@@ -37,49 +37,6 @@ const post_AuthenticateUser = (
     .catch((error) => console.log(error));
 };
 
-// const post_OauthDetails2 = async (
-//   nonce,
-//   clientId,
-//   scope,
-//   responseType,
-//   redirectUri,
-//   display,
-//   prompt,
-//   acrValues,
-//   claims
-// ) => {
-//   let loginFields = {
-//     id: "String",
-//     version: "String",
-//     requestTime: "String",
-//     request: {
-//       clientId: clientId,
-//       scope: scope,
-//       responseType: responseType,
-//       redirectUri: redirectUri,
-//       display: display,
-//       prompt: prompt,
-//       acrValues: acrValues,
-//       claims: claims,
-//     },
-//   };
-
-//   const endpoint = baseUrl + oauthDetailsEndPoint + "?nonce=" + nonce;
-//   fetch(endpoint, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify(loginFields),
-//   })
-//     .then((response) => response.json())
-//     .then((data) => {
-//       return data;
-//     })
-//     .catch((error) => console.log(error));
-// };
-
-
 const post_OauthDetails = async (
   nonce,
   clientId,

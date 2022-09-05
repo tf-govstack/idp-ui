@@ -13,8 +13,6 @@ const dynamicSize = {
     },
 };
 
-
-
 const LoadingIndicator = ({ message, size }) => {
     return (
         <>
@@ -27,19 +25,6 @@ const LoadingIndicator = ({ message, size }) => {
                 {message}
             </div>
         </>
-        // <div className="d-flex flex-column align-items-center my-4">
-        //     <button type="button" class="bg-indigo-500 ..." disabled>
-        //         <svg class="animate-spin h-5 w-5 mr-3 ..." viewBox="0 0 24 24">
-        //             <span className="visually-hidden">{message}</span>
-        //         </svg>
-        //         Processing...
-        //     </button>
-
-        //     {/* <Spinner animation="border" role="status" style={dynamicSize[size]}>
-        //         <span className="visually-hidden">{message}</span>
-        //     </Spinner>
-        //     <span>{message}</span> */}
-        // </div>
     );
 };
 
