@@ -24,10 +24,24 @@ const Authorize = () => {
         let display = searchParams.get("display");
         let prompt = searchParams.get("prompt");
         let acr_values = searchParams.get("acr_values");
-        //let claims = searchParams.get("claims");
+        let claims = searchParams.get("claims");
+
+        let claimsDecoded
+        if (claims == null) {
+          claimsDecoded = null;
+        } else {
+          try {
+            claimsDecoded = JSON.parse(decodeURI(claims));
+          } catch {
+            setError(new Error("Unable to parse claims! Please try again."));
+            setStatus("ERROR");
+            return;
+          }
+        }
+        console.log(claimsDecoded);
 
         const response = await post_OauthDetails(nonce, client_id, scope,
-          response_type, redirect_uri, display, prompt, acr_values, {});
+          response_type, redirect_uri, display, prompt, acr_values, claimsDecoded);
 
         setOAuthDetailResponse(response);
         setStatus("LOADED");

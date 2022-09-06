@@ -48,7 +48,7 @@ const post_OauthDetails = async (
   acrValues,
   claims
 ) => {
-  let loginFields = {
+  let request = {
     id: "String",
     version: "String",
     requestTime: "String",
@@ -66,7 +66,9 @@ const post_OauthDetails = async (
 
   var endpoint = baseUrl + oauthDetailsEndPoint + "?nonce=" + nonce;
 
-  return axios.post(endpoint, loginFields, {
+  console.log(request);
+
+  return axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
     },
