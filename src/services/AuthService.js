@@ -66,8 +66,6 @@ const post_OauthDetails = async (
 
   var endpoint = baseUrl + oauthDetailsEndPoint + "?nonce=" + nonce;
 
-  console.log(request);
-
   return axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",

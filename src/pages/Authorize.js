@@ -38,7 +38,6 @@ const Authorize = () => {
             return;
           }
         }
-        console.log(claimsDecoded);
 
         const response = await post_OauthDetails(nonce, client_id, scope,
           response_type, redirect_uri, display, prompt, acr_values, claimsDecoded);

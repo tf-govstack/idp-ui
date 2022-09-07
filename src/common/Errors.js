@@ -1,6 +1,6 @@
 const Error404 = () => {
     return (
-        <div class="container mx-auto">
+        <div className="container mx-auto">
             <h1>404 NOT FOUND</h1>
         </div>
     );
@@ -9,7 +9,7 @@ const Error404 = () => {
 
 const Error500 = () => {
     return (
-        <div class="container mx-auto">
+        <div className="container mx-auto">
             <h1>500 INTERNAL SERVER ERROR</h1>
         </div>
     );

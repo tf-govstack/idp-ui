@@ -1,4 +1,4 @@
-const loginFields=[
+const otpFields=[
     {
         labelText:"Vid",
         labelFor:"Mosip vid",
@@ -10,14 +10,27 @@ const loginFields=[
         placeholder:"VID"   
     },
     {
-        labelText:"Password",
-        labelFor:"password",
-        id:"password",
-        name:"password",
+        labelText:"Otp",
+        labelFor:"otp",
+        id:"otp",
+        name:"otp",
         type:"password",
-        autoComplete:"current-password",
+        autoComplete:"",
         isRequired:true,
-        placeholder:"Password"   
+        placeholder:"1234"   
+    }
+]
+
+const bioLoginFields=[
+    {
+        labelText:"Vid",
+        labelFor:"Mosip vid",
+        id:"mosip-vid",
+        name:"vid",
+        type:"text",
+        autoComplete:"vid",
+        isRequired:true,
+        placeholder:"VID"   
     }
 ]
 
@@ -68,18 +81,18 @@ const tabList=[
     {
         name:"Log in with OTP",
         icon:"space-shuttle",  
-        comp: "xx"
+        comp: "OTP"
     },
     {
         name:"Log in with Inji",
         icon:"cog",
-        comp: "xx"  
+        comp: "QRCode"  
     },
     {
         name:"Log in with Biometrics",
         icon:"briefcase",  
-        comp: "xx"
+        comp: "Biometric"
     }
 ]
 
-export {loginFields,signupFields, tabList}
+export {otpFields,signupFields, tabList, bioLoginFields}

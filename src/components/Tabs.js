@@ -5,7 +5,7 @@ export default function Tabs ({
   tabs,
   block
 }) {
-  const [openTab, setOpenTab] = React.useState(1);
+  const [openTab, setOpenTab] = React.useState(0);
   return (
     <>
       <div className="flex flex-wrap">
@@ -16,7 +16,7 @@ export default function Tabs ({
           >
             {
             tabs.map((tab, index)=>
-            <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+            <li key={tab.name+index} className="-mb-px mr-2 last:mr-0 flex-auto text-center">
               <a
                 className={
                   "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
@@ -44,17 +44,15 @@ export default function Tabs ({
               {
                 tabs.map((tab, index)=> 
                 
-                <div className={openTab === index ? "block" : "hidden"} id={"link"+ index}>
-                  <p>
-                    {index} {block[tab.comp]}
-                  </p>
+                <div key={tab.comp+index} className={openTab === index ? "block" : "hidden"} id={"link"+ index}>
+                    {block.get(tab.icon)}
                 </div>
                 )
               }
-              </div>
             </div>
-            </div>
-            </div>
+          </div>
+        </div>  
+      </div>
     </>
-  );
-};
+  )
+}

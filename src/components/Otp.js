@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import { loginFields } from "../constants/formFields";
+import { otpFields } from "../constants/formFields";
 import FormAction from "./FormAction";
 import FormExtra from "./FormExtra";
 import Input from "./Input";
 
 
-const fields=loginFields;
+const fields=otpFields;
 let fieldsState = {};
-fields.forEach(field=>fieldsState["login_"+field.id]='');
+fields.forEach(field=>fieldsState["Otp"+field.id]='');
 
 
-export default function Login(){
+export default function Otp(loginFields){
+    const fields = loginFields["param"];
     const [loginState,setLoginState]=useState(fieldsState);
 
     const handleChange=(e)=>{
@@ -53,12 +54,12 @@ export default function Login(){
             {
                 fields.map(field=>
                         <Input
-                            key={"login_"+field.id}
+                            key={"Otp_"+field.id}
                             handleChange={handleChange}
-                            value={loginState["login_"+field.id]}
+                            value={loginState["Otp_"+field.id]}
                             labelText={field.labelText}
                             labelFor={field.labelFor}
-                            id={"login_"+field.id}
+                            id={"Otp_"+field.id}
                             name={field.name}
                             type={field.type}
                             isRequired={field.isRequired}
@@ -69,7 +70,25 @@ export default function Login(){
             }
         </div>
 
-        <FormExtra/>
+        <div className="flex items-center justify-between ">
+        <div className="flex items-center">
+          <input
+            id="remember-me"
+            name="remember-me"
+            type="checkbox"
+            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+          />
+          <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+            Remember me
+          </label>
+        </div>
+
+        <div className="text-sm">
+          <a href="#" className="font-medium text-purple-600 hover:text-purple-500">
+            Resend OTP?
+          </a>
+        </div> 
+      </div>
         <FormAction handleSubmit={handleSubmit} text="Login"/>
 
       </form>
