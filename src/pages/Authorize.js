@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Error404 } from '../common/Errors';
 import LoadingIndicator from "../common/LoadingIndicator";
 import { post_OauthDetails } from '../services/AuthService';
-const Authorize = () => {
+const AuthorizePage = () => {
   const [status, setStatus] = useState("LOADING")
   const [oAuthDetailResponse, setOAuthDetailResponse] = useState(null)
   const [error, setError] = useState(null)
@@ -46,6 +46,7 @@ const Authorize = () => {
         setStatus("LOADED");
       }
       catch (errormsg) {
+        setOAuthDetailResponse(null);
         setError(errormsg)
         setStatus("ERROR")
       }
@@ -56,23 +57,23 @@ const Authorize = () => {
 
 
   useEffect(() => {
-    redirectToLogin();
+    if (status === "LOADED") {
+      redirectToLogin();
+    }
   }, [status])
 
   const redirectToLogin = async () => {
-    if (status === "LOADED") {
-      if (oAuthDetailResponse === null) {
-        return;
-      }
+    if (oAuthDetailResponse === null) {
+      return;
+    }
 
-      const { response, errors } = oAuthDetailResponse
+    const { response, errors } = oAuthDetailResponse
 
-      if (errors != null && errors.length > 0) {
-        return;
-      } else {
-        window.localStorage.setItem("OauthDetails", JSON.stringify(response));
-        navigate("/login", { replace: true });
-      }
+    if (errors != null && errors.length > 0) {
+      return;
+    } else {
+      window.localStorage.setItem("OauthDetails", JSON.stringify(response));
+      navigate("/login?transactionId=" + response.transactionId, { replace: true });
     }
   }
 
@@ -124,4 +125,4 @@ const Authorize = () => {
   return el;
 }
 
-export default Authorize;
+export default AuthorizePage;

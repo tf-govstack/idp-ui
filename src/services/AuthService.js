@@ -4,37 +4,31 @@ const baseUrl = process.env.REACT_APP_API_BASE_URL;
 const authenticateEndPoint = "/authorization/authenticate";
 const oauthDetailsEndPoint = "/authorization/oauth-details";
 
-const post_AuthenticateUser = (
+const post_AuthenticateUser = async (
   transactionId,
   individualId,
-  otp,
-  biometrics
+  challengeList
 ) => {
-  let loginFields = {
+  let request = {
     id: "String",
     version: "String",
     requestTime: "String",
     request: {
       transactionId: transactionId,
       individualId: individualId,
-      otp: otp,
-      biometrics: biometrics,
+      challengeList: challengeList
     },
   };
 
+  console.log(request);
+
   const endpoint = baseUrl + authenticateEndPoint;
-  fetch(endpoint, {
-    method: "POST",
+  const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(loginFields),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      //API Success from LoginRadius Login API
-    })
-    .catch((error) => console.log(error));
+  });
+  return response.data;
 };
 
 const post_OauthDetails = async (
@@ -66,12 +60,12 @@ const post_OauthDetails = async (
 
   var endpoint = baseUrl + oauthDetailsEndPoint + "?nonce=" + nonce;
 
-  return axios.post(endpoint, request, {
+  const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
     },
-  })
-    .then((response) => response.data);
+  });
+  return response.data;
 };
 
 

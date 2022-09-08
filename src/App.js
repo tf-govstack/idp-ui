@@ -5,7 +5,8 @@ import {
   Route,
 } from "react-router-dom";
 import LoginPage from './pages/Login';
-import Authorize from './pages/Authorize';
+import AuthorizePage from './pages/Authorize';
+import ConsentPage from './pages/Consent';
 
 function App() {
   return (
@@ -14,7 +15,8 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/authorize" element={<Authorize />} />
+            <Route path="/authorize" element={<AuthorizePage />} />
+            <Route path="/consent" element={<ConsentPage />} />
           </Routes>
         </BrowserRouter>
       </div>

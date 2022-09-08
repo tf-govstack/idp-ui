@@ -1,76 +1,104 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import LoadingIndicator from '../common/LoadingIndicator';
 import { otpFields } from "../constants/formFields";
+import { post_AuthenticateUser } from '../services/AuthService';
 import FormAction from "./FormAction";
-import FormExtra from "./FormExtra";
 import Input from "./Input";
 
 
-const fields=otpFields;
+const fields = otpFields;
 let fieldsState = {};
-fields.forEach(field=>fieldsState["Otp"+field.id]='');
+fields.forEach(field => fieldsState["Otp" + field.id] = '');
 
 
-export default function Otp(loginFields){
-    const fields = loginFields["param"];
-    const [loginState,setLoginState]=useState(fieldsState);
+export default function Otp(loginFields) {
+  const fields = loginFields["param"];
+  const [loginState, setLoginState] = useState(fieldsState);
+  const [error, setError] = useState(null)
+  const [transactionId, setTransactionId] = useState(null)
+  const [status, setStatus] = useState("LOADED")
 
-    const handleChange=(e)=>{
-        setLoginState({...loginState,[e.target.id]:e.target.value})
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setLoginState({ ...loginState, [e.target.id]: e.target.value })
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    authenticateUser();
+  }
+
+
+  useEffect(() => {
+    setTransactionId(searchParams.get("transactionId"));
+  }, [])
+
+  //Handle Login API Integration here
+  const authenticateUser = async () => {
+
+    try {
+      let vid = loginState['Otp_mosip-vid'];
+      let challengeType = "OTP";
+      let challenge = loginState['Otp_otp'];
+
+      let challengeList = [
+        {
+          type: challengeType,
+          challenge: challenge
+        }
+      ]
+
+      setStatus("LOADING");
+
+      const authenticateResponse = await post_AuthenticateUser(transactionId, vid, challengeList);
+
+      setStatus("LOADED");
+
+      const { response, errors } = authenticateResponse
+
+      if (errors != null && errors.length > 0) {
+        console.log(errors);
+        setError("Authentication failed: " + errors[0].errorCode)
+        return;
+      } else {
+        console.log(response);
+        setError(null)
+        navigate("/consent", { replace: false });
+      }
     }
-
-    const handleSubmit=(e)=>{
-        e.preventDefault();
-        authenticateUser();
+    catch (errormsg) {
+      // setError(errormsg)
+      // setStatus("ERROR")
     }
+  }
 
-    //Handle Login API Integration here
-    const authenticateUser = () =>{
-        
-     
-        // let loginFields={
-        //         vid:loginState['mosip-vid'],
-        //         password:loginState['password']
-        // };
-           
-        // const endpoint=`https://api.loginradius.com/identity/v2/auth/login?apikey=${apiKey}&apisecret=${apiSecret}`;
-        //  fetch(endpoint,
-        //      {
-        //      method:'POST',
-        //      headers: {
-        //      'Content-Type': 'application/json'
-        //      },
-        //      body:JSON.stringify(loginFields)
-        //      }).then(response=>response.json())
-        //      .then(data=>{
-        //         //API Success from LoginRadius Login API
-        //      })
-        //      .catch(error=>console.log(error))
-         }
-    
+  return (
+    <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+      <div className="-space-y-px">
+        {
+          fields.map(field =>
+            <Input
+              key={"Otp_" + field.id}
+              handleChange={handleChange}
+              value={loginState["Otp_" + field.id]}
+              labelText={field.labelText}
+              labelFor={field.labelFor}
+              id={"Otp_" + field.id}
+              name={field.name}
+              type={field.type}
+              isRequired={field.isRequired}
+              placeholder={field.placeholder}
+            />
 
-    return(
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-        <div className="-space-y-px">
-            {
-                fields.map(field=>
-                        <Input
-                            key={"Otp_"+field.id}
-                            handleChange={handleChange}
-                            value={loginState["Otp_"+field.id]}
-                            labelText={field.labelText}
-                            labelFor={field.labelFor}
-                            id={"Otp_"+field.id}
-                            name={field.name}
-                            type={field.type}
-                            isRequired={field.isRequired}
-                            placeholder={field.placeholder}
-                    />
-                
-                )
-            }
-        </div>
+          )
+        }
+      </div>
 
-        <div className="flex items-center justify-between ">
+      <div className="flex items-center justify-between ">
         <div className="flex items-center">
           <input
             id="remember-me"
@@ -87,10 +115,32 @@ export default function Otp(loginFields){
           <a href="#" className="font-medium text-purple-600 hover:text-purple-500">
             Resend OTP?
           </a>
-        </div> 
+        </div>
       </div>
-        <FormAction handleSubmit={handleSubmit} text="Login"/>
-
-      </form>
-    )
+      {
+        <div>
+          {
+            (status === "LOADING") && <LoadingIndicator size="medium" message="Authenticating. Please wait...." />
+          }
+        </div>
+      }
+      {
+        (status !== "LOADING") && error && (
+          <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
+            {error}
+          </div>
+        )
+      }
+      {
+        (transactionId === null || transactionId === "") && (
+          <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
+            Invalid transactionId
+          </div>
+        )
+      }
+      {
+        (transactionId !== null && transactionId !== "") && <FormAction handleSubmit={handleSubmit} text="Login" />
+      }
+    </form>
+  )
 }
