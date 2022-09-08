@@ -1,3 +1,26 @@
+const pinFields = [
+    {
+        labelText: "Uin",
+        labelFor: "Mosip Uin",
+        id: "mosip-uin",
+        name: "uin",
+        type: "text",
+        autoComplete: "uin",
+        isRequired: true,
+        placeholder: "UIN"
+    },
+    {
+        labelText: "Pin",
+        labelFor: "pin",
+        id: "pin",
+        name: "pin",
+        type: "password",
+        autoComplete: "",
+        isRequired: true,
+        placeholder: "1234"
+    }
+]
+
 const otpFields = [
     {
         labelText: "Vid",
@@ -82,8 +105,13 @@ const tabList = [
     {
         name: "Log in with PIN",
         icon: "space-shuttle",
-        comp: "OTP"
+        comp: "PIN"
     }
+    // , {
+    //     name: "Log in with OTP",
+    //     icon: "space-shuttle",
+    //     comp: "OTP"
+    // }
     // ,{
     //     name: "Log in with Inji",
     //     icon: "cog",
@@ -96,4 +124,4 @@ const tabList = [
     // }
 ]
 
-export { otpFields, signupFields, tabList, bioLoginFields }
+export { pinFields, otpFields, signupFields, tabList, bioLoginFields }
