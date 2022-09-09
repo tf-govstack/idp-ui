@@ -9,6 +9,7 @@ const AuthorizePage = () => {
   const [oAuthDetailResponse, setOAuthDetailResponse] = useState(null)
   const [error, setError] = useState(null)
   const [searchParams, setSearchParams] = useSearchParams();
+  const [redirectUri, setRedirectUri] = useState("");
 
   const navigate = useNavigate();
 
@@ -20,7 +21,8 @@ const AuthorizePage = () => {
         let client_id = searchParams.get("client_id");
         let scope = searchParams.get("scope");
         let response_type = searchParams.get("response_type");
-        let redirect_uri = searchParams.get("redirect_uri");
+        setRedirectUri(searchParams.get("redirect_uri"));
+        let redirect_uri = searchParams.get("redirect_uri")
         let display = searchParams.get("display");
         let prompt = searchParams.get("prompt");
         let acr_values = searchParams.get("acr_values");
@@ -72,8 +74,10 @@ const AuthorizePage = () => {
     if (errors != null && errors.length > 0) {
       return;
     } else {
-      window.localStorage.setItem("OauthDetails", JSON.stringify(response));
-      navigate("/login?transactionId=" + response.transactionId, { replace: true });
+      let nonce = searchParams.get("nonce");
+      window.localStorage.setItem("redirect_uri", redirectUri);
+      window.localStorage.setItem("oauth_details", JSON.stringify(response));
+      navigate("/login?transactionId=" + response.transactionId + "&nonce=" + nonce, { replace: true });
     }
   }
 
@@ -115,7 +119,7 @@ const AuthorizePage = () => {
       } else {
         el = (
           <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
-            {error?.message}
+            Error: {error?.message}
           </div>
         )
       }

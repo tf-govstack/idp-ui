@@ -1,10 +1,14 @@
 import React from "react";
-import { Error404 } from '../common/Errors';
-const ConsentPage = () => {
-  let el = (
-    <Error404 message="Consent Page" />
-  )
-  return el;
-}
+import Header from "../components/Header"
+import Consent from "../components/Consent";
 
-export default ConsentPage;
+export default function ConsentPage() {
+  return (
+    <>
+      <Header
+        heading="Login With Mosip"
+      />
+      <Consent />
+    </>
+  )
+}

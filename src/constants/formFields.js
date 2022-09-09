@@ -7,7 +7,7 @@ const pinFields = [
         type: "text",
         autoComplete: "uin",
         isRequired: true,
-        placeholder: "UIN"
+        placeholder: "UIN or VID"
     },
     {
         labelText: "Pin",
@@ -17,7 +17,7 @@ const pinFields = [
         type: "password",
         autoComplete: "",
         isRequired: true,
-        placeholder: "1234"
+        placeholder: "Enter PIN"
     }
 ]
 

@@ -3,6 +3,8 @@ import axios from "axios";
 const baseUrl = process.env.REACT_APP_API_BASE_URL;
 const authenticateEndPoint = "/authorization/authenticate";
 const oauthDetailsEndPoint = "/authorization/oauth-details";
+const authCodeEndPoint = "/authorization/auth-code";
+
 
 const post_AuthenticateUser = async (
   transactionId,
@@ -12,15 +14,13 @@ const post_AuthenticateUser = async (
   let request = {
     id: "String",
     version: "String",
-    requestTime: "String",
+    requestTime: new Date().toISOString(),
     request: {
       transactionId: transactionId,
       individualId: individualId,
       challengeList: challengeList
     },
   };
-
-  console.log(request);
 
   const endpoint = baseUrl + authenticateEndPoint;
   const response = await axios.post(endpoint, request, {
@@ -45,7 +45,7 @@ const post_OauthDetails = async (
   let request = {
     id: "String",
     version: "String",
-    requestTime: "String",
+    requestTime: new Date().toISOString(),
     request: {
       clientId: clientId,
       scope: scope,
@@ -69,4 +69,33 @@ const post_OauthDetails = async (
 };
 
 
-export { post_AuthenticateUser, post_OauthDetails }
+const post_AuthCode = async (
+  nonce,
+  state,
+  transactionId,
+  acceptedClaims,
+  permittedAuthorizeScopes
+) => {
+  let request = {
+    id: "String",
+    version: "String",
+    requestTime: new Date().toISOString(),
+    request: {
+      transactionId: transactionId,
+      acceptedClaims: acceptedClaims,
+      permittedAuthorizeScopes: permittedAuthorizeScopes
+    },
+  };
+
+  const endpoint = baseUrl + authCodeEndPoint + "?nonce=" + nonce + "&state=" + state;
+  const response = await axios.post(endpoint, request, {
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+  });
+  return response.data;
+};
+
+
+export { post_AuthenticateUser, post_OauthDetails, post_AuthCode }

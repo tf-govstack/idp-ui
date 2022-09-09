@@ -16,7 +16,6 @@ export default function Pin(loginFields) {
   const fields = loginFields["param"];
   const [loginState, setLoginState] = useState(fieldsState);
   const [error, setError] = useState(null)
-  const [transactionId, setTransactionId] = useState(null)
   const [status, setStatus] = useState("LOADED")
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,15 +31,13 @@ export default function Pin(loginFields) {
     authenticateUser();
   }
 
-
-  useEffect(() => {
-    setTransactionId(searchParams.get("transactionId"));
-  }, [])
-
   //Handle Login API Integration here
   const authenticateUser = async () => {
 
     try {
+      let transactionId = searchParams.get("transactionId");
+      let nonce = searchParams.get("nonce");
+
       let pin = loginState['Pin_mosip-uin'];
       let challengeType = "PIN";
       let challenge = loginState['Pin_pin'];
@@ -61,13 +58,11 @@ export default function Pin(loginFields) {
       const { response, errors } = authenticateResponse
 
       if (errors != null && errors.length > 0) {
-        console.log(errors);
         setError("Authentication failed: " + errors[0].errorCode)
         return;
       } else {
-        console.log(response);
         setError(null)
-        navigate("/consent", { replace: true });
+        navigate("/consent?transactionId=" + response.transactionId + "&nonce=" + nonce, { replace: true });
       }
     }
     catch (errormsg) {
@@ -131,16 +126,7 @@ export default function Pin(loginFields) {
           </div>
         )
       }
-      {
-        (transactionId === null || transactionId === "") && (
-          <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
-            Invalid transactionId
-          </div>
-        )
-      }
-      {
-        (transactionId !== null && transactionId !== "") && <FormAction handleSubmit={handleSubmit} text="Login" />
-      }
+      <FormAction handleSubmit={handleSubmit} text="Login" />
     </form>
   )
 }
