@@ -47,6 +47,7 @@ const post_OauthDetails = async (
     version: "String",
     requestTime: new Date().toISOString(),
     request: {
+      nonce: nonce,
       clientId: clientId,
       scope: scope,
       responseType: responseType,
@@ -58,7 +59,7 @@ const post_OauthDetails = async (
     },
   };
 
-  var endpoint = baseUrl + oauthDetailsEndPoint + "?nonce=" + nonce;
+  var endpoint = baseUrl + oauthDetailsEndPoint;
 
   const response = await axios.post(endpoint, request, {
     headers: {

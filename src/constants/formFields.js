@@ -112,16 +112,16 @@ const tabList = [
     //     icon: "space-shuttle",
     //     comp: "OTP"
     // }
-    // ,{
-    //     name: "Log in with Inji",
-    //     icon: "cog",
-    //     comp: "QRCode"
-    // }
-    // ,{
-    //     name: "Log in with Biometrics",
-    //     icon: "briefcase",
-    //     comp: "Biometric"
-    // }
+    , {
+        name: "Log in with Inji",
+        icon: "cog",
+        comp: "QRCode"
+    }
+    , {
+        name: "Log in with Biometrics",
+        icon: "briefcase",
+        comp: "Biometric"
+    }
 ]
 
 export { pinFields, otpFields, signupFields, tabList, bioLoginFields }

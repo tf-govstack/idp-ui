@@ -44,7 +44,7 @@ export default function Pin(loginFields) {
 
       let challengeList = [
         {
-          type: challengeType,
+          authFactorType: challengeType,
           challenge: challenge
         }
       ]
@@ -66,8 +66,8 @@ export default function Pin(loginFields) {
       }
     }
     catch (errormsg) {
-      // setError(errormsg)
-      // setStatus("ERROR")
+      setError(errormsg.message)
+      setStatus("ERROR")
     }
   }
 
