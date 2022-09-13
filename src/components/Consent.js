@@ -60,6 +60,7 @@ export default function Consent() {
 
     const handleCancel = (e) => {
         e.preventDefault();
+        cancelConsent();
     }
 
     let oAuthDetails = JSON.parse(window.localStorage.getItem("oauth_details"));
@@ -102,6 +103,23 @@ export default function Consent() {
                 setError(null)
                 window.location.replace(response.redirectUri + params + "code=" + response.code);
             }
+        }
+        catch (errormsg) {
+            // setError(errormsg)
+            // setStatus("ERROR")
+        }
+    }
+
+    const cancelConsent = async () => {
+
+        try {
+            let nonce = searchParams.get("nonce");
+            let state = "12fsaf1";
+
+            let params = "?nonce=" + nonce + "&state=" + state + "&";
+
+            let redirect_uri = window.localStorage.getItem("redirect_uri");
+            window.location.replace(redirect_uri + params + "error=" + "Authorization failed");
         }
         catch (errormsg) {
             // setError(errormsg)
