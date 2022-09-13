@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Tabs ({ 
+export default function Tabs({
   color,
   tabs,
   block
@@ -15,43 +15,43 @@ export default function Tabs ({
             role="tablist"
           >
             {
-            tabs.map((tab, index)=>
-            <li key={tab.name+index} className="-mb-px mr-2 last:mr-0 flex-auto text-center">
-              <a
-                className={
-                  "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
-                  (openTab === index
-                    ? "text-white bg-" + color + "-600"
-                    : "text-" + color + "-600 bg-white")
-                }
-                onClick={e => {
-                  e.preventDefault();
-                  setOpenTab(index);
-                }}
-                data-toggle="tab"
-                href="#link1"
-                role="tablist"
-              >
-                <i className={"fas fa-" + tab.icon + " text-base mr-1"}></i> {tab.name} 
-              </a>
-            </li>
-            )
+              tabs.map((tab, index) =>
+                <li key={tab.name + index} className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+                  <a
+                    className={
+                      "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
+                      (openTab === index
+                        ? "text-white bg-gradient-to-r from-" + color + "-500 to-blue-500 hover:bg-gradient-to-bl"
+                        : "text-" + color + "-600 bg-white")
+                    }
+                    onClick={e => {
+                      e.preventDefault();
+                      setOpenTab(index);
+                    }}
+                    data-toggle="tab"
+                    href="#link1"
+                    role="tablist"
+                  >
+                    <i className={"fas fa-" + tab.icon + " text-base mr-1"}></i> {tab.name}
+                  </a>
+                </li>
+              )
             }
           </ul>
           <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded">
             <div className="px-4 py-5 flex-auto">
               <div className="tab-content tab-space"></div>
               {
-                tabs.map((tab, index)=> 
-                
-                <div key={tab.comp+index} className={openTab === index ? "block" : "hidden"} id={"link"+ index}>
+                tabs.map((tab, index) =>
+
+                  <div key={tab.comp + index} className={openTab === index ? "block" : "hidden"} id={"link" + index}>
                     {block.get(tab.icon)}
-                </div>
+                  </div>
                 )
               }
             </div>
           </div>
-        </div>  
+        </div>
       </div>
     </>
   )

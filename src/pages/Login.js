@@ -74,7 +74,7 @@ export default function LoginPage() {
         linkName="Preregister"
         linkUrl="https://mec.mosip.io/preregister"
       />
-      <Tabs color="purple" tabs={tabs} block={tabCompInstance} />
+      <Tabs color="cyan" tabs={tabs} block={tabCompInstance} />
     </>
   )
 }
