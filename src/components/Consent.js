@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import LoadingIndicator from '../common/LoadingIndicator';
 import { otpFields } from "../constants/formFields";
-import { post_AuthCode, post_AuthenticateUser } from '../services/AuthService';
-import FormAction from "./FormAction";
+import { post_AuthCode } from '../services/AuthService';
 
 
 const fields = otpFields;
@@ -53,6 +52,15 @@ export default function Consent() {
         setClaims(resultArray)
     };
 
+    useEffect(() => {
+        const enableEssentialClaims = async () => {
+            let oAuthDetails = JSON.parse(window.localStorage.getItem("oauth_details"));
+            let claims = oAuthDetails?.essentialClaims;
+            setClaims(claims)
+        }
+        enableEssentialClaims();
+    }, [])
+
     const handleSubmit = (e) => {
         e.preventDefault();
         submitConsent();
@@ -65,11 +73,11 @@ export default function Consent() {
 
     let oAuthDetails = JSON.parse(window.localStorage.getItem("oauth_details"));
 
-    var authorizeScopes = oAuthDetails?.authorizeScopes;
-    var essentialClaims = oAuthDetails?.essentialClaims;
-    var voluntaryClaims = oAuthDetails?.voluntaryClaims;
-    var clientName = oAuthDetails?.clientName;
-    var logoUrl = oAuthDetails?.logoUrl;
+    let authorizeScopes = oAuthDetails?.authorizeScopes;
+    let essentialClaims = oAuthDetails?.essentialClaims;
+    let voluntaryClaims = oAuthDetails?.voluntaryClaims;
+    let clientName = oAuthDetails?.clientName;
+    let logoUrl = oAuthDetails?.logoUrl;
 
     //Handle Login API Integration here
     const submitConsent = async () => {
@@ -151,8 +159,8 @@ export default function Consent() {
                                                 <div class="grid grid-cols-2 gap-4">
                                                     <div className="flex justify-start">
                                                         <label labelfor={item} className="inline-flex relative items-center mb-1 mt-1 cursor-pointer">
-                                                            <input type="checkbox" value="" id={item} className="sr-only peer" onChange={handleClaimChange} />
-                                                            <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                                            <input type="checkbox" value="" id={item} className="sr-only peer" onChange={handleScopeChange} />
+                                                            <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 dark:peer-focus:ring-cyan-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-cyan-600"></div>
                                                         </label>
                                                     </div>
                                                     <div className="flex justify-end relative items-center mb-1 mt-1 cursor-pointer">
@@ -178,8 +186,8 @@ export default function Consent() {
                                                 <div class="grid grid-cols-2 gap-4">
                                                     <div className="flex justify-start">
                                                         <label labelfor={item} className="inline-flex relative items-center mb-1 mt-1 cursor-pointer">
-                                                            <input type="checkbox" value="" id={item} className="sr-only peer" onChange={handleClaimChange} />
-                                                            <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                                            <input type="checkbox" value="" id={item} className="sr-only peer" onChange={handleClaimChange} checked />
+                                                            <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 dark:peer-focus:ring-cyan-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-cyan-600"></div>
                                                         </label>
                                                     </div>
                                                     <div className="flex justify-end relative items-center mb-1 mt-1 cursor-pointer">
@@ -207,7 +215,7 @@ export default function Consent() {
                                                     <div className="flex justify-start">
                                                         <label labelfor={item} className="inline-flex relative items-center mb-1 mt-1 cursor-pointer">
                                                             <input type="checkbox" value="" id={item} className="sr-only peer" onChange={handleClaimChange} />
-                                                            <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                                            <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 dark:peer-focus:ring-cyan-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-cyan-600"></div>
                                                         </label>
                                                     </div>
                                                     <div className="flex justify-end relative items-center mb-1 mt-1 cursor-pointer">
