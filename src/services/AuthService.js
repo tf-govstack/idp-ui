@@ -91,8 +91,7 @@ const post_AuthCode = async (
   const endpoint = baseUrl + authCodeEndPoint + "?nonce=" + nonce + "&state=" + state;
   const response = await axios.post(endpoint, request, {
     headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*"
+      "Content-Type": "application/json"
     },
   });
   return response.data;
