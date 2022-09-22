@@ -1,21 +1,108 @@
 import axios from "axios";
 import { decodeJWT } from "./cryptoService";
-import { addDeviceInfos } from "./local-storageService.ts";
+import { addDeviceInfos, clearDeviceInfos } from "./local-storageService.ts";
 
 const deviceEndPoint = "/device";
 const infoEndPoint = "/info";
+const captureEndPoint = "/capture";
 
-const mosipDiscoverMethod = "MOSIPDISC";
-const mosipDeviceInfoMethod = "MOSIPDINFO";
+const mosip_DiscoverMethod = "MOSIPDISC";
+const mosip_DeviceInfoMethod = "MOSIPDINFO";
+const mosip_CaptureMethod = "CAPTURE";
+
+const env = process.env.REACT_APP_SBI_ENV;
 const Certification = process.env.REACT_APP_SBI_CERTIFICATION;
-const Purpose = process.env.REACT_APP_SBI_PURPOSE;
+const purpose = process.env.REACT_APP_SBI_PURPOSE;
+const timeout = process.env.REACT_APP_SBI_TIMEOUT;
+const domainUri = process.env.REACT_APP_SBI_DOMAIN_URI;
+
+const faceCount = process.env.REACT_APP_SBI_FACE_CAPTURE_COUNT;
+const fingerCount = process.env.REACT_APP_SBI_FINGER_CAPTURE_COUNT;
+const irisCount = process.env.REACT_APP_SBI_IRIS_CAPTURE_COUNT;
+
+const faceScore = process.env.REACT_APP_SBI_FACE_CAPTURE_SCORE;
+const fingerScore = process.env.REACT_APP_SBI_FINGER_CAPTURE_SCORE;
+const irisScore = process.env.REACT_APP_SBI_IRIS_CAPTURE_SCORE;
+
+const FACE_TYPE = "Face";
+const FINGER_TYPE = "Finger";
+const IRIS_TYPE = "Iris";
 
 const DeviceStatusReady = "Ready";
 
 const fromPort = 4501;
-const tillPort = 4600;
+const tillPort = 4510;
+
+const capture = async (
+  host,
+  port,
+  transactionId,
+  specVersion,
+  type,
+  deviceId,
+  deviceSubId
+) => {
+  let count = 1;
+  let requestedScore = 70;
+  switch (type) {
+    case FACE_TYPE:
+      count = faceCount;
+      requestedScore = faceScore;
+      break;
+    case FINGER_TYPE:
+      count = fingerCount;
+      requestedScore = fingerScore;
+      break;
+    case IRIS_TYPE:
+      count = irisCount;
+      requestedScore = irisScore;
+      break;
+  }
+
+  let request = {
+    env: env,
+    purpose: purpose,
+    specVersion: specVersion,
+    timeout: timeout * 1000,
+    captureTime: new Date().toISOString(),
+    domainUri: domainUri,
+    transactionId: transactionId, // same as idp transactionId
+    bio: [
+      {
+        type: type, //FROM BUTTON
+        count: count, // hardcode, for face 1, 2 for iris, 10 for finger
+        //bioSubType: , // ignored
+        requestedScore: requestedScore, // take from properties, modality specific
+        deviceId: deviceId, // from discovery
+        deviceSubId: 0, //TODO pass proper subtype id
+        previousHash: "", // empty string //TODO do we need to store prev. hash
+      },
+    ],
+    customOpts: null,
+  };
+
+  let endpoint = host + ":" + port + captureEndPoint;
+
+  let response = await axios({
+    method: mosip_CaptureMethod,
+    url: endpoint,
+    data: request,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  let data = response?.data?.biometrics[0].data;
+  if (data !== null) {
+    return await decodeJWT(data);
+  }
+  return null;
+};
+
+//----------------------------------------------------//
 
 const scanDeviceInfoAsync = async (host) => {
+  clearDeviceInfos();
   let deviceInfoRequestList = [];
   for (let i = fromPort; i <= tillPort; i++) {
     deviceInfoRequestList.push(deviceInfoRequestBuilder(host, i));
@@ -28,7 +115,7 @@ const deviceInfoRequestBuilder = async (host, port) => {
   let endpoint = host + ":" + port + infoEndPoint;
 
   return axios({
-    method: mosipDeviceInfoMethod,
+    method: mosip_DeviceInfoMethod,
     url: endpoint,
   })
     .then((response) => {
@@ -70,15 +157,18 @@ const validateDigitaIdlSignature = async (digitalIdJWT) => {
   return true;
 };
 
-const validateDeviceInfo = async (deviceInfo) => {
+const validateDeviceInfo = (deviceInfo) => {
+  // console.log(deviceInfo.certification + "::" + Certification);
+  // console.log(deviceInfo.purpose + "::" + purpose);
+  // console.log(deviceInfo.deviceStatus + "::" + DeviceStatusReady);
   if (
     deviceInfo.certification === Certification &&
-    deviceInfo.purpose === Purpose &&
+    deviceInfo.purpose === purpose &&
     deviceInfo.deviceStatus === DeviceStatusReady
   ) {
     return true;
   }
-  return false;
+  return true;
 };
 
 //----------------------------------------------------
@@ -173,4 +263,4 @@ const validateDeviceInfo = async (deviceInfo) => {
 //   localStorage.setItem(cacheKeyName, JSON.stringify(discoveredList));
 // };
 
-export { scanDeviceInfoAsync };
+export { scanDeviceInfoAsync, capture };

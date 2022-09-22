@@ -1,5 +1,11 @@
 
-const device_info_keyname = "deviceinfo";
+const device_info_keyname = "deviceInfo";
+
+const clearDeviceInfos= () => {
+  if (localStorage.getItem(device_info_keyname)) {
+    localStorage.removeItem(device_info_keyname);
+  }
+}
 
 const addDeviceInfos = (port, decodedDeviceInfo) => {
     let deviceInfo = {};
@@ -13,4 +19,8 @@ const addDeviceInfos = (port, decodedDeviceInfo) => {
     localStorage.setItem(device_info_keyname, JSON.stringify(deviceInfo));
 }
 
-export { addDeviceInfos }
+const getDeviceInfos = () => {
+  return JSON.parse(window.localStorage.getItem(device_info_keyname));
+}
+
+export { addDeviceInfos, getDeviceInfos , clearDeviceInfos}

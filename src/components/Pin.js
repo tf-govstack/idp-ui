@@ -38,7 +38,7 @@ export default function Pin(loginFields) {
       let transactionId = searchParams.get("transactionId");
       let nonce = searchParams.get("nonce");
 
-      let pin = loginState['Pin_mosip-uin'];
+      let uin = loginState['Pin_mosip-uin'];
       let challengeType = "PIN";
       let challenge = loginState['Pin_pin'];
 
@@ -51,7 +51,7 @@ export default function Pin(loginFields) {
 
       setStatus("LOADING");
 
-      const authenticateResponse = await post_AuthenticateUser(transactionId, pin, challengeList);
+      const authenticateResponse = await post_AuthenticateUser(transactionId, uin, challengeList);
 
       setStatus("LOADED");
 
@@ -104,12 +104,6 @@ export default function Pin(loginFields) {
           <label htmlFor="remember-me" className="ml-2 block text-sm text-cyan-900">
             Remember me
           </label>
-        </div>
-
-        <div className="text-sm">
-          <a href="#" className="font-medium text-cyan-600 hover:text-cyan-500">
-            Resend OTP?
-          </a>
         </div>
       </div>
       {

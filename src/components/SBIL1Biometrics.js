@@ -1,133 +1,233 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import LoadingIndicator from "../common/LoadingIndicator";
-import { scanDeviceInfoAsync } from "../services/SbiService";
+import { ERROR, LOADED, LOADING } from "../constants/states";
+import { post_AuthenticateUser } from "../services/AuthService";
+import { getDeviceInfos } from "../services/local-storageService.ts";
+import { capture, scanDeviceInfoAsync } from "../services/SbiService";
 
-import FormAction from "./FormAction";
 import Input from "./Input";
 
-let captured = false;
 let fieldsState = {};
+const host = "http://127.0.0.1";
+const defaultPort = 4501;
 
-
-function discover(theUrl, port) {
-  console.log("Discover");
-}
-
-function deviceInfo(theUrl) {
-  console.log("Device info");
-}
-
-function capture(theUrl) {
-  console.log("Catpure");
-}
+const buttonImgPath = {
+  Face: "images/face_capture.png",
+  Finger: "images/fingerprint_scan.png",
+  Iris: "images/iris_code.png",
+};
 
 export default function SBIL1Biometrics(loginFields) {
   const fields = loginFields["param"];
   fields.forEach((field) => (fieldsState["sbi_" + field.id] = ""));
   const [loginState, setLoginState] = useState(fieldsState);
-  const [error, setError] = useState(null);
-  const [status, setStatus] = useState("LOADED");
+  const [status, setStatus] = useState({ state: LOADED, msg: "" });
+  
+  const [devices, setDevices] = useState([]);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    console.log("Attempt to handle change");
     setLoginState({ ...loginState, [e.target.id]: e.target.value });
   };
 
-  const StartCapture = (e) => {
-    console.log("Start capture");
+  const submitHandler = (e) => {
     e.preventDefault();
-    captured = true;
-    console.log("Start capture");
+
+    const { id } = e.nativeEvent.submitter;
+    startCapture(id);
   };
 
-  const Authenticate = () => {
-    captured = false;
-    return; //Send to server
+  const startCapture = async (serialNo) => {
+    let transactionId = searchParams.get("transactionId");
+    let nonce = searchParams.get("nonce");
+    let uin = loginState["sbi_mosip-vid"];
+
+    let deviceDetail = devices.get(serialNo);
+
+    try {
+      setStatus({
+        state: LOADING,
+        msg: deviceDetail.type + " Capture Initiated on " + deviceDetail.model,
+      });
+
+      let response = await capture(
+        host,
+        defaultPort,
+        transactionId,
+        deviceDetail.specVersion,
+        deviceDetail.type,
+        deviceDetail.deviceId,
+        deviceDetail.deviceSubId
+      );
+
+      setStatus({ state: LOADED, msg: "" });
+
+      await Authenticate(transactionId, nonce, uin, response.bioValue);
+    } catch (errormsg) {
+      setStatus({ state: ERROR, msg: errormsg.message });
+    }
+  };
+
+  const Authenticate = async (transactionId, nonce, uin, bioValue) => {
+    let challengeType = "bio"; //TODO where to get this value from?
+    let challenge = bioValue;
+
+    let challengeList = [
+      {
+        authFactorType: challengeType,
+        challenge: challenge,
+      },
+    ];
+
+    setStatus({ state: LOADING, msg: "Authenticating! Please wait" });
+
+    const authenticateResponse = await post_AuthenticateUser(
+      transactionId,
+      uin,
+      challengeList
+    );
+
+    setStatus({ state: LOADED, msg: "" });
+
+    const { response, errors } = authenticateResponse;
+
+    if (errors != null && errors.length > 0) {
+      setStatus({
+        state: ERROR,
+        msg: "Authentication failed: " + errors[0].errorCode,
+      });
+    } else {
+      navigate(
+        "/consent?transactionId=" + response.transactionId + "&nonce=" + nonce,
+        { replace: true }
+      );
+    }
   };
 
   const handleScan = (e) => {
     e.preventDefault();
-    scan();
+    scanDevices();
   };
 
   useEffect(() => {
-    scan();
+    scanDevices();
   }, []);
 
-  const scan = async () => {
+  const scanDevices = async () => {
     try {
-      setError(null);
-      setStatus("LOADING");
-      scanDeviceInfoAsync("http://127.0.0.1").then(() => {
-        setStatus("LOADED");
+      setStatus({ state: LOADING, msg: "Scanning Devices. Please wait...." });
+      scanDeviceInfoAsync(host).then(() => {
+        setStatus({ state: LOADED, msg: "" });
+        refreshDeviceList();
       });
     } catch (errormsg) {
-      setError(errormsg.message);
-      setStatus("ERROR");
+      setStatus({ state: ERROR, msg: errormsg.message });
     }
+  };
+
+  const refreshDeviceList = () => {
+    let deviceInfosPortsWise = getDeviceInfos();
+
+    let devicesDetails = new Map();
+
+    Object.keys(deviceInfosPortsWise).map((port) => {
+      let deviceInfos = deviceInfosPortsWise[port];
+
+      deviceInfos?.forEach((deviceInfo) => {
+        let deviceDetail = {
+          specVersion: deviceInfo.specVersion[0],
+          type: deviceInfo.digitalId.type,
+          deviceId: deviceInfo.deviceId,
+          deviceSubId: deviceInfo.deviceSubId,
+          model: deviceInfo.digitalId.model,
+          serialNo: deviceInfo.digitalId.serialNo,
+        };
+        devicesDetails.set(deviceInfo.digitalId.serialNo, deviceDetail);
+      });
+    });
+
+    setDevices(devicesDetails);
   };
 
   return (
     <>
-      {
-        <div>
-          {status === "LOADING" && (
-            <LoadingIndicator
-              size="medium"
-              message="Scanning Devices. Please wait...."
+      <form className="mt-8 space-y-6" onSubmit={submitHandler}>
+        <div className="-space-y-px">
+          {fields.map((field) => (
+            <Input
+              key={"sbi_" + field.id}
+              handleChange={handleChange}
+              value={loginState["sbi_" + field.id]}
+              labelText={field.labelText}
+              labelFor={field.labelFor}
+              id={"sbi_" + field.id}
+              name={field.name}
+              type={field.type}
+              isRequired={field.isRequired}
+              placeholder={field.placeholder}
             />
-          )}
+          ))}
         </div>
-      }
-      {status !== "LOADING" && error && (
-        <div
-          className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
-          role="alert"
-        >
-          {error}
-          <button
-            type="button"
-            class="flex justify-center w-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 light:bg-gray-800 light:text-white light:border-gray-600 light:hover:bg-gray-700 light:hover:border-gray-600 light:focus:ring-gray-700"
-            onClick={handleScan}
-          >
-            Scan Devices again
-          </button>
-        </div>
-      )}
-      {status === "LOADED" && error === null && (
-        <>
-          <form className="mt-8 space-y-6" onSubmit={StartCapture}>
-            <div className="-space-y-px">
-              {fields.map((field) => (
-                <Input
-                  key={"sbi_" + field.id}
-                  handleChange={handleChange}
-                  value={loginState["sbi_" + field.id]}
-                  labelText={field.labelText}
-                  labelFor={field.labelFor}
-                  id={"sbi_" + field.id}
-                  name={field.name}
-                  type={field.type}
-                  isRequired={field.isRequired}
-                  placeholder={field.placeholder}
-                />
-              ))}
+
+        {status.state === LOADING && (
+          <div>
+            <LoadingIndicator size="medium" message={status.msg} />
+          </div>
+        )}
+
+        {status.state === ERROR && (
+          <>
+            <div
+              className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
+              role="alert"
+            >
+              {status.msg}
             </div>
-            <FormAction
-              handleSubmit={StartCapture}
-              text={captured ? "Authenticate" : "Capture"}
-            />
-          </form>
-          <button
-            type="button"
-            class="flex justify-center w-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 light:bg-gray-800 light:text-white light:border-gray-600 light:hover:bg-gray-700 light:hover:border-gray-600 light:focus:ring-gray-700"
-            onClick={handleScan}
-          >
-            Scan Devices again
-          </button>
-        </>
-      )}
+            <button
+              type="button"
+              class="flex justify-center w-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 light:bg-gray-800 light:text-white light:border-gray-600 light:hover:bg-gray-700 light:hover:border-gray-600 light:focus:ring-gray-700"
+              onClick={handleScan}
+            >
+              Retry!
+            </button>
+          </>
+        )}
+
+        {status.state === LOADED && (
+          <>
+            <div class="grid grid-cols-3 flex justify-center">
+              {[...devices.keys()].map((serialNo) => {
+                let deviceDetail = devices.get(serialNo);
+
+                return (
+                  <div>
+                    <button
+                      class="w-32 h-32 text-black bg-white-200 font-medium rounded-lg text-sm mr-2 mb-2 dark:bg-white-200 hover:scale-105"
+                      type="submit"
+                      id={serialNo}
+                    >
+                      <img src={buttonImgPath[deviceDetail.type]} />
+                    </button>
+                    <div>
+                      <p class="text-center font-bold text-sm">
+                        {deviceDetail.type} Capture
+                      </p>
+                      <p class="text-center text-gray-700 text-sm">
+                        {deviceDetail.model}-{deviceDetail.deviceId}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </form>
     </>
   );
 }
