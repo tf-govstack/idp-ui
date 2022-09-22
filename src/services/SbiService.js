@@ -1,6 +1,11 @@
 import axios from "axios";
-import { decodeJWT } from "./cryptoService";
-import { addDeviceInfos, clearDeviceInfos } from "./local-storageService.ts";
+import { decodeJWT, encodeBase64 } from "./cryptoService";
+import {
+  addDeviceInfos,
+  addDiscoveredDevices,
+  clearDeviceInfos,
+  clearDiscoveredDevices,
+} from "./local-storageService.ts";
 
 const deviceEndPoint = "/device";
 const infoEndPoint = "/info";
@@ -90,37 +95,45 @@ const capture = async (
     headers: {
       "Content-Type": "application/json",
     },
+    timeout: timeout * 1000,
   });
 
-  let data = response?.data?.biometrics[0].data;
-  if (data !== null) {
-    return await decodeJWT(data);
+  if (response?.data !== null) {
+    return encodeBase64(response?.data);
   }
   return null;
 };
 
 //----------------------------------------------------//
 
-const scanDeviceInfoAsync = async (host) => {
+const discoverDevicesAsync = async (host) => {
+  clearDiscoveredDevices();
   clearDeviceInfos();
-  let deviceInfoRequestList = [];
+
+  let discoverRequestList = [];
   for (let i = fromPort; i <= tillPort; i++) {
-    deviceInfoRequestList.push(deviceInfoRequestBuilder(host, i));
+    discoverRequestList.push(discoverRequestBuilder(host, i));
   }
 
-  return axios.all(deviceInfoRequestList);
+  return axios.all(discoverRequestList);
 };
 
-const deviceInfoRequestBuilder = async (host, port) => {
-  let endpoint = host + ":" + port + infoEndPoint;
+const discoverRequestBuilder = async (host, port) => {
+  let endpoint = host + ":" + port + deviceEndPoint;
+
+  let request = {
+    type: "Biometric Device",
+  };
 
   return axios({
-    method: mosip_DeviceInfoMethod,
+    method: mosip_DiscoverMethod,
     url: endpoint,
+    data: request,
   })
-    .then((response) => {
+    .then(async (response) => {
       if (response?.data !== null) {
-        cacheDeviceInfo(port, response.data);
+        addDiscoveredDevices(port, response.data);
+        await deviceInfo(host, port);
       }
     })
     .catch((error) => {
@@ -128,19 +141,37 @@ const deviceInfoRequestBuilder = async (host, port) => {
     });
 };
 
-const cacheDeviceInfo = async (port, deviceInfo) => {
-  var decodedDeviceDetails = await decodeDeviceInfo(deviceInfo);
+const deviceInfo = async (host, port) => {
+  let endpoint = host + ":" + port + infoEndPoint;
 
-  addDeviceInfos(port, decodedDeviceDetails);
+  await axios({
+    method: mosip_DeviceInfoMethod,
+    url: endpoint,
+  })
+    .then(async (response) => {
+      if (response?.data !== null) {
+        var decodedDeviceDetails = await decodeAndValidateDeviceInfo(
+          response.data
+        );
+        addDeviceInfos(port, decodedDeviceDetails);
+      }
+    })
+    .catch((error) => {
+      //ignore
+    });
 };
 
-const decodeDeviceInfo = async (deviceInfo) => {
+const decodeAndValidateDeviceInfo = async (deviceInfo) => {
   var deviceDetails = [];
   for (let i = 0; i < deviceInfo.length; i++) {
+    if (!validateDigitalIdSignature(deviceInfo[i].deviceInfo)) {
+      continue;
+    }
+
     var decodedDevice = await decodeJWT(deviceInfo[i].deviceInfo);
 
-    if (!validateDigitaIdlSignature(decodedDevice)) {
-      return;
+    if (!validateDigitalIdSignature(decodedDevice.digitalId)) {
+      continue;
     }
 
     decodedDevice.digitalId = await decodeJWT(decodedDevice.digitalId);
@@ -152,15 +183,12 @@ const decodeDeviceInfo = async (deviceInfo) => {
   return deviceDetails;
 };
 
-const validateDigitaIdlSignature = async (digitalIdJWT) => {
+const validateDigitalIdSignature = async (digitalIdJWT) => {
   //TODO implementation
   return true;
 };
 
 const validateDeviceInfo = (deviceInfo) => {
-  // console.log(deviceInfo.certification + "::" + Certification);
-  // console.log(deviceInfo.purpose + "::" + purpose);
-  // console.log(deviceInfo.deviceStatus + "::" + DeviceStatusReady);
   if (
     deviceInfo.certification === Certification &&
     deviceInfo.purpose === purpose &&
@@ -171,96 +199,4 @@ const validateDeviceInfo = (deviceInfo) => {
   return true;
 };
 
-//----------------------------------------------------
-
-// const scanSync = async (host) => {
-//   for (let i = fromPort; i <= tillPort; i++) {
-//     try {
-//       discover(host, i);
-//     } catch (e) {
-//       //ignore
-//     }
-//   }
-// };
-
-// const discover = async (host, port) => {
-//   let endpoint = host + ":" + port + deviceEndPoint;
-
-//   let request = {
-//     type: "Biometric Device",
-//   };
-
-//   axios({
-//     method: mosipDiscoverMethod,
-//     url: endpoint,
-//     data: request,
-//   })
-//     .then((response) => {
-//       if (response?.data !== null) {
-//         deviceInfo(host, port);
-//       }
-//     })
-//     .catch((error) => {
-//       console.err(error);
-//     });
-// };
-
-// const deviceInfo = async (host, port) => {
-//   let endpoint = host + ":" + port + infoEndPoint;
-
-//   axios({
-//     method: mosipDeviceInfoMethod,
-//     url: endpoint,
-//   })
-//     .then((response) => {
-//       if (response?.data !== null) {
-//         cacheDeviceInfo(port, response.data);
-//       }
-//     })
-//     .catch((error) => {
-//       console.err(error);
-//     });
-// };
-
-// const cacheDiscoveredDevice = async (port, deviceDiscover) => {
-//   localStorage.setItem(
-//     discover_keyname + "-" + port,
-//     JSON.stringify(deviceDiscover)
-//   );
-// };
-
-// const addDeviceDiscover = async (port, deviceDiscover) => {
-//   let discoverNew = {
-//     port: port + "",
-//     deviceDiscoverInfo: JSON.stringify(deviceDiscover),
-//   };
-//   let emptyList = [];
-
-//   //initialize if does not exist
-//   if (!localStorage.getItem(cacheKeyName)) {
-//     localStorage.setItem(cacheKeyName, JSON.stringify(emptyList));
-//   }
-
-//   let discoveredList = JSON.parse(localStorage.getItem(cacheKeyName));
-
-//   if (discoveredList.length <= 0) {
-//     discoveredList.push(discoverNew);
-//   } else if (discoveredList.length > 0) {
-//     var found = false;
-//     for (var index = 0; index < discoveredList.length; index++) {
-//       var discoverInfo = discoveredList[index];
-//       if (parseInt(discoverInfo.port + "") == parseInt(port)) {
-//         discoveredList[index] = discoverNew;
-//         found = true;
-//         break;
-//       }
-//     }
-//     if (!found) {
-//       discoveredList.push(discoverNew);
-//     }
-//   }
-
-//   localStorage.setItem(cacheKeyName, JSON.stringify(discoveredList));
-// };
-
-export { scanDeviceInfoAsync, capture };
+export { capture, discoverDevicesAsync };

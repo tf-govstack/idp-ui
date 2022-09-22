@@ -5,7 +5,7 @@ import LoadingIndicator from "../common/LoadingIndicator";
 import { ERROR, LOADED, LOADING } from "../constants/states";
 import { post_AuthenticateUser } from "../services/AuthService";
 import { getDeviceInfos } from "../services/local-storageService.ts";
-import { capture, scanDeviceInfoAsync } from "../services/SbiService";
+import { capture, discoverDevicesAsync } from "../services/SbiService";
 
 import Input from "./Input";
 
@@ -24,7 +24,7 @@ export default function SBIL1Biometrics(loginFields) {
   fields.forEach((field) => (fieldsState["sbi_" + field.id] = ""));
   const [loginState, setLoginState] = useState(fieldsState);
   const [status, setStatus] = useState({ state: LOADED, msg: "" });
-  
+
   const [devices, setDevices] = useState([]);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -74,7 +74,7 @@ export default function SBIL1Biometrics(loginFields) {
   };
 
   const Authenticate = async (transactionId, nonce, uin, bioValue) => {
-    let challengeType = "bio"; //TODO where to get this value from?
+    let challengeType = "BIO"; //TODO where to get this value from?
     let challenge = bioValue;
 
     let challengeList = [
@@ -121,7 +121,8 @@ export default function SBIL1Biometrics(loginFields) {
   const scanDevices = async () => {
     try {
       setStatus({ state: LOADING, msg: "Scanning Devices. Please wait...." });
-      scanDeviceInfoAsync(host).then(() => {
+
+      discoverDevicesAsync(host).then(() => {
         setStatus({ state: LOADED, msg: "" });
         refreshDeviceList();
       });
