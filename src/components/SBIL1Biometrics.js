@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import LoadingIndicator from "../common/LoadingIndicator";
+import { deviceType } from "../constants/clientConstants";
 import { ERROR, LOADED, LOADING } from "../constants/states";
 import { post_AuthenticateUser } from "../services/AuthService";
 import { getDeviceInfos } from "../services/local-storageService.ts";
@@ -11,7 +12,6 @@ import Input from "./Input";
 
 let fieldsState = {};
 const host = "http://127.0.0.1";
-const defaultPort = 4501;
 
 const buttonImgPath = {
   Face: "images/face_capture.png",
@@ -24,12 +24,16 @@ export default function SBIL1Biometrics(loginFields) {
   fields.forEach((field) => (fieldsState["sbi_" + field.id] = ""));
   const [loginState, setLoginState] = useState(fieldsState);
   const [status, setStatus] = useState({ state: LOADED, msg: "" });
-
-  const [devices, setDevices] = useState([]);
-
   const [searchParams, setSearchParams] = useSearchParams();
-
   const navigate = useNavigate();
+
+  const [modalityDevices, setModalityDevices] = useState([]);
+
+  const [selectedDevices, setSelectedDevices] = useState([]);
+
+  const handleDeviceChange = (selectedDeviceSerialNo, type) => {
+    selectedDevices.set(type, selectedDeviceSerialNo);
+  };
 
   const handleChange = (e) => {
     setLoginState({ ...loginState, [e.target.id]: e.target.value });
@@ -42,39 +46,46 @@ export default function SBIL1Biometrics(loginFields) {
     startCapture(id);
   };
 
-  const startCapture = async (serialNo) => {
+  const startCapture = async (type) => {
     let transactionId = searchParams.get("transactionId");
     let nonce = searchParams.get("nonce");
-    let uin = loginState["sbi_mosip-vid"];
+    let vid = loginState["sbi_mosip-vid"];
 
-    let deviceDetail = devices.get(serialNo);
+    let deviceId = selectedDevices.get(type);
+
+    let device = modalityDevices.get(type).get(deviceId);
+
+    if (device === null) {
+      setStatus({ state: ERROR, msg: "Device not found!" });
+      return;
+    }
 
     try {
       setStatus({
         state: LOADING,
-        msg: deviceDetail.type + " Capture Initiated on " + deviceDetail.model,
+        msg: device.type + " Capture Initiated on " + device.model,
       });
 
       let response = await capture(
         host,
-        defaultPort,
+        device.port,
         transactionId,
-        deviceDetail.specVersion,
-        deviceDetail.type,
-        deviceDetail.deviceId,
-        deviceDetail.deviceSubId
+        device.specVersion,
+        device.type,
+        device.deviceId,
+        device.deviceSubId
       );
 
       setStatus({ state: LOADED, msg: "" });
 
-      await Authenticate(transactionId, nonce, uin, response.bioValue);
+      await Authenticate(transactionId, nonce, vid, response.bioValue);
     } catch (errormsg) {
       setStatus({ state: ERROR, msg: errormsg.message });
     }
   };
 
   const Authenticate = async (transactionId, nonce, uin, bioValue) => {
-    let challengeType = "BIO"; //TODO where to get this value from?
+    let challengeType = "BIO"; //TODO Get these values from config
     let challenge = bioValue;
 
     let challengeList = [
@@ -118,7 +129,7 @@ export default function SBIL1Biometrics(loginFields) {
     scanDevices();
   }, []);
 
-  const scanDevices = async () => {
+  const scanDevices = () => {
     try {
       setStatus({ state: LOADING, msg: "Scanning Devices. Please wait...." });
 
@@ -134,13 +145,18 @@ export default function SBIL1Biometrics(loginFields) {
   const refreshDeviceList = () => {
     let deviceInfosPortsWise = getDeviceInfos();
 
-    let devicesDetails = new Map();
+    let devicesModalityWise = new Map();
+
+    let faceDevices = new Map();
+    let fingerDevices = new Map();
+    let irisDevices = new Map();
 
     Object.keys(deviceInfosPortsWise).map((port) => {
       let deviceInfos = deviceInfosPortsWise[port];
 
       deviceInfos?.forEach((deviceInfo) => {
         let deviceDetail = {
+          port: port,
           specVersion: deviceInfo.specVersion[0],
           type: deviceInfo.digitalId.type,
           deviceId: deviceInfo.deviceId,
@@ -148,12 +164,40 @@ export default function SBIL1Biometrics(loginFields) {
           model: deviceInfo.digitalId.model,
           serialNo: deviceInfo.digitalId.serialNo,
         };
-        devicesDetails.set(deviceInfo.digitalId.serialNo, deviceDetail);
+
+        switch (deviceDetail.type) {
+          case deviceType.face:
+            faceDevices.set(deviceDetail.serialNo, deviceDetail);
+            break;
+          case deviceType.finger:
+            fingerDevices.set(deviceDetail.serialNo, deviceDetail);
+            break;
+          case deviceType.iris:
+            irisDevices.set(deviceDetail.serialNo, deviceDetail);
+            break;
+        }
       });
     });
 
-    setDevices(devicesDetails);
+    if (faceDevices.size > 0)
+      devicesModalityWise.set(deviceType.face, faceDevices);
+    if (fingerDevices.size > 0)
+      devicesModalityWise.set(deviceType.finger, fingerDevices);
+    if (irisDevices.size > 0)
+      devicesModalityWise.set(deviceType.iris, irisDevices);
+
+    setModalityDevices(devicesModalityWise);
+
+    let selectedDevices = new Map();
+
+    selectedDevices.set(deviceType.face, [...faceDevices.keys()]?.at(0));
+    selectedDevices.set(deviceType.finger, [...fingerDevices.keys()]?.at(0));
+    selectedDevices.set(deviceType.iris, [...irisDevices.keys()]?.at(0));
+
+    setSelectedDevices(selectedDevices);
   };
+
+  // let optionClass = `py-1 px-1 font-medium block text-xs w-full whitespace-nowrap bg-gray text-white-700 hover:bg-gray-100 items-center`;
 
   return (
     <>
@@ -199,35 +243,59 @@ export default function SBIL1Biometrics(loginFields) {
           </>
         )}
 
-        {status.state === LOADED && (
-          <>
-            <div class="grid grid-cols-3 flex justify-center">
-              {[...devices.keys()].map((serialNo) => {
-                let deviceDetail = devices.get(serialNo);
-
+        {
+          status.state === LOADED && (
+            <div class={"grid grid-cols-" + modalityDevices.size + " flex justify-center"}>
+              {[...modalityDevices.keys()].map((type) => {
+                let typeWiseDevices = modalityDevices.get(type);
                 return (
-                  <div>
-                    <button
-                      class="w-32 h-32 text-black bg-white-200 font-medium rounded-lg text-sm mr-2 mb-2 dark:bg-white-200 hover:scale-105"
-                      type="submit"
-                      id={serialNo}
-                    >
-                      <img src={buttonImgPath[deviceDetail.type]} />
-                    </button>
-                    <div>
-                      <p class="text-center font-bold text-sm">
-                        {deviceDetail.type} Capture
-                      </p>
-                      <p class="text-center text-gray-700 text-sm">
-                        {deviceDetail.model}-{deviceDetail.deviceId}
-                      </p>
-                    </div>
-                  </div>
+                  <>
+                    {typeWiseDevices?.size > 0 && (
+                      <div class="flex justify-center">
+                        <div>
+                          <div class="mb-2">
+                            <select
+                              class="text-center w-32 px-1 py-1 bg-blue-600 text-white font-medium text-xs
+                              leading-tight rounded shadow-md hover:bg-blue-700 hover:shadow-lg
+                              focus:bg-blue-700 focus:shadow-lg active:bg-blue-800 active:shadow-lg active:text-white transition duration-150 ease-in-out flex items-center"
+                              value={selectedDevices[type]}
+                              onChange={(e) =>
+                                handleDeviceChange(e.target.value, type)
+                              }
+                            >
+                              {[...typeWiseDevices.keys()].map((serialNo) => {
+                                let device = typeWiseDevices.get(serialNo);
+                                return (
+                                  <option
+                                    class="font-medium block text-xs w-full whitespace-nowrap bg-gray text-white-700 hover:bg-gray-100 items-center"
+                                    key={device.serialNo}
+                                    value={device.serialNo}
+                                  >
+                                    {device.model}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </div>
+                          <button
+                            class="w-32 h-32 text-black bg-white-200 font-medium rounded-lg text-sm mr-2 mb-2 dark:bg-white-200 hover:scale-105"
+                            type="submit"
+                            id={type}
+                          >
+                            <img src={buttonImgPath[type]} />
+                            <p class="text-center font-bold text-sm">
+                              {type} Capture
+                            </p>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 );
               })}
             </div>
-          </>
-        )}
+          )
+        }
       </form>
     </>
   );

@@ -188,6 +188,12 @@ const validateDigitalIdSignature = async (digitalIdJWT) => {
   return true;
 };
 
+//TODO add documentation to all methods
+/**
+ *
+ * @param {*} deviceInfo
+ * @returns
+ */
 const validateDeviceInfo = (deviceInfo) => {
   if (
     deviceInfo.certification === Certification &&
