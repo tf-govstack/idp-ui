@@ -5,6 +5,7 @@ import LoadingIndicator from "../common/LoadingIndicator";
 import { deviceType } from "../constants/clientConstants";
 import { ERROR, LOADED, LOADING } from "../constants/states";
 import { post_AuthenticateUser } from "../services/AuthService";
+import { encodeBase64 } from "../services/cryptoService";
 import { getDeviceInfos } from "../services/local-storageService.ts";
 import { capture, discoverDevicesAsync } from "../services/SbiService";
 
@@ -54,11 +55,12 @@ export default function SBIL1Biometrics(loginFields) {
     let deviceId = selectedDevices.get(type);
 
     let device = modalityDevices.get(type).get(deviceId);
-
     if (device === null) {
       setStatus({ state: ERROR, msg: "Device not found!" });
       return;
     }
+
+    let biometricResponse = null;
 
     try {
       setStatus({
@@ -66,7 +68,7 @@ export default function SBIL1Biometrics(loginFields) {
         msg: device.type + " Capture Initiated on " + device.model,
       });
 
-      let response = await capture(
+      biometricResponse = await capture(
         host,
         device.port,
         transactionId,
@@ -76,12 +78,61 @@ export default function SBIL1Biometrics(loginFields) {
         device.deviceSubId
       );
 
+      let errorMsg = validateBiometricResponse(biometricResponse);
+
       setStatus({ state: LOADED, msg: "" });
 
-      await Authenticate(transactionId, nonce, vid, response.bioValue);
+      if (errorMsg !== null) {
+        setStatus({
+          state: ERROR,
+          msg: "Biometric capture failed: " + errorMsg,
+        });
+        return;
+      }
     } catch (errormsg) {
-      setStatus({ state: ERROR, msg: errormsg.message });
+      setStatus({
+        state: ERROR,
+        msg: "Biometric capture failed: " + errormsg.message,
+      });
+      return;
     }
+
+    try {
+      await Authenticate(
+        transactionId,
+        nonce,
+        vid,
+        await encodeBase64(biometricResponse)
+      );
+    } catch (errormsg) {
+      setStatus({
+        state: ERROR,
+        msg: "Authentication failed: " + errormsg.message,
+      });
+    }
+  };
+
+  const validateBiometricResponse = (response) => {
+    if (
+      response === null ||
+      response["biometrics"] === null ||
+      response["biometrics"].length === 0
+    ) {
+      return "Empty response";
+    }
+
+    let biometrics = response["biometrics"];
+
+    let errorMsg = null;
+    for (let i = 0; i < biometrics.length; i++) {
+      let error = biometrics[i]["error"];
+      if (error !== null && error.errorCode !== "0") {
+        errorMsg = "ErrorCode-" + error.errorCode + ":" + error.errorInfo;
+        break;
+      }
+    }
+
+    return errorMsg;
   };
 
   const Authenticate = async (transactionId, nonce, uin, bioValue) => {
@@ -243,59 +294,61 @@ export default function SBIL1Biometrics(loginFields) {
           </>
         )}
 
-        {
-          status.state === LOADED && (
-            <div class={"grid grid-cols-" + modalityDevices.size + " flex justify-center"}>
-              {[...modalityDevices.keys()].map((type) => {
-                let typeWiseDevices = modalityDevices.get(type);
-                return (
-                  <>
-                    {typeWiseDevices?.size > 0 && (
-                      <div class="flex justify-center">
-                        <div>
-                          <div class="mb-2">
-                            <select
-                              class="text-center w-32 px-1 py-1 bg-blue-600 text-white font-medium text-xs
+        {status.state === LOADED && (
+          <div
+            class={
+              "grid grid-cols-" + modalityDevices.size + " flex justify-center"
+            }
+          >
+            {[...modalityDevices.keys()].map((type) => {
+              let typeWiseDevices = modalityDevices.get(type);
+              return (
+                <>
+                  {typeWiseDevices?.size > 0 && (
+                    <div class="flex justify-center">
+                      <div>
+                        <div class="mb-2">
+                          <select
+                            class="text-center w-32 px-1 py-1 bg-blue-600 text-white font-medium text-xs
                               leading-tight rounded shadow-md hover:bg-blue-700 hover:shadow-lg
                               focus:bg-blue-700 focus:shadow-lg active:bg-blue-800 active:shadow-lg active:text-white transition duration-150 ease-in-out flex items-center"
-                              value={selectedDevices[type]}
-                              onChange={(e) =>
-                                handleDeviceChange(e.target.value, type)
-                              }
-                            >
-                              {[...typeWiseDevices.keys()].map((serialNo) => {
-                                let device = typeWiseDevices.get(serialNo);
-                                return (
-                                  <option
-                                    class="font-medium block text-xs w-full whitespace-nowrap bg-gray text-white-700 hover:bg-gray-100 items-center"
-                                    key={device.serialNo}
-                                    value={device.serialNo}
-                                  >
-                                    {device.model}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </div>
-                          <button
-                            class="w-32 h-32 text-black bg-white-200 font-medium rounded-lg text-sm mr-2 mb-2 dark:bg-white-200 hover:scale-105"
-                            type="submit"
-                            id={type}
+                            value={selectedDevices[type]}
+                            onChange={(e) =>
+                              handleDeviceChange(e.target.value, type)
+                            }
                           >
-                            <img src={buttonImgPath[type]} />
-                            <p class="text-center font-bold text-sm">
-                              {type} Capture
-                            </p>
-                          </button>
+                            {[...typeWiseDevices.keys()].map((serialNo) => {
+                              let device = typeWiseDevices.get(serialNo);
+                              return (
+                                <option
+                                  class="font-medium block text-xs w-full whitespace-nowrap bg-gray text-white-700 hover:bg-gray-100 items-center"
+                                  key={device.serialNo}
+                                  value={device.serialNo}
+                                >
+                                  {device.model}
+                                </option>
+                              );
+                            })}
+                          </select>
                         </div>
+                        <button
+                          class="w-32 h-32 text-black bg-white-200 font-medium rounded-lg text-sm mr-2 mb-2 dark:bg-white-200 hover:scale-105"
+                          type="submit"
+                          id={type}
+                        >
+                          <img src={buttonImgPath[type]} />
+                          <p class="text-center font-bold text-sm">
+                            {type} Capture
+                          </p>
+                        </button>
                       </div>
-                    )}
-                  </>
-                );
-              })}
-            </div>
-          )
-        }
+                    </div>
+                  )}
+                </>
+              );
+            })}
+          </div>
+        )}
       </form>
     </>
   );

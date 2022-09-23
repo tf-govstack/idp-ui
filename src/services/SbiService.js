@@ -1,5 +1,5 @@
 import axios from "axios";
-import { decodeJWT, encodeBase64 } from "./cryptoService";
+import { decodeJWT } from "./cryptoService";
 import {
   addDeviceInfos,
   addDiscoveredDevices,
@@ -98,10 +98,7 @@ const capture = async (
     timeout: timeout * 1000,
   });
 
-  if (response?.data !== null) {
-    return encodeBase64(response?.data);
-  }
-  return null;
+  return response?.data;
 };
 
 //----------------------------------------------------//
