@@ -44,8 +44,7 @@ const capture = async (
   transactionId,
   specVersion,
   type,
-  deviceId,
-  deviceSubId
+  deviceId
 ) => {
   let count = 1;
   let requestedScore = 70;
@@ -79,7 +78,7 @@ const capture = async (
         //bioSubType: , // ignored
         requestedScore: requestedScore, // take from properties, modality specific
         deviceId: deviceId, // from discovery
-        deviceSubId: 0, //TODO pass proper subtype id
+        deviceSubId: 0, //Set as 0, not required for Auth capture.
         previousHash: "", // empty string //TODO do we need to store prev. hash
       },
     ],
@@ -161,16 +160,7 @@ const deviceInfo = async (host, port) => {
 const decodeAndValidateDeviceInfo = async (deviceInfo) => {
   var deviceDetails = [];
   for (let i = 0; i < deviceInfo.length; i++) {
-    if (!validateDigitalIdSignature(deviceInfo[i].deviceInfo)) {
-      continue;
-    }
-
     var decodedDevice = await decodeJWT(deviceInfo[i].deviceInfo);
-
-    if (!validateDigitalIdSignature(decodedDevice.digitalId)) {
-      continue;
-    }
-
     decodedDevice.digitalId = await decodeJWT(decodedDevice.digitalId);
 
     if (validateDeviceInfo(decodedDevice)) {
@@ -178,11 +168,6 @@ const decodeAndValidateDeviceInfo = async (deviceInfo) => {
     }
   }
   return deviceDetails;
-};
-
-const validateDigitalIdSignature = async (digitalIdJWT) => {
-  //TODO implementation
-  return true;
 };
 
 //TODO add documentation to all methods

@@ -74,8 +74,7 @@ export default function SBIL1Biometrics(loginFields) {
         transactionId,
         device.specVersion,
         device.type,
-        device.deviceId,
-        device.deviceSubId
+        device.deviceId
       );
 
       let errorMsg = validateBiometricResponse(biometricResponse);
