@@ -247,8 +247,6 @@ export default function SBIL1Biometrics(loginFields) {
     setSelectedDevices(selectedDevices);
   };
 
-  // let optionClass = `py-1 px-1 font-medium block text-xs w-full whitespace-nowrap bg-gray text-white-700 hover:bg-gray-100 items-center`;
-
   return (
     <>
       <form className="mt-8 space-y-6" onSubmit={submitHandler}>
@@ -294,11 +292,7 @@ export default function SBIL1Biometrics(loginFields) {
         )}
 
         {status.state === LOADED && (
-          <div
-            class={
-              "grid grid-cols-" + modalityDevices.size + " flex justify-center"
-            }
-          >
+          <div class="{{ modalityDevices.size === 1 ? 'grid flex justify-center grid-cols-1' : modalityDevices.size === 2 ? 'grid flex justify-center grid-cols-2' : 'grid flex justify-center grid-cols-3' }}">
             {[...modalityDevices.keys()].map((type) => {
               let typeWiseDevices = modalityDevices.get(type);
               return (
@@ -306,7 +300,7 @@ export default function SBIL1Biometrics(loginFields) {
                   {typeWiseDevices?.size > 0 && (
                     <div class="flex justify-center">
                       <div>
-                        <div class="mb-2">
+                        <div class="flex justify-center mb-2">
                           <select
                             class="text-center w-32 px-1 py-1 bg-blue-600 text-white font-medium text-xs
                               leading-tight rounded shadow-md hover:bg-blue-700 hover:shadow-lg
@@ -331,7 +325,8 @@ export default function SBIL1Biometrics(loginFields) {
                           </select>
                         </div>
                         <button
-                          class="w-32 h-32 text-black bg-white-200 font-medium rounded-lg text-sm mr-2 mb-2 dark:bg-white-200 hover:scale-105"
+                          class="w-32 h-32 text-black bg-white-200 font-medium rounded-lg 
+                          text-sm ml-2 mt-2 mr-2 mb-2 dark:bg-white-200 hover:scale-105"
                           type="submit"
                           id={type}
                         >

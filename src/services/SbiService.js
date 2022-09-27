@@ -184,7 +184,7 @@ const validateDeviceInfo = (deviceInfo) => {
   ) {
     return true;
   }
-  return true;
+  return false;
 };
 
 export { capture, discoverDevicesAsync };
