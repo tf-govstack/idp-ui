@@ -1,7 +1,13 @@
 const deviceType = {
-    face : "Face",
-    finger : "Finger",
-    iris : "Iris"
-}
+  face: "Face",
+  finger: "Finger",
+  iris: "Iris",
+};
 
-export { deviceType }
+const challengeTypes = {
+  bio: "BIO",
+  pin: "PIN",
+  otp: "OTP",
+};
+
+export { deviceType, challengeTypes };

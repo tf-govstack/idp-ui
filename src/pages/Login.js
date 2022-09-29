@@ -1,33 +1,55 @@
 import React from "react";
-import Header from "../components/Header"
-import Otp from "../components/Otp"
-import Pin from "../components/Pin"
-import Tabs from '../components/Tabs';
-import { tabList, otpFields, bioLoginFields, pinFields } from "../constants/formFields";
+import Header from "../components/Header";
+import Otp from "../components/Otp";
+import Pin from "../components/Pin";
+import Tabs from "../components/Tabs";
+import {
+  tabList,
+  otpFields,
+  bioLoginFields,
+  pinFields,
+  faceBioLoginFields,
+  fingerBioLoginFields,
+  irisBioLoginFields,
+} from "../constants/formFields";
 import IDPQRCode from "../components/IDPQRCode";
 import SBIL1Biometrics from "../components/SBIL1Biometrics";
+import L1Biometric from "../components/L1Biometric";
 
 const tabs = tabList;
-const bioFields = bioLoginFields;
 
 const comp = {
   PIN: Pin,
   OTP: Otp,
   QRCode: IDPQRCode,
-  Biometric: SBIL1Biometrics
+  Biometric: SBIL1Biometrics,
+  FaceBiometric: L1Biometric,
+  FingerBiometric: L1Biometric,
+  IrisBiometric: L1Biometric,
 };
 
-function InitiateSBIL1Biometrics(inst) {
-  return React.createElement(comp[inst], { "param": bioFields });
+function InitiateL1IrisBiometric(inst) {
+  return React.createElement(comp[inst], { param: irisBioLoginFields });
 }
 
+function InitiateL1FingerBiometric(inst) {
+  return React.createElement(comp[inst], { param: fingerBioLoginFields });
+}
+
+function InitiateL1FaceBiometric(inst) {
+  return React.createElement(comp[inst], { param: faceBioLoginFields });
+}
+
+function InitiateSBIL1Biometrics(inst) {
+  return React.createElement(comp[inst], { param: bioLoginFields });
+}
 
 function InitiatePin(inst) {
-  return React.createElement(comp[inst], { "param": pinFields });
+  return React.createElement(comp[inst], { param: pinFields });
 }
 
 function InitiateOtp(inst) {
-  return React.createElement(comp[inst], { "param": otpFields });
+  return React.createElement(comp[inst], { param: otpFields });
 }
 
 function InitiateQRCode(inst) {
@@ -36,9 +58,9 @@ function InitiateQRCode(inst) {
 
 function createDynamicLoginElements(inst) {
   if (typeof comp[inst] === "undefined") {
-    return React.createElement(
-      () => <div>The component {inst} has not been created yet.</div>
-    );
+    return React.createElement(() => (
+      <div>The component {inst} has not been created yet.</div>
+    ));
   }
 
   if (comp[inst] === SBIL1Biometrics) {
@@ -50,20 +72,33 @@ function createDynamicLoginElements(inst) {
   }
 
   if (comp[inst] === Otp) {
-    return InitiateOtp(inst, otpFields)
+    return InitiateOtp(inst, otpFields);
   }
 
   if (comp[inst] === Pin) {
-    return InitiatePin(inst, otpFields)
+    return InitiatePin(inst, otpFields);
+  }
+
+  if (comp[inst] === L1Biometric && inst === "FaceBiometric") {
+    return InitiateL1FaceBiometric(inst);
+  }
+
+  if (comp[inst] === L1Biometric && inst === "FingerBiometric") {
+    return InitiateL1FingerBiometric(inst);
+  }
+
+  if (comp[inst] === L1Biometric && inst === "IrisBiometric") {
+    return InitiateL1IrisBiometric(inst);
   }
 
   return React.createElement(comp[inst]);
-
-};
+}
 
 let tabCompInstance = new Map();
 
-tabs.map(tab => { return tabCompInstance.set(tab.icon, createDynamicLoginElements(tab.comp)) });
+tabs.map((tab) => {
+  return tabCompInstance.set(tab.icon, createDynamicLoginElements(tab.comp));
+});
 
 export default function LoginPage() {
   return (
@@ -76,5 +111,5 @@ export default function LoginPage() {
       />
       <Tabs color="cyan" tabs={tabs} block={tabCompInstance} />
     </>
-  )
+  );
 }

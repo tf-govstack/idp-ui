@@ -8,6 +8,7 @@ import { post_AuthenticateUser } from "../services/AuthService";
 import { encodeBase64 } from "../services/cryptoService";
 import { getDeviceInfos } from "../services/local-storageService.ts";
 import { capture, discoverDevicesAsync } from "../services/SbiService";
+import BiometricInput from "./BiometricInput";
 
 import Input from "./Input";
 
@@ -20,17 +21,20 @@ const buttonImgPath = {
   Iris: "images/iris_code.png",
 };
 
-export default function SBIL1Biometrics(loginFields) {
-  const fields = loginFields["param"];
-  fields.forEach((field) => (fieldsState["sbi_" + field.id] = ""));
+export default function L1Biometric(loginFields) {
+  const params = loginFields["param"];
+  const inputFields = params.inputFields;
+  const biometricFields = params.bioFields;
+
+  inputFields.forEach((field) => (fieldsState["sbi_" + field.id] = ""));
   const [loginState, setLoginState] = useState(fieldsState);
   const [status, setStatus] = useState({ state: LOADED, msg: "" });
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const [modalityDevices, setModalityDevices] = useState([]);
+  const [modalityDevices, setModalityDevices] = useState(new Map());
 
-  const [selectedDevices, setSelectedDevices] = useState([]);
+  const [selectedDevices, setSelectedDevices] = useState(new Map());
 
   const handleDeviceChange = (selectedDeviceSerialNo, type) => {
     selectedDevices.set(type, selectedDeviceSerialNo);
@@ -246,12 +250,11 @@ export default function SBIL1Biometrics(loginFields) {
 
     setSelectedDevices(selectedDevices);
   };
-
   return (
     <>
       <form className="mt-8 space-y-6" onSubmit={submitHandler}>
         <div className="-space-y-px">
-          {fields.map((field) => (
+          {inputFields.map((field) => (
             <Input
               key={"sbi_" + field.id}
               handleChange={handleChange}
@@ -292,53 +295,17 @@ export default function SBIL1Biometrics(loginFields) {
         )}
 
         {status.state === LOADED && (
-          <div class="{{ modalityDevices.size === 1 ? 'grid flex justify-center grid-cols-1' : modalityDevices.size === 2 ? 'grid flex justify-center grid-cols-2' : 'grid flex justify-center grid-cols-3' }}">
-            {[...modalityDevices.keys()].map((type) => {
-              let typeWiseDevices = modalityDevices.get(type);
+          <div class="{{ biometricFields.size === 1 ? 'grid flex justify-center grid-cols-1' : biometricFields.size === 2 ? 'grid flex justify-center grid-cols-2' : 'grid flex justify-center grid-cols-3' }}">
+            {biometricFields.map((biometric) => {
+              let typeWiseDevices = modalityDevices.get(biometric.modality);
               return (
-                <>
-                  {typeWiseDevices?.size > 0 && (
-                    <div class="flex justify-center">
-                      <div>
-                        <div class="flex justify-center mb-2">
-                          <select
-                            class="text-center w-32 px-1 py-1 bg-blue-600 text-white font-medium text-xs
-                              leading-tight rounded shadow-md hover:bg-blue-700 hover:shadow-lg
-                              focus:bg-blue-700 focus:shadow-lg active:bg-blue-800 active:shadow-lg active:text-white transition duration-150 ease-in-out flex items-center"
-                            value={selectedDevices[type]}
-                            onChange={(e) =>
-                              handleDeviceChange(e.target.value, type)
-                            }
-                          >
-                            {[...typeWiseDevices.keys()].map((serialNo) => {
-                              let device = typeWiseDevices.get(serialNo);
-                              return (
-                                <option
-                                  class="font-medium block text-xs w-full whitespace-nowrap bg-gray text-white-700 hover:bg-gray-100 items-center"
-                                  key={device.serialNo}
-                                  value={device.serialNo}
-                                >
-                                  {device.model}
-                                </option>
-                              );
-                            })}
-                          </select>
-                        </div>
-                        <button
-                          class="w-32 h-32 text-black bg-white-200 font-medium rounded-lg 
-                          text-sm ml-2 mt-2 mr-2 mb-2 dark:bg-white-200 hover:scale-105"
-                          type="submit"
-                          id={type}
-                        >
-                          <img src={buttonImgPath[type]} />
-                          <p class="text-center font-bold text-sm">
-                            {type} Capture
-                          </p>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </>
+                <BiometricInput
+                  typeWiseDevices={typeWiseDevices}
+                  modality={biometric.modality}
+                  selectedDevice={selectedDevices.get(biometric.modality)}
+                  handleDeviceChange={handleDeviceChange}
+                  buttonImgPath={buttonImgPath[biometric.modality]}
+                />
               );
             })}
           </div>
