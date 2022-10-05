@@ -1,6 +1,6 @@
 import axios from "axios";
+import { IDP_SERVER_BASE_URL } from "./serviceHelper";
 
-const baseUrl = process.env.REACT_APP_API_BASE_URL;
 const authenticateEndPoint = "/authorization/authenticate";
 const oauthDetailsEndPoint = "/authorization/oauth-details";
 const authCodeEndPoint = "/authorization/auth-code";
@@ -22,7 +22,7 @@ const post_AuthenticateUser = async (
     },
   };
 
-  const endpoint = baseUrl + authenticateEndPoint;
+  const endpoint = IDP_SERVER_BASE_URL + authenticateEndPoint;
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
@@ -59,7 +59,7 @@ const post_OauthDetails = async (
     },
   };
 
-  var endpoint = baseUrl + oauthDetailsEndPoint;
+  var endpoint = IDP_SERVER_BASE_URL + oauthDetailsEndPoint;
 
   const response = await axios.post(endpoint, request, {
     headers: {
@@ -88,7 +88,7 @@ const post_AuthCode = async (
     },
   };
 
-  const endpoint = baseUrl + authCodeEndPoint + "?nonce=" + nonce + "&state=" + state;
+  const endpoint = IDP_SERVER_BASE_URL + authCodeEndPoint + "?nonce=" + nonce + "&state=" + state;
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json"

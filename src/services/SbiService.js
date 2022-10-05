@@ -6,6 +6,7 @@ import {
   clearDeviceInfos,
   clearDiscoveredDevices,
 } from "./local-storageService.ts";
+import { SBI_DOMAIN_URI } from "./serviceHelper";
 
 const deviceEndPoint = "/device";
 const infoEndPoint = "/info";
@@ -19,7 +20,6 @@ const env = process.env.REACT_APP_SBI_ENV;
 const Certification = process.env.REACT_APP_SBI_CERTIFICATION;
 const purpose = process.env.REACT_APP_SBI_PURPOSE;
 const timeout = process.env.REACT_APP_SBI_TIMEOUT;
-const domainUri = process.env.REACT_APP_SBI_DOMAIN_URI;
 
 const faceCount = process.env.REACT_APP_SBI_FACE_CAPTURE_COUNT;
 const fingerCount = process.env.REACT_APP_SBI_FINGER_CAPTURE_COUNT;
@@ -69,7 +69,7 @@ const capture = async (
     specVersion: specVersion,
     timeout: timeout * 1000,
     captureTime: new Date().toISOString(),
-    domainUri: domainUri,
+    domainUri: SBI_DOMAIN_URI,
     transactionId: transactionId, // same as idp transactionId
     bio: [
       {
