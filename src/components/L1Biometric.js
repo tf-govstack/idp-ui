@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { challengeTypes, deviceType } from "../constants/clientConstants";
 import { ERROR, LOADED, LOADING } from "../constants/states";
@@ -315,6 +315,14 @@ export default function L1Biometric(loginFields) {
               );
             })}
             {/* </div> */}
+            <div class="flex justify-center">
+            <Link
+              class="text-center text-gray-500 font-semibold"
+              to="#"
+            >
+              More ways to sign in
+            </Link>
+            </div>
           </>
         )}
       </form>
