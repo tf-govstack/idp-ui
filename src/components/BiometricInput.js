@@ -9,17 +9,19 @@ export default function BiometricInput({
     <>
       {typeWiseDevices?.size > 0 && (
         <div>
-          <div
-            class="w-40 h-40 text-black bg-white-200 font-medium rounded-lg 
-                          text-sm mb-5"
-          >
-            <img src={buttonImgPath} />
+          <div class="flex justify-center mb-2">
+            <div class="w-40 h-40 text-black bg-white-200 font-medium rounded-lg text-sm mb-2">
+              <img
+                src={buttonImgPath}
+              />
+            </div>
           </div>
           <div class="flex justify-center mb-2">
             <select
               class="text-center w-32 px-1 py-1 bg-blue-600 text-white font-medium text-xs
                               leading-tight rounded shadow-md hover:bg-blue-700 hover:shadow-lg
-                              focus:bg-blue-700 focus:shadow-lg active:bg-blue-800 active:shadow-lg active:text-white transition duration-150 ease-in-out flex items-center"
+                              focus:bg-blue-700 focus:shadow-lg active:bg-blue-800 active:shadow-lg 
+                              active:text-white transition duration-150 ease-in-out flex items-center"
               value={selectedDevice}
               onChange={(e) => handleDeviceChange(e.target.value, modality)}
             >

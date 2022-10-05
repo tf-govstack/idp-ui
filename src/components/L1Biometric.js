@@ -253,7 +253,9 @@ export default function L1Biometric(loginFields) {
   };
   return (
     <>
-    <h1 class="text-center text-sky-600 font-semibold" >Sign with Biometric</h1>
+      <h1 class="text-center text-sky-600 font-semibold">
+        Sign with Biometric
+      </h1>
       <form className="mt-8 space-y-6" onSubmit={submitHandler}>
         <div className="-space-y-px">
           {inputFields.map((field) => (
@@ -298,7 +300,8 @@ export default function L1Biometric(loginFields) {
         )}
 
         {status.state === LOADED && (
-          <div class="{{ biometricFields.size === 1 ? 'grid flex justify-center grid-cols-1' : biometricFields.size === 2 ? 'grid flex justify-center grid-cols-2' : 'grid flex justify-center grid-cols-3' }}">
+          <>
+            {/* <div class="{{ biometricFields.size === 1 ? 'grid flex justify-center grid-cols-1' : biometricFields.size === 2 ? 'grid flex justify-center grid-cols-2' : 'grid flex justify-center grid-cols-3' }}"> */}
             {biometricFields.map((biometric) => {
               let typeWiseDevices = modalityDevices.get(biometric.modality);
               return (
@@ -311,7 +314,8 @@ export default function L1Biometric(loginFields) {
                 />
               );
             })}
-          </div>
+            {/* </div> */}
+          </>
         )}
       </form>
     </>
