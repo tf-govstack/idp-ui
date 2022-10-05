@@ -2,6 +2,12 @@ const device_info_keyname = "deviceInfo";
 const discover_keyname = "discover";
 
 const clearDiscoveredDevices = () => {
+  if (localStorage.getItem(discover_keyname)) {
+    localStorage.removeItem(discover_keyname);
+  }
+};
+
+const clearDeviceInfos = () => {
   if (localStorage.getItem(device_info_keyname)) {
     localStorage.removeItem(device_info_keyname);
   }
@@ -18,12 +24,6 @@ const addDiscoveredDevices = (port, discoveredDevices) => {
   discover = JSON.parse(localStorage.getItem(discover_keyname));
   discover[port] = discoveredDevices;
   localStorage.setItem(discover_keyname, JSON.stringify(discover));
-};
-
-const clearDeviceInfos = () => {
-  if (localStorage.getItem(device_info_keyname)) {
-    localStorage.removeItem(device_info_keyname);
-  }
 };
 
 const addDeviceInfos = (port, decodedDeviceInfo) => {

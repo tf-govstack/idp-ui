@@ -11,6 +11,7 @@ import { capture, discoverDevicesAsync } from "../services/SbiService";
 import BiometricInput from "./BiometricInput";
 
 import Input from "./Input";
+import InputWithImage from "./InputWithImage";
 
 let fieldsState = {};
 const host = "http://127.0.0.1";
@@ -252,10 +253,11 @@ export default function L1Biometric(loginFields) {
   };
   return (
     <>
+    <h1 class="text-center text-sky-600 font-semibold" >Sign with Biometric</h1>
       <form className="mt-8 space-y-6" onSubmit={submitHandler}>
         <div className="-space-y-px">
           {inputFields.map((field) => (
-            <Input
+            <InputWithImage
               key={"sbi_" + field.id}
               handleChange={handleChange}
               value={loginState["sbi_" + field.id]}
@@ -266,6 +268,7 @@ export default function L1Biometric(loginFields) {
               type={field.type}
               isRequired={field.isRequired}
               placeholder={field.placeholder}
+              imgPath="images/photo_scan.png"
             />
           ))}
         </div>
