@@ -9,8 +9,6 @@ import { encodeBase64 } from "../services/cryptoService";
 import { getDeviceInfos } from "../services/local-storageService.ts";
 import { capture, discoverDevicesAsync } from "../services/SbiService";
 import BiometricInput from "./BiometricInput";
-
-import Input from "./Input";
 import InputWithImage from "./InputWithImage";
 
 let fieldsState = {};
@@ -54,7 +52,6 @@ export default function L1Biometric(loginFields) {
 
   const startCapture = async (type) => {
     let transactionId = searchParams.get("transactionId");
-    let nonce = searchParams.get("nonce");
     let vid = loginState["sbi_mosip-vid"];
 
     let deviceId = selectedDevices.get(type);
@@ -104,7 +101,6 @@ export default function L1Biometric(loginFields) {
     try {
       await Authenticate(
         transactionId,
-        nonce,
         vid,
         await encodeBase64(biometricResponse)
       );
@@ -139,7 +135,7 @@ export default function L1Biometric(loginFields) {
     return errorMsg;
   };
 
-  const Authenticate = async (transactionId, nonce, uin, bioValue) => {
+  const Authenticate = async (transactionId, uin, bioValue) => {
     let challengeType = challengeTypes.bio; //TODO Get these values from config
     let challenge = bioValue;
 
@@ -169,7 +165,7 @@ export default function L1Biometric(loginFields) {
       });
     } else {
       navigate(
-        "/consent?transactionId=" + response.transactionId + "&nonce=" + nonce,
+        "/consent?transactionId=" + response.transactionId,
         { replace: true }
       );
     }
@@ -316,12 +312,9 @@ export default function L1Biometric(loginFields) {
             })}
             {/* </div> */}
             <div class="flex justify-center">
-            <Link
-              class="text-center text-gray-500 font-semibold"
-              to="#"
-            >
-              More ways to sign in
-            </Link>
+              <Link class="text-center text-gray-500 font-semibold" to="#">
+                More ways to sign in
+              </Link>
             </div>
           </>
         )}

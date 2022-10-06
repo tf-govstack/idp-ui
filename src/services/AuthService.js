@@ -5,7 +5,6 @@ const authenticateEndPoint = "/authorization/authenticate";
 const oauthDetailsEndPoint = "/authorization/oauth-details";
 const authCodeEndPoint = "/authorization/auth-code";
 
-
 const post_AuthenticateUser = async (
   transactionId,
   individualId,
@@ -18,7 +17,7 @@ const post_AuthenticateUser = async (
     request: {
       transactionId: transactionId,
       individualId: individualId,
-      challengeList: challengeList
+      challengeList: challengeList,
     },
   };
 
@@ -33,14 +32,18 @@ const post_AuthenticateUser = async (
 
 const post_OauthDetails = async (
   nonce,
+  state,
   clientId,
-  scope,
-  responseType,
   redirectUri,
-  display,
-  prompt,
+  responseType,
+  scope,
   acrValues,
-  claims
+  claims,
+  claimsLocales,
+  display,
+  maxAge,
+  prompt,
+  uiLocales
 ) => {
   let request = {
     id: "String",
@@ -48,14 +51,18 @@ const post_OauthDetails = async (
     requestTime: new Date().toISOString(),
     request: {
       nonce: nonce,
+      state: state,
       clientId: clientId,
-      scope: scope,
-      responseType: responseType,
       redirectUri: redirectUri,
-      display: display,
-      prompt: prompt,
+      responseType: responseType,
+      scope: scope,
       acrValues: acrValues,
       claims: claims,
+      claimsLocales: claimsLocales,
+      display: display,
+      maxAge: maxAge,
+      prompt: prompt,
+      uiLocales: uiLocales,
     },
   };
 
@@ -69,10 +76,7 @@ const post_OauthDetails = async (
   return response.data;
 };
 
-
 const post_AuthCode = async (
-  nonce,
-  state,
   transactionId,
   acceptedClaims,
   permittedAuthorizeScopes
@@ -84,18 +88,17 @@ const post_AuthCode = async (
     request: {
       transactionId: transactionId,
       acceptedClaims: acceptedClaims,
-      permittedAuthorizeScopes: permittedAuthorizeScopes
+      permittedAuthorizeScopes: permittedAuthorizeScopes,
     },
   };
 
-  const endpoint = IDP_SERVER_BASE_URL + authCodeEndPoint + "?nonce=" + nonce + "&state=" + state;
+  const endpoint = IDP_SERVER_BASE_URL + authCodeEndPoint;
   const response = await axios.post(endpoint, request, {
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
   });
   return response.data;
 };
 
-
-export { post_AuthenticateUser, post_OauthDetails, post_AuthCode }
+export { post_AuthenticateUser, post_OauthDetails, post_AuthCode };

@@ -36,7 +36,6 @@ export default function Pin(loginFields) {
 
     try {
       let transactionId = searchParams.get("transactionId");
-      let nonce = searchParams.get("nonce");
 
       let uin = loginState['Pin_mosip-uin'];
       let challengeType = "PIN";
@@ -62,7 +61,7 @@ export default function Pin(loginFields) {
         return;
       } else {
         setError(null)
-        navigate("/consent?transactionId=" + response.transactionId + "&nonce=" + nonce, { replace: true });
+        navigate("/consent?transactionId=" + response.transactionId, { replace: true });
       }
     }
     catch (errormsg) {
