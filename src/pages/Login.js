@@ -11,10 +11,12 @@ import {
   faceBioLoginFields,
   fingerBioLoginFields,
   irisBioLoginFields,
+  allBioLoginFields,
 } from "../constants/formFields";
 import IDPQRCode from "../components/IDPQRCode";
 import SBIL1Biometrics from "../components/SBIL1Biometrics";
-import L1Biometric from "../components/L1Biometric";
+import L1Biometrics from "../components/L1Biometrics";
+import L1IndividualBiometric from "../components/L1IndividualBiometric";
 
 const tabs = tabList;
 
@@ -23,10 +25,15 @@ const comp = {
   OTP: Otp,
   QRCode: IDPQRCode,
   Biometric: SBIL1Biometrics,
-  FaceBiometric: L1Biometric,
-  FingerBiometric: L1Biometric,
-  IrisBiometric: L1Biometric,
+  FaceBiometric: L1IndividualBiometric,
+  FingerBiometric: L1IndividualBiometric,
+  IrisBiometric: L1IndividualBiometric,
+  Biometrics: L1Biometrics,
 };
+
+function InitiateL1Biometrics(inst) {
+  return React.createElement(comp[inst], { param: allBioLoginFields });
+}
 
 function InitiateL1IrisBiometric(inst) {
   return React.createElement(comp[inst], { param: irisBioLoginFields });
@@ -79,16 +86,20 @@ function createDynamicLoginElements(inst) {
     return InitiatePin(inst, otpFields);
   }
 
-  if (comp[inst] === L1Biometric && inst === "FaceBiometric") {
+  if (comp[inst] === L1IndividualBiometric && inst === "FaceBiometric") {
     return InitiateL1FaceBiometric(inst);
   }
 
-  if (comp[inst] === L1Biometric && inst === "FingerBiometric") {
+  if (comp[inst] === L1IndividualBiometric && inst === "FingerBiometric") {
     return InitiateL1FingerBiometric(inst);
   }
 
-  if (comp[inst] === L1Biometric && inst === "IrisBiometric") {
+  if (comp[inst] === L1IndividualBiometric && inst === "IrisBiometric") {
     return InitiateL1IrisBiometric(inst);
+  }
+
+  if (comp[inst] === L1Biometrics) {
+    return InitiateL1Biometrics(inst);
   }
 
   return React.createElement(comp[inst]);

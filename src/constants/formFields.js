@@ -46,7 +46,7 @@ const otpFields = [
   },
 ];
 
-//TODO remove
+// //TODO remove
 const bioLoginFields = [
   {
     labelText: "Vid",
@@ -59,6 +59,22 @@ const bioLoginFields = [
     placeholder: "VID",
   },
 ];
+
+const allBioLoginFields = {
+  inputFields: [
+    {
+      labelText: "Enter your VID",
+      labelFor: "Mosip vid",
+      id: "mosip-vid",
+      name: "vid",
+      type: "text",
+      autoComplete: "vid",
+      isRequired: true,
+      placeholder: "VID",
+    },
+  ],
+  bioFields: [deviceType.face, deviceType.finger, deviceType.iris],
+};
 
 const faceBioLoginFields = {
   inputFields: [
@@ -181,20 +197,25 @@ const tabList = [
     icon: "cog",
     comp: "QRCode",
   },
+  // {
+  //   name: "Log in with face",
+  //   icon: "face_capture",
+  //   comp: "FaceBiometric",
+  // },
+  // {
+  //   name: "Log in with iris",
+  //   icon: "iris_capture",
+  //   comp: "IrisBiometric",
+  // },
+  // {
+  //   name: "Log in with fingerprint",
+  //   icon: "finger_capture",
+  //   comp: "FingerBiometric",
+  // },
   {
-    name: "Log in with face",
-    icon: "face_capture",
-    comp: "FaceBiometric",
-  },
-  {
-    name: "Log in with iris",
-    icon: "iris_capture",
-    comp: "IrisBiometric",
-  },
-  {
-    name: "Log in with fingerprint",
-    icon: "finger_capture",
-    comp: "FingerBiometric",
+    name: "Log in with Biometrics",
+    icon: "bio_capture",
+    comp: "Biometrics",
   },
 ];
 
@@ -204,6 +225,7 @@ export {
   signupFields,
   tabList,
   bioLoginFields,
+  allBioLoginFields,
   faceBioLoginFields,
   fingerBioLoginFields,
   irisBioLoginFields,

@@ -20,7 +20,7 @@ const buttonImgPath = {
   Iris: "images/iris_code.png",
 };
 
-export default function L1Biometric(loginFields) {
+export default function L1IndividualBiometric(loginFields) {
   const params = loginFields["param"];
   const inputFields = params.inputFields;
   const biometricFields = params.bioFields;
