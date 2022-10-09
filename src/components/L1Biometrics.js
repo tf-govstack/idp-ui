@@ -10,14 +10,21 @@ import { getDeviceInfos } from "../services/local-storageService.ts";
 import { capture, discoverDevicesAsync } from "../services/SbiService";
 import BiometricInput from "./BiometricInput";
 import InputWithImage from "./InputWithImage";
+import Select from "react-select";
 
 let fieldsState = {};
 const host = "http://127.0.0.1";
 
-const buttonImgPath = {
+const modalityImgPath = {
   Face: "images/face_capture.png",
   Finger: "images/fingerprint_scan.png",
   Iris: "images/iris_code.png",
+};
+
+const modalityIconPath = {
+  Face: "images/Sign in with face.png",
+  Finger: "images/Sign in with fingerprint.png",
+  Iris: "images/Sign in with Iris.png",
 };
 
 export default function L1Biometrics(loginFields) {
@@ -31,15 +38,15 @@ export default function L1Biometrics(loginFields) {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const [modalityDevices, setModalityDevices] = useState(new Map());
-
+  const [modalityDevices, setModalityDevices] = useState(null);
   const [selectedDevice, setSelectedDevice] = useState(null);
 
-  const handleDeviceChange = (selectedDeviceSerialNo) => {
-    setSelectedDevice(selectedDeviceSerialNo);
+  // handle onChange event of the dropdown
+  const handleDeviceChange = (device) => {
+    setSelectedDevice(device);
   };
 
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     setLoginState({ ...loginState, [e.target.id]: e.target.value });
   };
 
@@ -52,8 +59,7 @@ export default function L1Biometrics(loginFields) {
     let transactionId = searchParams.get("transactionId");
     let vid = loginState["sbi_mosip-vid"];
 
-    let device = modalityDevices.get(selectedDevice);
-    if (device === null) {
+    if (selectedDevice === null) {
       setStatus({ state: ERROR, msg: "Device not found!" });
       return;
     }
@@ -63,16 +69,17 @@ export default function L1Biometrics(loginFields) {
     try {
       setStatus({
         state: LOADING,
-        msg: device.type + " Capture Initiated on " + device.model,
+        msg:
+          selectedDevice.type + " Capture Initiated on " + selectedDevice.model,
       });
 
       biometricResponse = await capture(
         host,
-        device.port,
+        selectedDevice.port,
         transactionId,
-        device.specVersion,
-        device.type,
-        device.deviceId
+        selectedDevice.specVersion,
+        selectedDevice.type,
+        selectedDevice.deviceId
       );
 
       let errorMsg = validateBiometricResponse(biometricResponse);
@@ -191,7 +198,7 @@ export default function L1Biometrics(loginFields) {
   const refreshDeviceList = () => {
     let deviceInfosPortsWise = getDeviceInfos();
 
-    let modalitydevices = new Map();
+    let modalitydevices = [];
 
     Object.keys(deviceInfosPortsWise).map((port) => {
       let deviceInfos = deviceInfosPortsWise[port];
@@ -205,9 +212,12 @@ export default function L1Biometrics(loginFields) {
           deviceSubId: deviceInfo.deviceSubId,
           model: deviceInfo.digitalId.model,
           serialNo: deviceInfo.digitalId.serialNo,
+          text: deviceInfo.digitalId.model,
+          value: deviceInfo.digitalId.serialNo,
+          icon: modalityIconPath[deviceInfo.digitalId.type],
         };
 
-        modalitydevices.set(deviceDetail.serialNo, deviceDetail);
+        modalitydevices.push(deviceDetail);
       });
     });
 
@@ -221,11 +231,10 @@ export default function L1Biometrics(loginFields) {
       return;
     }
 
-    let selectedDevice = [...modalitydevices.keys()]?.at(0);
+    let selectedDevice = modalitydevices[0];
     setSelectedDevice(selectedDevice);
   };
 
-  
   return (
     <>
       <h1 class="text-center text-sky-600 font-semibold">
@@ -236,7 +245,7 @@ export default function L1Biometrics(loginFields) {
           {inputFields.map((field) => (
             <InputWithImage
               key={"sbi_" + field.id}
-              handleChange={handleChange}
+              handleChange={handleInputChange}
               value={loginState["sbi_" + field.id]}
               labelText={field.labelText}
               labelFor={field.labelFor}
@@ -278,34 +287,24 @@ export default function L1Biometrics(loginFields) {
           <>
             {selectedDevice && (
               <>
-                <div class="flex justify-center">
-                  <select
-                    class="text-center w-32 px-1 py-1 bg-blue-600 text-white font-medium text-xs
-                              leading-tight rounded shadow-md hover:bg-blue-700 hover:shadow-lg
-                              focus:bg-blue-700 focus:shadow-lg active:bg-blue-800 active:shadow-lg 
-                              active:text-white transition duration-150 ease-in-out flex items-center"
+                <div class="flex justify-center w-full">
+                  <Select
+                    className="w-10/12"
+                    placeholder="Select Option"
                     value={selectedDevice}
-                    onChange={(e) => handleDeviceChange(e.target.value)}
-                  >
-                    {[...modalityDevices?.keys()].map((serialNo) => {
-                      let deviceDetail = modalityDevices.get(serialNo);
-                      return (
-                        <option
-                          class="font-medium block text-xs w-full whitespace-nowrap bg-gray text-white-700 hover:bg-gray-100 items-center"
-                          key={deviceDetail.serialNo}
-                          value={deviceDetail.serialNo}
-                        >
-                          {deviceDetail.model}
-                        </option>
-                      );
-                    })}
-                  </select>
+                    options={modalityDevices}
+                    onChange={handleDeviceChange}
+                    getOptionLabel={(e) => (
+                      <div class="flex items-center">
+                        <img src={e.icon} />
+                        <span class="ml-2">{e.text}</span>
+                      </div>
+                    )}
+                  />
                 </div>
                 <BiometricInput
-                  modality={modalityDevices.get(selectedDevice).type}
-                  buttonImgPath={
-                    buttonImgPath[modalityDevices.get(selectedDevice).type]
-                  }
+                  modality={selectedDevice.type}
+                  buttonImgPath={modalityImgPath[selectedDevice.type]}
                 />
               </>
             )}
