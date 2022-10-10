@@ -1,13 +1,10 @@
-import './App.css';
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-} from "react-router-dom";
-import LoginPage from './pages/Login';
-import AuthorizePage from './pages/Authorize';
-import ConsentPage from './pages/Consent';
-import NavHeader from './components/NavHeader';
+import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/Login";
+import AuthorizePage from "./pages/Authorize";
+import ConsentPage from "./pages/Consent";
+import NavHeader from "./components/NavHeader";
+import SignInOptionsPage from "./pages/SignInOptions";
 
 function App() {
   return (
@@ -17,6 +14,7 @@ function App() {
         <div className="max-w-md w-full space-y-8">
           <BrowserRouter>
             <Routes>
+              <Route path="/" element={<SignInOptionsPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/authorize" element={<AuthorizePage />} />
               <Route path="/consent" element={<ConsentPage />} />

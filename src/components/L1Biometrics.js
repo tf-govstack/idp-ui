@@ -209,10 +209,9 @@ export default function L1Biometrics(loginFields) {
           specVersion: deviceInfo.specVersion[0],
           type: deviceInfo.digitalId.type,
           deviceId: deviceInfo.deviceId,
-          deviceSubId: deviceInfo.deviceSubId,
           model: deviceInfo.digitalId.model,
           serialNo: deviceInfo.digitalId.serialNo,
-          text: deviceInfo.digitalId.model,
+          text: deviceInfo.digitalId.make + "-" + deviceInfo.digitalId.model,
           value: deviceInfo.digitalId.serialNo,
           icon: modalityIconPath[deviceInfo.digitalId.type],
         };
