@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { challengeTypes, deviceType } from "../constants/clientConstants";
-import { ERROR, LOADED, LOADING } from "../constants/states";
+import { AUTHENTICATING, ERROR, LOADED, LOADING } from "../constants/states";
 import { post_AuthenticateUser } from "../services/AuthService";
 import { encodeBase64 } from "../services/cryptoService";
 import { getDeviceInfos } from "../services/local-storageService.ts";
@@ -68,9 +68,9 @@ export default function L1Biometrics(loginFields) {
 
     try {
       setStatus({
-        state: LOADING,
+        state: AUTHENTICATING,
         msg:
-          selectedDevice.type + " Capture Initiated on " + selectedDevice.model,
+          selectedDevice.type + " Capture initiated on " + selectedDevice.model,
       });
 
       biometricResponse = await capture(
@@ -149,7 +149,7 @@ export default function L1Biometrics(loginFields) {
       },
     ];
 
-    setStatus({ state: LOADING, msg: "Authenticating! Please wait" });
+    setStatus({ state: AUTHENTICATING, msg: "Authenticating. Please wait..." });
 
     const authenticateResponse = await post_AuthenticateUser(
       transactionId,
@@ -282,33 +282,37 @@ export default function L1Biometrics(loginFields) {
           </>
         )}
 
-        {status.state === LOADED && modalityDevices && (
-          <>
-            {selectedDevice && (
-              <>
-                <div class="flex justify-center w-full">
-                  <Select
-                    className="w-10/12"
-                    placeholder="Select Option"
-                    value={selectedDevice}
-                    options={modalityDevices}
-                    onChange={handleDeviceChange}
-                    getOptionLabel={(e) => (
-                      <div class="flex items-center">
-                        <img src={e.icon} />
-                        <span class="ml-2">{e.text}</span>
-                      </div>
-                    )}
+        {(status.state === LOADED || status.state === AUTHENTICATING) &&
+          modalityDevices && (
+            <>
+              {selectedDevice && (
+                <>
+                  <div class="flex justify-center w-full">
+                    <Select
+                      className="w-8/12"
+                      placeholder="Select Option"
+                      value={selectedDevice}
+                      options={modalityDevices}
+                      onChange={handleDeviceChange}
+                      getOptionLabel={(e) => (
+                        <div class="flex items-center h-7">
+                          <img class="w-8" src={e.icon} />
+                          <span class="ml-2 text-xs">{e.text}</span>
+                        </div>
+                      )}
+                    />
+                  </div>
+                  <BiometricInput
+                    modality={selectedDevice.type}
+                    buttonImgPath={modalityImgPath[selectedDevice.type]}
+                    loadingMsg={
+                      status.state === AUTHENTICATING ? status.msg : ""
+                    }
                   />
-                </div>
-                <BiometricInput
-                  modality={selectedDevice.type}
-                  buttonImgPath={modalityImgPath[selectedDevice.type]}
-                />
-              </>
-            )}
-          </>
-        )}
+                </>
+              )}
+            </>
+          )}
 
         <div class="flex justify-center">
           <Link class="text-center text-gray-500 font-semibold" to="#">

@@ -17,13 +17,13 @@ export default function SignInOptions() {
     setStatus({ state: LOADING, msg: "Loading" });
 
     //TODO integration with Auth factors
-    let oAuthDetails = JSON.parse(window.localStorage.getItem("oauth_details"));
-    let authFactors = oAuthDetails.authFactors;
+    // let oAuthDetails = JSON.parse(window.localStorage.getItem("oauth_details"));
+    // let authFactors = oAuthDetails.authFactors;
 
-    if (authFactors === null || authFactors.size === 0) {
-      setStatus({ state: ERROR, msg: "Options to signing not found!" });
-      return;
-    }
+    // if (authFactors === null || authFactors.size === 0) {
+    //   setStatus({ state: ERROR, msg: "Options to signing not found!" });
+    //   return;
+    // }
 
     //dummy
     let loginOptions = [
