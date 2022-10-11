@@ -1,13 +1,20 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LoadingIndicator from "../common/LoadingIndicator";
-import { challengeTypes, deviceType } from "../constants/clientConstants";
+import { challengeTypes } from "../constants/clientConstants";
 import { AUTHENTICATING, ERROR, LOADED, LOADING } from "../constants/states";
 import { post_AuthenticateUser } from "../services/AuthService";
 import { encodeBase64 } from "../services/cryptoService";
-import { getDeviceInfos } from "../services/local-storageService.ts";
-import { capture, discoverDevicesAsync } from "../services/SbiService";
+import {
+  getDeviceInfos,
+  getTransactionId,
+  storeTransactionId,
+} from "../services/local-storageService.ts";
+import {
+  capture_Auth,
+  mosipdisc_DiscoverDevicesAsync,
+} from "../services/SbiService";
 import BiometricInput from "./BiometricInput";
 import InputWithImage from "./InputWithImage";
 import Select from "react-select";
@@ -35,7 +42,6 @@ export default function L1Biometrics(loginFields) {
   inputFields.forEach((field) => (fieldsState["sbi_" + field.id] = ""));
   const [loginState, setLoginState] = useState(fieldsState);
   const [status, setStatus] = useState({ state: LOADED, msg: "" });
-  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const [modalityDevices, setModalityDevices] = useState(null);
@@ -56,7 +62,16 @@ export default function L1Biometrics(loginFields) {
   };
 
   const startCapture = async () => {
-    let transactionId = searchParams.get("transactionId");
+    let transactionId = getTransactionId();
+
+    if (!transactionId) {
+      setStatus({
+        state: ERROR,
+        msg: "Invalid transaction Id",
+      });
+      return;
+    }
+
     let vid = loginState["sbi_mosip-vid"];
 
     if (selectedDevice === null) {
@@ -73,7 +88,7 @@ export default function L1Biometrics(loginFields) {
           selectedDevice.type + " Capture initiated on " + selectedDevice.model,
       });
 
-      biometricResponse = await capture(
+      biometricResponse = await capture_Auth(
         host,
         selectedDevice.port,
         transactionId,
@@ -167,7 +182,8 @@ export default function L1Biometrics(loginFields) {
         msg: "Authentication failed: " + errors[0].errorCode,
       });
     } else {
-      navigate("/consent?transactionId=" + response.transactionId, {
+      storeTransactionId(response.transactionId);
+      navigate("/consent", {
         replace: true,
       });
     }
@@ -186,7 +202,7 @@ export default function L1Biometrics(loginFields) {
     try {
       setStatus({ state: LOADING, msg: "Scanning Devices. Please wait...." });
 
-      discoverDevicesAsync(host).then(() => {
+      mosipdisc_DiscoverDevicesAsync(host).then(() => {
         setStatus({ state: LOADED, msg: "" });
         refreshDeviceList();
       });

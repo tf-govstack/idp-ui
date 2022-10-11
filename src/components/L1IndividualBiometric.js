@@ -7,7 +7,7 @@ import { ERROR, LOADED, LOADING } from "../constants/states";
 import { post_AuthenticateUser } from "../services/AuthService";
 import { encodeBase64 } from "../services/cryptoService";
 import { getDeviceInfos } from "../services/local-storageService.ts";
-import { capture, discoverDevicesAsync } from "../services/SbiService";
+import { capture_Auth, mosipdisc_DiscoverDevicesAsync } from "../services/SbiService";
 import BiometricInput from "./BiometricInput";
 import InputWithImage from "./InputWithImage";
 
@@ -70,7 +70,7 @@ export default function L1IndividualBiometric(loginFields) {
         msg: device.type + " Capture Initiated on " + device.model,
       });
 
-      biometricResponse = await capture(
+      biometricResponse = await capture_Auth(
         host,
         device.port,
         transactionId,
@@ -184,7 +184,7 @@ export default function L1IndividualBiometric(loginFields) {
     try {
       setStatus({ state: LOADING, msg: "Scanning Devices. Please wait...." });
 
-      discoverDevicesAsync(host).then(() => {
+      mosipdisc_DiscoverDevicesAsync(host).then(() => {
         setStatus({ state: LOADED, msg: "" });
         refreshDeviceList();
       });

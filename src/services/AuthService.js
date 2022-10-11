@@ -5,6 +5,13 @@ const authenticateEndPoint = "/authorization/authenticate";
 const oauthDetailsEndPoint = "/authorization/oauth-details";
 const authCodeEndPoint = "/authorization/auth-code";
 
+/**
+ * Triggers /authenticate API on IDP service
+ * @param {string} transactionId same as idp transactionId
+ * @param {String} individualId UIN/VIN of the individual
+ * @param {List<AuthChallenge>} challengeList challenge list based on the auth type(ie. BIO, PIN, INJI)
+ * @returns /authenticate API response
+ */
 const post_AuthenticateUser = async (
   transactionId,
   individualId,
@@ -30,6 +37,23 @@ const post_AuthenticateUser = async (
   return response.data;
 };
 
+/**
+ * Triggers /auth-code API on IDP service
+ * @param {string} nonce
+ * @param {string} state
+ * @param {string} clientId
+ * @param {url} redirectUri
+ * @param {string} responseType
+ * @param {string} scope
+ * @param {string} acrValues
+ * @param {jsonObject} claims
+ * @param {string} claimsLocales
+ * @param {string} display
+ * @param {int} maxAge
+ * @param {string} prompt
+ * @param {string} uiLocales
+ * @returns /oauthDetails API response
+ */
 const post_OauthDetails = async (
   nonce,
   state,
@@ -76,6 +100,13 @@ const post_OauthDetails = async (
   return response.data;
 };
 
+/**
+ * Triggers /auth-code API to IDP service
+ * @param {String} transactionId
+ * @param {List<String>} acceptedClaims
+ * @param {List<String>} permittedAuthorizeScopes
+ * @returns /auth-code API response
+ */
 const post_AuthCode = async (
   transactionId,
   acceptedClaims,

@@ -27,7 +27,17 @@ const DeviceStatusReady = "Ready";
 const fromPort = 4501;
 const tillPort = 4600;
 
-const capture = async (
+/**
+ * Triggers capture request of SBI for auth capture
+ * @param {url} host SBI is hosted on given host
+ * @param {int} port port on which SBI is listening to.
+ * @param {string} transactionId same as idp transactionId
+ * @param {string} specVersion supported spec version
+ * @param {string} type modality type
+ * @param {string} deviceId
+ * @returns auth capture response
+ */
+const capture_Auth = async (
   host,
   port,
   transactionId,
@@ -89,16 +99,16 @@ const capture = async (
     timeout: timeout * 1000,
     captureTime: new Date().toISOString(),
     domainUri: SBI_DOMAIN_URI,
-    transactionId: transactionId, // same as idp transactionId
+    transactionId: transactionId,
     bio: [
       {
-        type: type, //FROM BUTTON
-        count: count, // hardcode, for face 1, 2 for iris, 10 for finger
+        type: type, //modality
+        count: count, // from configuration
         //bioSubType: , // ignored
-        requestedScore: requestedScore, // take from properties, modality specific
+        requestedScore: requestedScore, // from configuration
         deviceId: deviceId, // from discovery
         deviceSubId: 0, //Set as 0, not required for Auth capture.
-        previousHash: "", // empty string //TODO do we need to store prev. hash
+        previousHash: "", // empty string
       },
     ],
     customOpts: null,
@@ -119,9 +129,13 @@ const capture = async (
   return response?.data;
 };
 
-//----------------------------------------------------//
+/**
+ * Triggers MOSIPDISC request on multiple port simultaneously.
+ * @param {url} host SBI is hosted on given host
+ * @returns MOSIPDISC requests for the given host and the port ranging between fromPort and tillPort
+ */
 
-const discoverDevicesAsync = async (host) => {
+const mosipdisc_DiscoverDevicesAsync = async (host) => {
   clearDiscoveredDevices();
   clearDeviceInfos();
 
@@ -133,6 +147,14 @@ const discoverDevicesAsync = async (host) => {
   return axios.all(discoverRequestList);
 };
 
+/**
+ * Builds MOSIPDISC API request for multiple ports to discover devices on
+ * the specifed host and port. On success response, discovered devices
+ * are cached and MOSIPDINFO API is called to fetch deviceInfo.
+ * @param {url} host SBI is hosted on given host
+ * @param {int} port port on which SBI is listening to.
+ * @returns MOSIPDISC request for the give host and port
+ */
 const discoverRequestBuilder = async (host, port) => {
   let endpoint = host + ":" + port + deviceEndPoint;
 
@@ -148,7 +170,7 @@ const discoverRequestBuilder = async (host, port) => {
     .then(async (response) => {
       if (response?.data !== null) {
         addDiscoveredDevices(port, response.data);
-        await deviceInfo(host, port);
+        await mosipdinfo_DeviceInfo(host, port);
       }
     })
     .catch((error) => {
@@ -156,7 +178,13 @@ const discoverRequestBuilder = async (host, port) => {
     });
 };
 
-const deviceInfo = async (host, port) => {
+/**
+ * MOSIPDINFO API call for fetch deviceinfo from SBI on the specifed host and port
+ * On success response, the device infos are decoded, validated and cached.
+ * @param {url} host SBI is hosted on given host
+ * @param {int} port port on which SBI is listening to.
+ */
+const mosipdinfo_DeviceInfo = async (host, port) => {
   let endpoint = host + ":" + port + infoEndPoint;
 
   await axios({
@@ -176,24 +204,28 @@ const deviceInfo = async (host, port) => {
     });
 };
 
-const decodeAndValidateDeviceInfo = async (deviceInfo) => {
-  var deviceDetails = [];
-  for (let i = 0; i < deviceInfo.length; i++) {
-    var decodedDevice = await decodeJWT(deviceInfo[i].deviceInfo);
+/**
+ * decodes and validates the JWT device info response from /deviceinfo api of SBI
+ * @param {json Object} deviceInfo JWT response array from /deviceinfo api of SBI
+ * @returns {Array<Object>} JWT decoded deviceInfo array
+ */
+const decodeAndValidateDeviceInfo = async (deviceInfoList) => {
+  var deviceDetailList = [];
+  for (let i = 0; i < deviceInfoList.length; i++) {
+    var decodedDevice = await decodeJWT(deviceInfoList[i].deviceInfo);
     decodedDevice.digitalId = await decodeJWT(decodedDevice.digitalId);
 
     if (validateDeviceInfo(decodedDevice)) {
-      deviceDetails.push(decodedDevice);
+      deviceDetailList.push(decodedDevice);
     }
   }
-  return deviceDetails;
+  return deviceDetailList;
 };
 
-//TODO add documentation to all methods
 /**
- *
- * @param {*} deviceInfo
- * @returns
+ * validates the device info for device certification level, purpose and status.
+ * @param {*} deviceInfo decoded deviceInfo
+ * @returns {boolean}
  */
 const validateDeviceInfo = (deviceInfo) => {
   const certification =
@@ -213,4 +245,4 @@ const validateDeviceInfo = (deviceInfo) => {
   return false;
 };
 
-export { capture, discoverDevicesAsync };
+export { capture_Auth, mosipdisc_DiscoverDevicesAsync };

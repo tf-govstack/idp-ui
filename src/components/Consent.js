@@ -1,17 +1,10 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import LoadingIndicator from "../common/LoadingIndicator";
-import { otpFields } from "../constants/formFields";
 import { post_AuthCode } from "../services/AuthService";
-
-const fields = otpFields;
-let fieldsState = {};
-fields.forEach((field) => (fieldsState["Otp" + field.id] = ""));
+import { getTransactionId } from "../services/local-storageService.ts";
 
 export default function Consent() {
-  const [error, setError] = useState(null);
   const [status, setStatus] = useState("LOADED");
-  const [searchParams, setSearchParams] = useSearchParams();
   const [claims, setClaims] = useState([]);
   const [scope, setScope] = useState([]);
 
@@ -65,7 +58,7 @@ export default function Consent() {
 
   const handleCancel = (e) => {
     e.preventDefault();
-    cancelConsent();
+    onError("Authorization failed");
   };
 
   let oAuthDetails = JSON.parse(window.localStorage.getItem("oauth_details"));
@@ -79,8 +72,12 @@ export default function Consent() {
   //Handle Login API Integration here
   const submitConsent = async () => {
     try {
-      //TODO get from cache
-      let transactionId = searchParams.get("transactionId");
+      let transactionId = getTransactionId();
+
+      if (!transactionId) {
+        onError("Invalid transaction Id");
+      }
+
       let acceptedClaims = claims;
       let permittedAuthorizeScopes = scope;
 
@@ -107,46 +104,37 @@ export default function Consent() {
 
       //TODO redirect with server response
       if (errors != null && errors.length > 0) {
-        let redirect_uri = window.localStorage.getItem("redirect_uri");
-
-        window.location.replace(
-          redirect_uri + params + "error=" + errors[0].errorCode
-        );
+        onError(errors[0].errorCode);
         return;
-      } else {
-        setError(null);
-        window.location.replace(
-          response.redirectUri + params + "code=" + response.code
-        );
-      }
-    } catch (errormsg) {
-      setError(errormsg.message);
-      setStatus("ERROR");
-    }
-  };
-
-  const cancelConsent = async () => {
-    try {
-      let nonce = window.localStorage.getItem("nonce");
-      let state = window.localStorage.getItem("state");
-      let redirect_uri = window.localStorage.getItem("redirect_uri");
-
-      let params = "?";
-      if (nonce !== null && nonce !== undefined) {
-        params = params + "nonce=" + nonce + "&";
-      }
-
-      if (state !== null && state !== undefined) {
-        params = params + "state=" + state + "&";
       }
 
       window.location.replace(
-        redirect_uri + params + "error=" + "Authorization failed"
+        response.redirectUri + params + "code=" + response.code
       );
-    } catch (errormsg) {
-      setError(errormsg.message);
-      setStatus("ERROR");
+    } catch (error) {
+      onError(error.message);
     }
+  };
+
+  const onError = async (errorMsg) => {
+    let nonce = window.localStorage.getItem("nonce");
+    let state = window.localStorage.getItem("state");
+    let redirect_uri = window.localStorage.getItem("redirect_uri");
+
+    if (!redirect_uri) {
+      return;
+    }
+
+    let params = "?";
+    if (nonce) {
+      params = params + "nonce=" + nonce + "&";
+    }
+
+    if (state) {
+      params = params + "state=" + state + "&";
+    }
+
+    window.location.replace(redirect_uri + params + "error=" + errorMsg);
   };
 
   return (
@@ -275,15 +263,6 @@ export default function Consent() {
               )}
             </div>
           }
-          {status !== "LOADING" && error && (
-            <div
-              className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
-              role="alert"
-            >
-              {error}
-            </div>
-          )}
-
           <div class="grid grid-cols-2 gap-4">
             <button
               type="button"
