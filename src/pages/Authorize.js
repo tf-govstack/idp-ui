@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Error404 } from "../common/Errors";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { post_OauthDetails } from "../services/AuthService";
+import { storeOauthDetails } from "../services/local-storageService.ts";
 const AuthorizePage = () => {
   const [status, setStatus] = useState("LOADING");
   const [oAuthDetailResponse, setOAuthDetailResponse] = useState(null);
@@ -91,11 +92,8 @@ const AuthorizePage = () => {
       let nonce = searchParams.get("nonce");
       let state = searchParams.get("state");
 
-      window.localStorage.setItem("redirect_uri", redirectUri);
-      window.localStorage.setItem("nonce", nonce);
-      window.localStorage.setItem("state", state);
+      storeOauthDetails(redirectUri, nonce, state, response)
 
-      window.localStorage.setItem("oauth_details", JSON.stringify(response));
       navigate("/login?transactionId=" + response.transactionId, {
         replace: true,
       });

@@ -1,10 +1,12 @@
 import axios from "axios";
+import { configurationKeys } from "../constants/clientConstants";
 import { decodeJWT } from "./cryptoService";
 import {
   addDeviceInfos,
   addDiscoveredDevices,
   clearDeviceInfos,
   clearDiscoveredDevices,
+  getIdpConfiguration,
 } from "./local-storageService.ts";
 import { SBI_DOMAIN_URI } from "./serviceHelper";
 
@@ -15,19 +17,6 @@ const captureEndPoint = "/capture";
 const mosip_DiscoverMethod = "MOSIPDISC";
 const mosip_DeviceInfoMethod = "MOSIPDINFO";
 const mosip_CaptureMethod = "CAPTURE";
-
-const env = process.env.REACT_APP_SBI_ENV;
-const Certification = process.env.REACT_APP_SBI_CERTIFICATION;
-const purpose = process.env.REACT_APP_SBI_PURPOSE;
-const timeout = process.env.REACT_APP_SBI_TIMEOUT;
-
-const faceCount = process.env.REACT_APP_SBI_FACE_CAPTURE_COUNT;
-const fingerCount = process.env.REACT_APP_SBI_FINGER_CAPTURE_COUNT;
-const irisCount = process.env.REACT_APP_SBI_IRIS_CAPTURE_COUNT;
-
-const faceScore = process.env.REACT_APP_SBI_FACE_CAPTURE_SCORE;
-const fingerScore = process.env.REACT_APP_SBI_FINGER_CAPTURE_SCORE;
-const irisScore = process.env.REACT_APP_SBI_IRIS_CAPTURE_SCORE;
 
 const FACE_TYPE = "Face";
 const FINGER_TYPE = "Finger";
@@ -46,6 +35,36 @@ const capture = async (
   type,
   deviceId
 ) => {
+  const env =
+    getIdpConfiguration(configurationKeys.sbiEnv) ??
+    process.env.REACT_APP_SBI_ENV;
+  const purpose =
+    getIdpConfiguration(configurationKeys.sbiDevicePurpose) ??
+    process.env.REACT_APP_SBI_PURPOSE;
+  const timeout =
+    getIdpConfiguration(configurationKeys.sbiCaptureTimeout) ??
+    process.env.REACT_APP_SBI_TIMEOUT;
+
+  const faceCount =
+    getIdpConfiguration(configurationKeys.sbiFaceCount) ??
+    process.env.REACT_APP_SBI_FACE_CAPTURE_COUNT;
+  const fingerCount =
+    getIdpConfiguration(configurationKeys.sbiFingerCount) ??
+    process.env.REACT_APP_SBI_FINGER_CAPTURE_COUNT;
+  const irisCount =
+    getIdpConfiguration(configurationKeys.sbiIrisCount) ??
+    process.env.REACT_APP_SBI_IRIS_CAPTURE_COUNT;
+
+  const faceScore =
+    getIdpConfiguration(configurationKeys.sbiThresholdFace) ??
+    process.env.REACT_APP_SBI_FACE_CAPTURE_SCORE;
+  const fingerScore =
+    getIdpConfiguration(configurationKeys.sbiThresholdFinger) ??
+    process.env.REACT_APP_SBI_FINGER_CAPTURE_SCORE;
+  const irisScore =
+    getIdpConfiguration(configurationKeys.sbiThresholdIris) ??
+    process.env.REACT_APP_SBI_IRIS_CAPTURE_SCORE;
+
   let count = 1;
   let requestedScore = 70;
   switch (type) {
@@ -177,8 +196,15 @@ const decodeAndValidateDeviceInfo = async (deviceInfo) => {
  * @returns
  */
 const validateDeviceInfo = (deviceInfo) => {
+  const certification =
+    getIdpConfiguration(configurationKeys.sbiDeviceCertification) ??
+    process.env.REACT_APP_SBI_CERTIFICATION;
+  const purpose =
+    getIdpConfiguration(configurationKeys.sbiDevicePurpose) ??
+    process.env.REACT_APP_SBI_PURPOSE;
+
   if (
-    deviceInfo.certification === Certification &&
+    deviceInfo.certification === certification &&
     deviceInfo.purpose === purpose &&
     deviceInfo.deviceStatus === DeviceStatusReady
   ) {
