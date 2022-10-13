@@ -17,6 +17,7 @@ import IDPQRCode from "../components/IDPQRCode";
 import SBIL1Biometrics from "../components/SBIL1Biometrics";
 import L1Biometrics from "../components/L1Biometrics";
 import L1IndividualBiometric from "../components/L1IndividualBiometric";
+import { useTranslation } from "react-i18next";
 
 const tabs = tabList;
 
@@ -112,10 +113,12 @@ tabs.map((tab) => {
 });
 
 export default function LoginPage() {
+  const { t } = useTranslation();
+
   return (
     <>
       <Header
-        heading="Login to your account"
+        heading={t("login_heading")}
         paragraph="Have not registered for MOSIP yet? "
         linkName="Preregister"
         linkUrl="https://mec.mosip.io/preregister"
