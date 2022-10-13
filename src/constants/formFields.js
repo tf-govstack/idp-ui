@@ -46,21 +46,7 @@ const otpFields = [
   },
 ];
 
-// //TODO remove
-const bioLoginFields = [
-  {
-    labelText: "Vid",
-    labelFor: "Mosip vid",
-    id: "mosip-vid",
-    name: "vid",
-    type: "text",
-    autoComplete: "vid",
-    isRequired: true,
-    placeholder: "VID",
-  },
-];
-
-const allBioLoginFields = {
+const bioLoginFields = {
   inputFields: [
     {
       labelText: "Enter your VID",
@@ -74,72 +60,6 @@ const allBioLoginFields = {
     },
   ],
   bioFields: [deviceType.face, deviceType.finger, deviceType.iris],
-};
-
-const faceBioLoginFields = {
-  inputFields: [
-    {
-      labelText: "Enter your VID",
-      labelFor: "Mosip vid",
-      id: "mosip-vid",
-      name: "vid",
-      type: "text",
-      autoComplete: "vid",
-      isRequired: true,
-      placeholder: "VID",
-    },
-  ],
-  bioFields: [
-    {
-      id: "faceBiometric",
-      name: "faceBiometric",
-      modality: deviceType.face,
-    },
-  ],
-};
-
-const fingerBioLoginFields = {
-  inputFields: [
-    {
-      labelText: "Enter your VID",
-      labelFor: "Mosip vid",
-      id: "mosip-vid",
-      name: "vid",
-      type: "text",
-      autoComplete: "vid",
-      isRequired: true,
-      placeholder: "VID",
-    },
-  ],
-  bioFields: [
-    {
-      id: "fingerBiometric",
-      name: "fingerBiometric",
-      modality: deviceType.finger,
-    },
-  ],
-};
-
-const irisBioLoginFields = {
-  inputFields: [
-    {
-      labelText: "Enter your VID",
-      labelFor: "Mosip vid",
-      id: "mosip-vid",
-      name: "vid",
-      type: "text",
-      autoComplete: "vid",
-      isRequired: true,
-      placeholder: "VID",
-    },
-  ],
-  bioFields: [
-    {
-      id: "irisBiometric",
-      name: "irisBiometric",
-      modality: deviceType.iris,
-    },
-  ],
 };
 
 const signupFields = [
@@ -197,21 +117,6 @@ const tabList = [
     icon: "cog",
     comp: "QRCode",
   },
-  // {
-  //   name: "Log in with face",
-  //   icon: "face_capture",
-  //   comp: "FaceBiometric",
-  // },
-  // {
-  //   name: "Log in with iris",
-  //   icon: "iris_capture",
-  //   comp: "IrisBiometric",
-  // },
-  // {
-  //   name: "Log in with fingerprint",
-  //   icon: "finger_capture",
-  //   comp: "FingerBiometric",
-  // },
   {
     name: "Log in with Biometrics",
     icon: "bio_capture",
@@ -225,8 +130,4 @@ export {
   signupFields,
   tabList,
   bioLoginFields,
-  allBioLoginFields,
-  faceBioLoginFields,
-  fingerBioLoginFields,
-  irisBioLoginFields,
 };

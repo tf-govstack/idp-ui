@@ -1,5 +1,5 @@
 import axios from "axios";
-import { IDP_SERVER_BASE_URL } from "./serviceHelper";
+import { IDP_SERVER_API_URL } from "./serviceHelper";
 
 const authenticateEndPoint = "/authorization/authenticate";
 const oauthDetailsEndPoint = "/authorization/oauth-details";
@@ -28,7 +28,7 @@ const post_AuthenticateUser = async (
     },
   };
 
-  const endpoint = IDP_SERVER_BASE_URL + authenticateEndPoint;
+  const endpoint = IDP_SERVER_API_URL + authenticateEndPoint;
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
@@ -90,7 +90,7 @@ const post_OauthDetails = async (
     },
   };
 
-  var endpoint = IDP_SERVER_BASE_URL + oauthDetailsEndPoint;
+  var endpoint = IDP_SERVER_API_URL + oauthDetailsEndPoint;
 
   const response = await axios.post(endpoint, request, {
     headers: {
@@ -123,7 +123,7 @@ const post_AuthCode = async (
     },
   };
 
-  const endpoint = IDP_SERVER_BASE_URL + authCodeEndPoint;
+  const endpoint = IDP_SERVER_API_URL + authCodeEndPoint;
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",

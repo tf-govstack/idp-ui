@@ -10,6 +10,8 @@ import {
 } from "./local-storageService.ts";
 import { SBI_DOMAIN_URI } from "./serviceHelper";
 
+const purpose = "Auth";
+
 const deviceEndPoint = "/device";
 const infoEndPoint = "/info";
 const captureEndPoint = "/capture";
@@ -48,12 +50,9 @@ const capture_Auth = async (
   const env =
     getIdpConfiguration(configurationKeys.sbiEnv) ??
     process.env.REACT_APP_SBI_ENV;
-  const purpose =
-    getIdpConfiguration(configurationKeys.sbiDevicePurpose) ??
-    process.env.REACT_APP_SBI_PURPOSE;
   const timeout =
-    getIdpConfiguration(configurationKeys.sbiCaptureTimeout) ??
-    process.env.REACT_APP_SBI_TIMEOUT;
+    getIdpConfiguration(configurationKeys.sbiCaptureTimeoutInSeconds) ??
+    process.env.REACT_APP_SBI_TIMEOUT_IN_SECONDS;
 
   const faceCount =
     getIdpConfiguration(configurationKeys.sbiFaceCount) ??
@@ -231,9 +230,6 @@ const validateDeviceInfo = (deviceInfo) => {
   const certification =
     getIdpConfiguration(configurationKeys.sbiDeviceCertification) ??
     process.env.REACT_APP_SBI_CERTIFICATION;
-  const purpose =
-    getIdpConfiguration(configurationKeys.sbiDevicePurpose) ??
-    process.env.REACT_APP_SBI_PURPOSE;
 
   if (
     deviceInfo.certification === certification &&

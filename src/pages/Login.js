@@ -6,17 +6,11 @@ import Tabs from "../components/Tabs";
 import {
   tabList,
   otpFields,
-  bioLoginFields,
   pinFields,
-  faceBioLoginFields,
-  fingerBioLoginFields,
-  irisBioLoginFields,
-  allBioLoginFields,
+  bioLoginFields,
 } from "../constants/formFields";
 import IDPQRCode from "../components/IDPQRCode";
-import SBIL1Biometrics from "../components/SBIL1Biometrics";
 import L1Biometrics from "../components/L1Biometrics";
-import L1IndividualBiometric from "../components/L1IndividualBiometric";
 import { useTranslation } from "react-i18next";
 
 const tabs = tabList;
@@ -25,30 +19,10 @@ const comp = {
   PIN: Pin,
   OTP: Otp,
   QRCode: IDPQRCode,
-  Biometric: SBIL1Biometrics,
-  FaceBiometric: L1IndividualBiometric,
-  FingerBiometric: L1IndividualBiometric,
-  IrisBiometric: L1IndividualBiometric,
   Biometrics: L1Biometrics,
 };
 
 function InitiateL1Biometrics(inst) {
-  return React.createElement(comp[inst], { param: allBioLoginFields });
-}
-
-function InitiateL1IrisBiometric(inst) {
-  return React.createElement(comp[inst], { param: irisBioLoginFields });
-}
-
-function InitiateL1FingerBiometric(inst) {
-  return React.createElement(comp[inst], { param: fingerBioLoginFields });
-}
-
-function InitiateL1FaceBiometric(inst) {
-  return React.createElement(comp[inst], { param: faceBioLoginFields });
-}
-
-function InitiateSBIL1Biometrics(inst) {
   return React.createElement(comp[inst], { param: bioLoginFields });
 }
 
@@ -71,10 +45,6 @@ function createDynamicLoginElements(inst) {
     ));
   }
 
-  if (comp[inst] === SBIL1Biometrics) {
-    return InitiateSBIL1Biometrics(inst);
-  }
-
   if (comp[inst] === IDPQRCode) {
     return InitiateQRCode(inst);
   }
@@ -85,18 +55,6 @@ function createDynamicLoginElements(inst) {
 
   if (comp[inst] === Pin) {
     return InitiatePin(inst, otpFields);
-  }
-
-  if (comp[inst] === L1IndividualBiometric && inst === "FaceBiometric") {
-    return InitiateL1FaceBiometric(inst);
-  }
-
-  if (comp[inst] === L1IndividualBiometric && inst === "FingerBiometric") {
-    return InitiateL1FingerBiometric(inst);
-  }
-
-  if (comp[inst] === L1IndividualBiometric && inst === "IrisBiometric") {
-    return InitiateL1IrisBiometric(inst);
   }
 
   if (comp[inst] === L1Biometrics) {

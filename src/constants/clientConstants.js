@@ -18,8 +18,7 @@ const configurationKeys = {
   sbiFaceCount: "sbi.count.face",
   sbiFingerCount: "sbi.count.finger",
   sbiIrisCount: "sbi.count.iris",
-  sbiCaptureTimeout: "sbi.timeout.capture",
-  sbiDevicePurpose: "sbi.device.purpose",
+  sbiCaptureTimeoutInSeconds: "sbi.timeout.capture",
   sbiDeviceCertification: "sbi.device.certification",
 };
 
