@@ -1,6 +1,6 @@
 import axios from "axios";
-import { IDP_SERVER_API_URL } from "./serviceHelper";
 
+const IDP_SERVER_API_URL = window["envConfigs"].idpApiUrl;
 const authenticateEndPoint = "/authorization/authenticate";
 const oauthDetailsEndPoint = "/authorization/oauth-details";
 const authCodeEndPoint = "/authorization/auth-code";

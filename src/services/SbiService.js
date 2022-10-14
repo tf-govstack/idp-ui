@@ -8,8 +8,8 @@ import {
   clearDiscoveredDevices,
   getIdpConfiguration,
 } from "./local-storageService.ts";
-import { SBI_DOMAIN_URI } from "./serviceHelper";
 
+const SBI_DOMAIN_URI = window.origin;
 const purpose = "Auth";
 
 const deviceEndPoint = "/device";
