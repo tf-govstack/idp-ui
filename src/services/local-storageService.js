@@ -100,6 +100,18 @@ const getIdpConfiguration = (configKey) => {
   return oauthDetails?.configs[configKey];
 };
 
+const localStorageService = {
+  addDeviceInfos: addDeviceInfos,
+  getDeviceInfos: getDeviceInfos,
+  clearDeviceInfos: clearDeviceInfos,
+  clearDiscoveredDevices: clearDiscoveredDevices,
+  addDiscoveredDevices: addDiscoveredDevices,
+  storeOauthDetails: storeOauthDetails,
+  getIdpConfiguration: getIdpConfiguration,
+  getTransactionId: getTransactionId,
+  storeTransactionId: storeTransactionId,
+};
+
 export {
   addDeviceInfos,
   getDeviceInfos,
@@ -110,4 +122,5 @@ export {
   getIdpConfiguration,
   getTransactionId,
   storeTransactionId,
+  localStorageService,
 };

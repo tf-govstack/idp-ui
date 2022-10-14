@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import LoadingIndicator from "../common/LoadingIndicator";
-import { post_AuthCode } from "../services/AuthService";
-import { getTransactionId } from "../services/local-storageService.ts";
 
-export default function Consent() {
+export default function Consent({ authService, localStorageService }) {
+  const { post_AuthCode } = { ...authService };
+  const { getTransactionId } = { ...localStorageService };
+
   const [status, setStatus] = useState("LOADED");
   const [claims, setClaims] = useState([]);
   const [scope, setScope] = useState([]);

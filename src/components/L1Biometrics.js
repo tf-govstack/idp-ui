@@ -4,17 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { challengeTypes } from "../constants/clientConstants";
 import { AUTHENTICATING, ERROR, LOADED, LOADING } from "../constants/states";
-import { post_AuthenticateUser } from "../services/AuthService";
-import { encodeBase64 } from "../services/cryptoService";
-import {
-  getDeviceInfos,
-  getTransactionId,
-  storeTransactionId,
-} from "../services/local-storageService.ts";
-import {
-  capture_Auth,
-  mosipdisc_DiscoverDevicesAsync,
-} from "../services/SbiService";
 import BiometricInput from "./BiometricInput";
 import InputWithImage from "./InputWithImage";
 import Select from "react-select";
@@ -34,10 +23,22 @@ const modalityIconPath = {
   Iris: "images/Sign in with Iris.png",
 };
 
-export default function L1Biometrics(loginFields) {
-  const params = loginFields["param"];
-  const inputFields = params.inputFields;
-  const biometricFields = params.bioFields;
+export default function L1Biometrics({
+  param,
+  authService,
+  localStorageService,
+  cryptoService,
+  sbiService,
+}) {
+  const inputFields = param.inputFields;
+  const biometricFields = param.bioFields;
+
+  const { encodeBase64 } = { ...cryptoService };
+  const { capture_Auth, mosipdisc_DiscoverDevicesAsync } = { ...sbiService };
+  const { post_AuthenticateUser } = { ...authService };
+  const { getDeviceInfos, getTransactionId, storeTransactionId } = {
+    ...localStorageService,
+  };
 
   inputFields.forEach((field) => (fieldsState["sbi_" + field.id] = ""));
   const [loginState, setLoginState] = useState(fieldsState);

@@ -12,6 +12,10 @@ import {
 import IDPQRCode from "../components/IDPQRCode";
 import L1Biometrics from "../components/L1Biometrics";
 import { useTranslation } from "react-i18next";
+import { authService } from "../services/authService";
+import { localStorageService } from "../services/local-storageService";
+import { cryptoService } from "../services/cryptoService";
+import { sbiService } from "../services/sbiService";
 
 const tabs = tabList;
 
@@ -23,15 +27,28 @@ const comp = {
 };
 
 function InitiateL1Biometrics(inst) {
-  return React.createElement(comp[inst], { param: bioLoginFields });
+  return React.createElement(comp[inst], {
+    param: bioLoginFields,
+    authService: authService,
+    localStorageService: localStorageService,
+    cryptoService: cryptoService,
+    sbiService: sbiService,
+  });
 }
 
 function InitiatePin(inst) {
-  return React.createElement(comp[inst], { param: pinFields });
+  return React.createElement(comp[inst], {
+    param: pinFields,
+    authService: authService,
+    localStorageService: localStorageService,
+  });
 }
 
 function InitiateOtp(inst) {
-  return React.createElement(comp[inst], { param: otpFields });
+  return React.createElement(comp[inst], {
+    param: otpFields,
+    authService: authService,
+  });
 }
 
 function InitiateQRCode(inst) {

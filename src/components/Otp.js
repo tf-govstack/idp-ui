@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import LoadingIndicator from '../common/LoadingIndicator';
 import { otpFields } from "../constants/formFields";
-import { post_AuthenticateUser } from '../services/AuthService';
 import FormAction from "./FormAction";
 import Input from "./Input";
 
@@ -12,8 +11,10 @@ let fieldsState = {};
 fields.forEach(field => fieldsState["Otp" + field.id] = '');
 
 
-export default function Otp(loginFields) {
-  const fields = loginFields["param"];
+export default function Otp({ param, authService }) {
+  const fields = param;
+  const { post_AuthenticateUser } = { ...authService };
+
   const [loginState, setLoginState] = useState(fieldsState);
   const [error, setError] = useState(null)
   const [transactionId, setTransactionId] = useState(null)

@@ -22,4 +22,9 @@ const encodeBase64 = async (jsonObject) => {
   return objJsonB64;
 };
 
-export { decodeJWT, encodeBase64 };
+const cryptoService = {
+  decodeJWT: decodeJWT,
+  encodeBase64: encodeBase64,
+};
+
+export { decodeJWT, encodeBase64, cryptoService };

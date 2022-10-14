@@ -7,7 +7,7 @@ import {
   clearDeviceInfos,
   clearDiscoveredDevices,
   getIdpConfiguration,
-} from "./local-storageService.ts";
+} from "./local-storageService";
 
 const SBI_DOMAIN_URI = window.origin;
 const purpose = "Auth";
@@ -241,4 +241,9 @@ const validateDeviceInfo = (deviceInfo) => {
   return false;
 };
 
-export { capture_Auth, mosipdisc_DiscoverDevicesAsync };
+const sbiService = {
+  capture_Auth: capture_Auth,
+  mosipdisc_DiscoverDevicesAsync: mosipdisc_DiscoverDevicesAsync,
+};
+
+export { sbiService };

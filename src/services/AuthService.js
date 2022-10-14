@@ -29,6 +29,7 @@ const post_AuthenticateUser = async (
   };
 
   const endpoint = IDP_SERVER_API_URL + authenticateEndPoint;
+
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
@@ -132,4 +133,10 @@ const post_AuthCode = async (
   return response.data;
 };
 
-export { post_AuthenticateUser, post_OauthDetails, post_AuthCode };
+const authService = {
+  post_AuthenticateUser: post_AuthenticateUser,
+  post_OauthDetails: post_OauthDetails,
+  post_AuthCode: post_AuthCode,
+};
+
+export { authService };
