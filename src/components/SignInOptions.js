@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import ErrorIndicator from "../common/ErrorIndicator";
 import LoadingIndicator from "../common/LoadingIndicator";
-import { ERROR, LOADED, LOADING } from "../constants/states";
+import { LoadingStates as states } from "../constants/states";
 
 export default function SignInOptions() {
-  const [status, setStatus] = useState({ state: LOADED, msg: "" });
+  const [status, setStatus] = useState({ state: states.LOADED, msg: "" });
   const [singinOptions, setSinginOptions] = useState(null);
 
   const modalityIconPath = {
@@ -14,7 +15,7 @@ export default function SignInOptions() {
   };
 
   useEffect(() => {
-    setStatus({ state: LOADING, msg: "Loading" });
+    setStatus({ state: states.LOADING, msg: "Loading! Please wait..." });
 
     //TODO integration with Auth factors
     // let oAuthDetails = JSON.parse(window.localStorage.getItem("oauth_details"));
@@ -38,7 +39,7 @@ export default function SignInOptions() {
 
     setSinginOptions(loginOptions);
 
-    setStatus({ state: LOADED, msg: "" });
+    setStatus({ state: states.LOADED, msg: "" });
   }, []);
 
   return (
@@ -47,24 +48,19 @@ export default function SignInOptions() {
         Choose how you want to login:
       </h1>
 
-      {status.state === LOADING && (
+      {status.state === states.LOADING && (
         <div>
           <LoadingIndicator size="medium" message={status.msg} />
         </div>
       )}
 
-      {status.state === ERROR && (
+      {status.state === states.ERROR && (
         <>
-          <div
-            className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
-            role="alert"
-          >
-            {status.msg}
-          </div>
+          <ErrorIndicator message={status.msg} />
         </>
       )}
 
-      {status.state === LOADED && singinOptions && (
+      {status.state === states.LOADED && singinOptions && (
         <div className="divide-y">
           {singinOptions.map((option) => (
             <Link class="text-gray-500 font-semibold text-base" to={option.to}>

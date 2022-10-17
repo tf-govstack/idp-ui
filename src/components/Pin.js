@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ErrorIndicator from "../common/ErrorIndicator";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { otpFields } from "../constants/formFields";
+import { LoadingStates as states } from "../constants/states";
 import FormAction from "./FormAction";
 import Input from "./Input";
 
@@ -16,7 +18,7 @@ export default function Pin({ param, authService, localStorageService }) {
 
   const [loginState, setLoginState] = useState(fieldsState);
   const [error, setError] = useState(null);
-  const [status, setStatus] = useState("LOADED");
+  const [status, setStatus] = useState(states.LOADED);
 
   const navigate = useNavigate();
 
@@ -45,14 +47,14 @@ export default function Pin({ param, authService, localStorageService }) {
         },
       ];
 
-      setStatus("LOADING");
+      setStatus(states.LOADING);
       const authenticateResponse = await post_AuthenticateUser(
         transactionId,
         uin,
         challengeList
       );
 
-      setStatus("LOADED");
+      setStatus(states.LOADED);
 
       const { response, errors } = authenticateResponse;
 
@@ -67,7 +69,7 @@ export default function Pin({ param, authService, localStorageService }) {
       }
     } catch (errormsg) {
       setError(errormsg.message);
-      setStatus("ERROR");
+      setStatus(states.ERROR);
     }
   };
 
@@ -108,7 +110,7 @@ export default function Pin({ param, authService, localStorageService }) {
       </div>
       {
         <div>
-          {status === "LOADING" && (
+          {status === states.LOADING && (
             <LoadingIndicator
               size="medium"
               message="Authenticating. Please wait...."
@@ -116,14 +118,7 @@ export default function Pin({ param, authService, localStorageService }) {
           )}
         </div>
       }
-      {status !== "LOADING" && error && (
-        <div
-          className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
-          role="alert"
-        >
-          {error}
-        </div>
-      )}
+      {status !== states.LOADING && error && <ErrorIndicator message={error} />}
       <FormAction handleSubmit={handleSubmit} text="Login" />
     </form>
   );

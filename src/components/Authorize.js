@@ -1,14 +1,16 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Error404 } from "../common/Errors";
+import ErrorIndicator from "../common/ErrorIndicator";
 import LoadingIndicator from "../common/LoadingIndicator";
+import { LoadingStates as states } from "../constants/states";
 
 export default function Authorize({ authService, localStorageService }) {
+
   const { post_OauthDetails } = { ...authService };
   const { storeOauthDetails, storeTransactionId } = { ...localStorageService };
 
-  const [status, setStatus] = useState("LOADING");
+  const [status, setStatus] = useState(states.LOADING);
   const [oAuthDetailResponse, setOAuthDetailResponse] = useState(null);
   const [error, setError] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -40,8 +42,8 @@ export default function Authorize({ authService, localStorageService }) {
           try {
             claimsDecoded = JSON.parse(decodeURI(claims));
           } catch {
-            setError(new Error("Unable to parse claims! Please try again."));
-            setStatus("ERROR");
+            setError("Unable to parse claims! Please try again.");
+            setStatus(states.ERROR);
             return;
           }
         }
@@ -63,11 +65,11 @@ export default function Authorize({ authService, localStorageService }) {
         );
 
         setOAuthDetailResponse(response);
-        setStatus("LOADED");
-      } catch (errormsg) {
+        setStatus(states.LOADED);
+      } catch (error) {
         setOAuthDetailResponse(null);
-        setError(errormsg);
-        setStatus("ERROR");
+        setError(error.message);
+        setStatus(states.ERROR);
       }
     };
 
@@ -75,7 +77,7 @@ export default function Authorize({ authService, localStorageService }) {
   }, []);
 
   useEffect(() => {
-    if (status === "LOADED") {
+    if (status === states.LOADED) {
       redirectToLogin();
     }
   }, [status]);
@@ -107,14 +109,14 @@ export default function Authorize({ authService, localStorageService }) {
   let el;
 
   switch (status) {
-    case "LOADING":
+    case states.LOADING:
       el = (
         <LoadingIndicator size="medium" message="Loading. Please wait...." />
       );
       break;
-    case "LOADED":
+    case states.LOADED:
       if (oAuthDetailResponse === null) {
-        el = <Error404 />;
+        el = <ErrorIndicator message="Not Found" />;
         break;
       }
 
@@ -122,31 +124,14 @@ export default function Authorize({ authService, localStorageService }) {
 
       if (errors != null && errors.length > 0) {
         el = errors?.map(({ errorCode, errorMessage }, idx) => (
-          <div
-            key={idx}
-            className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
-            role="alert"
-          >
-            {errorMessage}
+          <div key={idx}>
+            <ErrorIndicator message={errorMessage} />
           </div>
         ));
       }
       break;
-    case "ERROR":
-      let msg = error?.message ?? "";
-
-      if (msg?.indexOf("404") > -1) {
-        el = <Error404 />;
-      } else {
-        el = (
-          <div
-            className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
-            role="alert"
-          >
-            Error: {error?.message}
-          </div>
-        );
-      }
+    case states.ERROR:
+      el = <ErrorIndicator message={error} />;
       break;
   }
 

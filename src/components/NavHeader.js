@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import Select from "react-select";
 
 export default function NavHeader() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [selectedLang, setSelectedLang] = useState(null);
 
   const changeLanguageHandler = (e) => {

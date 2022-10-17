@@ -3,10 +3,11 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { challengeTypes } from "../constants/clientConstants";
-import { AUTHENTICATING, ERROR, LOADED, LOADING } from "../constants/states";
+import { LoadingStates as states } from "../constants/states";
 import BiometricInput from "./BiometricInput";
 import InputWithImage from "./InputWithImage";
 import Select from "react-select";
+import ErrorIndicator from "../common/ErrorIndicator";
 
 let fieldsState = {};
 const host = "http://127.0.0.1";
@@ -42,7 +43,10 @@ export default function L1Biometrics({
 
   inputFields.forEach((field) => (fieldsState["sbi_" + field.id] = ""));
   const [loginState, setLoginState] = useState(fieldsState);
-  const [status, setStatus] = useState({ state: LOADED, msg: "" });
+  const [status, setStatus] = useState({
+    state: states.LOADED,
+    msg: "",
+  });
   const navigate = useNavigate();
 
   const [modalityDevices, setModalityDevices] = useState(null);
@@ -67,7 +71,7 @@ export default function L1Biometrics({
 
     if (!transactionId) {
       setStatus({
-        state: ERROR,
+        state: states.ERROR,
         msg: "Invalid transaction Id",
       });
       return;
@@ -76,7 +80,7 @@ export default function L1Biometrics({
     let vid = loginState["sbi_mosip-vid"];
 
     if (selectedDevice === null) {
-      setStatus({ state: ERROR, msg: "Device not found!" });
+      setStatus({ state: states.ERROR, msg: "Device not found!" });
       return;
     }
 
@@ -84,7 +88,7 @@ export default function L1Biometrics({
 
     try {
       setStatus({
-        state: AUTHENTICATING,
+        state: states.AUTHENTICATING,
         msg:
           selectedDevice.type + " Capture initiated on " + selectedDevice.model,
       });
@@ -100,18 +104,18 @@ export default function L1Biometrics({
 
       let errorMsg = validateBiometricResponse(biometricResponse);
 
-      setStatus({ state: LOADED, msg: "" });
+      setStatus({ state: states.LOADED, msg: "" });
 
       if (errorMsg !== null) {
         setStatus({
-          state: ERROR,
+          state: states.ERROR,
           msg: "Biometric capture failed: " + errorMsg,
         });
         return;
       }
     } catch (errormsg) {
       setStatus({
-        state: ERROR,
+        state: states.ERROR,
         msg: "Biometric capture failed: " + errormsg.message,
       });
       return;
@@ -125,7 +129,7 @@ export default function L1Biometrics({
       );
     } catch (errormsg) {
       setStatus({
-        state: ERROR,
+        state: states.ERROR,
         msg: "Authentication failed: " + errormsg.message,
       });
     }
@@ -165,7 +169,10 @@ export default function L1Biometrics({
       },
     ];
 
-    setStatus({ state: AUTHENTICATING, msg: "Authenticating. Please wait..." });
+    setStatus({
+      state: states.AUTHENTICATING,
+      msg: "Authenticating. Please wait...",
+    });
 
     const authenticateResponse = await post_AuthenticateUser(
       transactionId,
@@ -173,13 +180,13 @@ export default function L1Biometrics({
       challengeList
     );
 
-    setStatus({ state: LOADED, msg: "" });
+    setStatus({ state: states.LOADED, msg: "" });
 
     const { response, errors } = authenticateResponse;
 
     if (errors != null && errors.length > 0) {
       setStatus({
-        state: ERROR,
+        state: states.ERROR,
         msg: "Authentication failed: " + errors[0].errorCode,
       });
     } else {
@@ -201,14 +208,17 @@ export default function L1Biometrics({
 
   const scanDevices = () => {
     try {
-      setStatus({ state: LOADING, msg: "Scanning Devices. Please wait...." });
+      setStatus({
+        state: states.LOADING,
+        msg: "Scanning Devices. Please wait....",
+      });
 
       mosipdisc_DiscoverDevicesAsync(host).then(() => {
-        setStatus({ state: LOADED, msg: "" });
+        setStatus({ state: states.LOADED, msg: "" });
         refreshDeviceList();
       });
     } catch (errormsg) {
-      setStatus({ state: ERROR, msg: errormsg.message });
+      setStatus({ state: states.ERROR, msg: errormsg.message });
     }
   };
 
@@ -241,7 +251,7 @@ export default function L1Biometrics({
 
     if (modalitydevices.size === 0) {
       setStatus({
-        state: ERROR,
+        state: states.ERROR,
         msg: "No Devices Found!",
       });
       return;
@@ -275,20 +285,15 @@ export default function L1Biometrics({
           ))}
         </div>
 
-        {status.state === LOADING && (
+        {status.state === states.LOADING && (
           <div>
             <LoadingIndicator size="medium" message={status.msg} />
           </div>
         )}
 
-        {status.state === ERROR && (
+        {status.state === states.ERROR && (
           <>
-            <div
-              className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
-              role="alert"
-            >
-              {status.msg}
-            </div>
+            <ErrorIndicator message={status.msg} />
             <button
               type="button"
               class="flex justify-center w-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 light:bg-gray-800 light:text-white light:border-gray-600 light:hover:bg-gray-700 light:hover:border-gray-600 light:focus:ring-gray-700"
@@ -299,7 +304,8 @@ export default function L1Biometrics({
           </>
         )}
 
-        {(status.state === LOADED || status.state === AUTHENTICATING) &&
+        {(status.state === states.LOADED ||
+          status.state === states.AUTHENTICATING) &&
           modalityDevices && (
             <>
               {selectedDevice && (
@@ -323,7 +329,7 @@ export default function L1Biometrics({
                     modality={selectedDevice.type}
                     buttonImgPath={modalityImgPath[selectedDevice.type]}
                     loadingMsg={
-                      status.state === AUTHENTICATING ? status.msg : ""
+                      status.state === states.AUTHENTICATING ? status.msg : ""
                     }
                   />
                 </>

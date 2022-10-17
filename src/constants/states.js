@@ -1,7 +1,8 @@
-const LOADING = "LOADING";
-const LOADED = "LOADED";
-const ERROR = "ERROR";
-const AUTHENTICATING = "AUTHENTICATING";
+const LoadingStates = {
+  LOADING: "LOADING",
+  LOADED: "LOADED",
+  ERROR: "ERROR",
+  AUTHENTICATING: "AUTHENTICATING",
+};
 
-
-export { LOADING, LOADED, ERROR, AUTHENTICATING }
+export { LoadingStates };
