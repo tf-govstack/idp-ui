@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import ErrorIndicator from "../common/ErrorIndicator";
 import LoadingIndicator from "../common/LoadingIndicator";
@@ -12,9 +13,11 @@ let fieldsState = {};
 fields.forEach((field) => (fieldsState["Pin" + field.id] = ""));
 
 export default function Pin({ param, authService, localStorageService }) {
+  const { t } = useTranslation();
+
   const fields = param;
   const { post_AuthenticateUser } = { ...authService };
-  const { getTransactionId } = { ...localStorageService };
+  const { getTransactionId, storeTransactionId } = { ...localStorageService };
 
   const [loginState, setLoginState] = useState(fieldsState);
   const [error, setError] = useState(null);
@@ -59,11 +62,16 @@ export default function Pin({ param, authService, localStorageService }) {
       const { response, errors } = authenticateResponse;
 
       if (errors != null && errors.length > 0) {
-        setError("Authentication failed: " + errors[0].errorCode);
+        setError(
+          t("authentication_failed_msg", {
+            errorMsg: errors[0].errorCode,
+          })
+        );
         return;
       } else {
         setError(null);
-        navigate("/consent?transactionId=" + response.transactionId, {
+        storeTransactionId(response.transactionId);
+        navigate("/consent", {
           replace: true,
         });
       }
@@ -104,22 +112,19 @@ export default function Pin({ param, authService, localStorageService }) {
             htmlFor="remember-me"
             className="ml-2 block text-sm text-cyan-900"
           >
-            Remember me
+            {t("remember_me")}
           </label>
         </div>
       </div>
       {
         <div>
           {status === states.LOADING && (
-            <LoadingIndicator
-              size="medium"
-              message="Authenticating. Please wait...."
-            />
+            <LoadingIndicator size="medium" message={t("authenticating_msg")} />
           )}
         </div>
       }
       {status !== states.LOADING && error && <ErrorIndicator message={error} />}
-      <FormAction handleSubmit={handleSubmit} text="Login" />
+      <FormAction handleSubmit={handleSubmit} text={t("login")} />
     </form>
   );
 }

@@ -1,11 +1,13 @@
 import React from "react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ErrorIndicator from "../common/ErrorIndicator";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { LoadingStates as states } from "../constants/states";
 
 export default function Authorize({ authService, localStorageService }) {
+  const { t } = useTranslation();
 
   const { post_OauthDetails } = { ...authService };
   const { storeOauthDetails, storeTransactionId } = { ...localStorageService };
@@ -42,7 +44,7 @@ export default function Authorize({ authService, localStorageService }) {
           try {
             claimsDecoded = JSON.parse(decodeURI(claims));
           } catch {
-            setError("Unable to parse claims! Please try again.");
+            setError(t("parsing_error_msg"));
             setStatus(states.ERROR);
             return;
           }
@@ -110,13 +112,11 @@ export default function Authorize({ authService, localStorageService }) {
 
   switch (status) {
     case states.LOADING:
-      el = (
-        <LoadingIndicator size="medium" message="Loading. Please wait...." />
-      );
+      el = <LoadingIndicator size="medium" message={t("loading_msg")} />;
       break;
     case states.LOADED:
       if (oAuthDetailResponse === null) {
-        el = <ErrorIndicator message="Not Found" />;
+        el = <ErrorIndicator message={t("no_response_msg")} />;
         break;
       }
 

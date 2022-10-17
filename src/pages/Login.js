@@ -94,8 +94,8 @@ export default function LoginPage() {
     <>
       <Header
         heading={t("login_heading")}
-        paragraph="Have not registered for MOSIP yet? "
-        linkName="Preregister"
+        paragraph={t("login_paragraph")}
+        linkName={t("login_linkName")}
         linkUrl="https://mec.mosip.io/preregister"
       />
       <Tabs color="cyan" tabs={tabs} block={tabCompInstance} />

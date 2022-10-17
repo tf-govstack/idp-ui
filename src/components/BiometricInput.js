@@ -4,6 +4,7 @@ export default function BiometricInput({
   modality,
   buttonImgPath,
   loadingMsg,
+  buttonText,
 }) {
   return (
     <>
@@ -18,7 +19,7 @@ export default function BiometricInput({
         <div class="flex justify-center mb-10">
           <div class="w-40 h-40 text-black bg-white-200 font-medium rounded-lg text-sm">
             <img src={buttonImgPath} />
-            <p class="text-center font-bold text-sm mt-2">{modality} Capture</p>
+            <p class="text-center font-bold text-sm mt-2">{modality}</p>
           </div>
         </div>
         <div class="flex justify-center">
@@ -27,7 +28,7 @@ export default function BiometricInput({
             type="submit"
             id={modality}
           >
-            Scan and verify
+            {buttonText}
           </button>
         </div>
       </div>

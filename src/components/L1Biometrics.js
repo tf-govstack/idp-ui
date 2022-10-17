@@ -8,6 +8,7 @@ import BiometricInput from "./BiometricInput";
 import InputWithImage from "./InputWithImage";
 import Select from "react-select";
 import ErrorIndicator from "../common/ErrorIndicator";
+import { useTranslation } from "react-i18next";
 
 let fieldsState = {};
 const host = "http://127.0.0.1";
@@ -31,6 +32,8 @@ export default function L1Biometrics({
   cryptoService,
   sbiService,
 }) {
+  const { t } = useTranslation();
+
   const inputFields = param.inputFields;
   const biometricFields = param.bioFields;
 
@@ -72,7 +75,7 @@ export default function L1Biometrics({
     if (!transactionId) {
       setStatus({
         state: states.ERROR,
-        msg: "Invalid transaction Id",
+        msg: t("invalid_transaction_id_msg"),
       });
       return;
     }
@@ -80,7 +83,7 @@ export default function L1Biometrics({
     let vid = loginState["sbi_mosip-vid"];
 
     if (selectedDevice === null) {
-      setStatus({ state: states.ERROR, msg: "Device not found!" });
+      setStatus({ state: states.ERROR, msg: t("device_not_found_msg") });
       return;
     }
 
@@ -89,8 +92,10 @@ export default function L1Biometrics({
     try {
       setStatus({
         state: states.AUTHENTICATING,
-        msg:
-          selectedDevice.type + " Capture initiated on " + selectedDevice.model,
+        msg: t("capture_initiated_msg", {
+          modality: selectedDevice.type,
+          deviceModel: selectedDevice.model,
+        }),
       });
 
       biometricResponse = await capture_Auth(
@@ -109,14 +114,18 @@ export default function L1Biometrics({
       if (errorMsg !== null) {
         setStatus({
           state: states.ERROR,
-          msg: "Biometric capture failed: " + errorMsg,
+          msg: t("biometric_capture_failed_msg", {
+            errorMsg: errorMsg,
+          }),
         });
         return;
       }
-    } catch (errormsg) {
+    } catch (error) {
       setStatus({
         state: states.ERROR,
-        msg: "Biometric capture failed: " + errormsg.message,
+        msg: t("biometric_capture_failed_msg", {
+          errorMsg: error.message,
+        }),
       });
       return;
     }
@@ -127,10 +136,12 @@ export default function L1Biometrics({
         vid,
         await encodeBase64(biometricResponse)
       );
-    } catch (errormsg) {
+    } catch (error) {
       setStatus({
         state: states.ERROR,
-        msg: "Authentication failed: " + errormsg.message,
+        msg: t("authentication_failed_msg", {
+          errorMsg: error.message,
+        }),
       });
     }
   };
@@ -141,7 +152,7 @@ export default function L1Biometrics({
       response["biometrics"] === null ||
       response["biometrics"].length === 0
     ) {
-      return "Empty response";
+      return t("no_response_msg");
     }
 
     let biometrics = response["biometrics"];
@@ -150,7 +161,10 @@ export default function L1Biometrics({
     for (let i = 0; i < biometrics.length; i++) {
       let error = biometrics[i]["error"];
       if (error !== null && error.errorCode !== "0") {
-        errorMsg = "ErrorCode-" + error.errorCode + ":" + error.errorInfo;
+        errorMsg = t("error_code_with_info", {
+          errorCode: error.errorCode,
+          errorInfo: error.errorInfo,
+        });
         break;
       }
     }
@@ -171,7 +185,7 @@ export default function L1Biometrics({
 
     setStatus({
       state: states.AUTHENTICATING,
-      msg: "Authenticating. Please wait...",
+      msg: t("authenticating_msg"),
     });
 
     const authenticateResponse = await post_AuthenticateUser(
@@ -187,7 +201,9 @@ export default function L1Biometrics({
     if (errors != null && errors.length > 0) {
       setStatus({
         state: states.ERROR,
-        msg: "Authentication failed: " + errors[0].errorCode,
+        msg: t("authentication_failed_msg", {
+          errorMsg: errors[0].errorCode,
+        }),
       });
     } else {
       storeTransactionId(response.transactionId);
@@ -210,7 +226,7 @@ export default function L1Biometrics({
     try {
       setStatus({
         state: states.LOADING,
-        msg: "Scanning Devices. Please wait....",
+        msg: t("scanning_devices_msg"),
       });
 
       mosipdisc_DiscoverDevicesAsync(host).then(() => {
@@ -252,7 +268,7 @@ export default function L1Biometrics({
     if (modalitydevices.size === 0) {
       setStatus({
         state: states.ERROR,
-        msg: "No Devices Found!",
+        msg: t("no_devices_found_msg"),
       });
       return;
     }
@@ -264,7 +280,7 @@ export default function L1Biometrics({
   return (
     <>
       <h1 class="text-center text-sky-600 font-semibold">
-        Sign with Biometric
+        {t("sign_in_with_biometric")}
       </h1>
       <form className="mt-8 space-y-6" onSubmit={submitHandler}>
         <div className="-space-y-px">
@@ -299,7 +315,7 @@ export default function L1Biometrics({
               class="flex justify-center w-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 light:bg-gray-800 light:text-white light:border-gray-600 light:hover:bg-gray-700 light:hover:border-gray-600 light:focus:ring-gray-700"
               onClick={handleScan}
             >
-              Retry!
+              {t("retry")}
             </button>
           </>
         )}
@@ -313,7 +329,6 @@ export default function L1Biometrics({
                   <div class="flex justify-center w-full">
                     <Select
                       className="w-8/12"
-                      placeholder="Select Option"
                       value={selectedDevice}
                       options={modalityDevices}
                       onChange={handleDeviceChange}
@@ -331,6 +346,7 @@ export default function L1Biometrics({
                     loadingMsg={
                       status.state === states.AUTHENTICATING ? status.msg : ""
                     }
+                    buttonText={t("scan_and_verify")}
                   />
                 </>
               )}
@@ -339,7 +355,7 @@ export default function L1Biometrics({
 
         <div class="flex justify-center">
           <Link class="text-center text-gray-500 font-semibold" to="#">
-            More ways to sign in
+            {t("more_ways_to_sign_in")}
           </Link>
         </div>
       </form>

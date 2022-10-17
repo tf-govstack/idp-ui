@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import ErrorIndicator from "../common/ErrorIndicator";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { LoadingStates as states } from "../constants/states";
 
 export default function SignInOptions() {
+  const { t } = useTranslation();
+
   const [status, setStatus] = useState({ state: states.LOADED, msg: "" });
   const [singinOptions, setSinginOptions] = useState(null);
 
@@ -15,7 +18,7 @@ export default function SignInOptions() {
   };
 
   useEffect(() => {
-    setStatus({ state: states.LOADING, msg: "Loading! Please wait..." });
+    setStatus({ state: states.LOADING, msg: t("loading_msg") });
 
     //TODO integration with Auth factors
     // let oAuthDetails = JSON.parse(window.localStorage.getItem("oauth_details"));
@@ -28,12 +31,12 @@ export default function SignInOptions() {
 
     //dummy
     let loginOptions = [
-      { value: "PIN", icon: modalityIconPath["PIN"], to: "login" },
-      { value: "Inji", icon: modalityIconPath["Inji"], to: "login" },
+      { value: "PIN", icon: modalityIconPath["PIN"], navigateTo: "login" },
+      { value: "Inji", icon: modalityIconPath["Inji"], navigateTo: "login" },
       {
         value: "Biometrics",
         icon: modalityIconPath["Biometrics"],
-        to: "login",
+        navigateTo: "login",
       },
     ];
 
@@ -45,7 +48,7 @@ export default function SignInOptions() {
   return (
     <>
       <h1 class="text-center text-black-600 font-bold text-lg">
-        Choose how you want to login:
+        {t("login_option_heading")}
       </h1>
 
       {status.state === states.LOADING && (
@@ -63,10 +66,17 @@ export default function SignInOptions() {
       {status.state === states.LOADED && singinOptions && (
         <div className="divide-y">
           {singinOptions.map((option) => (
-            <Link class="text-gray-500 font-semibold text-base" to={option.to}>
+            <Link
+              class="text-gray-500 font-semibold text-base"
+              to={option.navigateTo}
+            >
               <div class="flex items-center">
                 <img class="w-7" src={option.icon} />
-                <span class="ml-4 mb-4 mt-4">Login with {option.value}</span>
+                <span class="ml-4 mb-4 mt-4">
+                  {t("login_with", {
+                    option: option.value,
+                  })}
+                </span>
               </div>
             </Link>
           ))}

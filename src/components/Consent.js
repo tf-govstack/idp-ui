@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import LoadingIndicator from "../common/LoadingIndicator";
+import { LoadingStates as states } from "../constants/states";
 
 export default function Consent({ authService, localStorageService }) {
+  const { t } = useTranslation();
+
   const { post_AuthCode } = { ...authService };
   const { getTransactionId } = { ...localStorageService };
 
-  const [status, setStatus] = useState("LOADED");
+  const [status, setStatus] = useState(states.LOADED);
   const [claims, setClaims] = useState([]);
   const [scope, setScope] = useState([]);
 
@@ -59,7 +63,7 @@ export default function Consent({ authService, localStorageService }) {
 
   const handleCancel = (e) => {
     e.preventDefault();
-    onError("Authorization failed");
+    onError(t("authorization_failed_msg"));
   };
 
   let oAuthDetails = JSON.parse(window.localStorage.getItem("oauth_details"));
@@ -74,15 +78,10 @@ export default function Consent({ authService, localStorageService }) {
   const submitConsent = async () => {
     try {
       let transactionId = getTransactionId();
-
-      if (!transactionId) {
-        onError("Invalid transaction Id");
-      }
-
       let acceptedClaims = claims;
       let permittedAuthorizeScopes = scope;
 
-      setStatus("LOADING");
+      setStatus(states.LOADING);
 
       const authCodeResponse = await post_AuthCode(
         transactionId,
@@ -90,7 +89,7 @@ export default function Consent({ authService, localStorageService }) {
         permittedAuthorizeScopes
       );
 
-      setStatus("LOADED");
+      setStatus(states.LOADED);
 
       const { response, errors } = authCodeResponse;
 
@@ -150,12 +149,12 @@ export default function Consent({ authService, localStorageService }) {
           </div>
 
           <div className="flex justify-center">
-            <b>{clientName} is requesting access to : </b>
+            <b>{t("request_msg", { clientName: clientName })}</b>
           </div>
 
           {authorizeScopes?.length > 0 && (
             <>
-              <h2>Authorize Scopes</h2>
+              <h2>{t("authorize_scope")}</h2>
               <div className="divide-y">
                 {authorizeScopes?.map((item) => (
                   <div key={item}>
@@ -188,7 +187,7 @@ export default function Consent({ authService, localStorageService }) {
           )}
           {essentialClaims?.length > 0 && (
             <>
-              <h2>Essential Claims</h2>
+              <h2>{t("essential_claims")}</h2>
               <div className="divide-y">
                 {essentialClaims?.map((item) => (
                   <div key={item}>
@@ -223,7 +222,7 @@ export default function Consent({ authService, localStorageService }) {
 
           {voluntaryClaims?.length > 0 && (
             <>
-              <h2>Voluntary Claims</h2>
+              <h2>{t("voluntary_claims")}</h2>
               <div className="divide-y">
                 {voluntaryClaims?.map((item) => (
                   <div key={item}>
@@ -259,7 +258,7 @@ export default function Consent({ authService, localStorageService }) {
               {status === "LOADING" && (
                 <LoadingIndicator
                   size="medium"
-                  message="Redirecting. Please wait...."
+                  message={t("redirecting_msg")}
                 />
               )}
             </div>
@@ -270,7 +269,7 @@ export default function Consent({ authService, localStorageService }) {
               class="flex justify-center w-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 light:bg-gray-800 light:text-white light:border-gray-600 light:hover:bg-gray-700 light:hover:border-gray-600 light:focus:ring-gray-700"
               onClick={handleCancel}
             >
-              Cancel
+              {t("cancel")}
             </button>
 
             <div className="flex justify-end">
@@ -279,7 +278,7 @@ export default function Consent({ authService, localStorageService }) {
                 class="flex justify-center w-full text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
                 onClick={handleSubmit}
               >
-                Allow
+                {t("allow")}
               </button>
             </div>
           </div>
