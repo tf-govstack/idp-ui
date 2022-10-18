@@ -31,7 +31,7 @@ export default function NavHeader() {
   }, []);
 
   return (
-    <nav class="bg-gray-100 border-gray-500 px-2 sm:px-4 py-2.5 rounded light:bg-gray-900">
+    <nav class="bg-white border-gray-500 shadow px-2 sm:px-4 py-2">
       <div class="flex items-center md:order-2 justify-end">
         <img src="images/language_icon.png" className="mr-2" />
         <Select

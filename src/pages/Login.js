@@ -16,6 +16,7 @@ import { authService } from "../services/authService";
 import { localStorageService } from "../services/local-storageService";
 import { cryptoService } from "../services/cryptoService";
 import { sbiService } from "../services/sbiService";
+import Background from "../components/Background";
 
 const tabs = tabList;
 
@@ -92,13 +93,34 @@ export default function LoginPage() {
 
   return (
     <>
-      <Header
-        heading={t("login_heading")}
-        paragraph={t("login_paragraph")}
-        linkName={t("login_linkName")}
-        linkUrl="https://mec.mosip.io/preregister"
-      />
-      <Tabs color="cyan" tabs={tabs} block={tabCompInstance} />
+      {/* <Background
+        heading="Login with MOSIP"
+        logoPath="logo.png"
+        backgroundImgPath="images/illustration_one.png"
+        component={createDynamicLoginElements(tabs[0].comp)}
+      /> */}
+
+      {/* <Background
+        heading="Login with MOSIP"
+        logoPath="logo.png"
+        backgroundImgPath="images/illustration_one.png"
+        component={React.createElement(Tabs, {
+          color: "cyan",
+          tabs: tabs,
+          block: tabCompInstance,
+        })}
+      /> */}
+      <div className="min-h-full h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <Header
+            heading={t("login_heading")}
+            paragraph={t("login_paragraph")}
+            linkName={t("login_linkName")}
+            linkUrl="https://mec.mosip.io/preregister"
+          />
+          <Tabs color="cyan" tabs={tabs} block={tabCompInstance} />
+        </div>
+      </div>
     </>
   );
 }

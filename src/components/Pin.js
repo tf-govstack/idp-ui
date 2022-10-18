@@ -116,6 +116,7 @@ export default function Pin({ param, authService, localStorageService }) {
           </label>
         </div>
       </div>
+      <FormAction handleSubmit={handleSubmit} text={t("login")} />
       {
         <div>
           {status === states.LOADING && (
@@ -124,7 +125,6 @@ export default function Pin({ param, authService, localStorageService }) {
         </div>
       }
       {status !== states.LOADING && error && <ErrorIndicator message={error} />}
-      <FormAction handleSubmit={handleSubmit} text={t("login")} />
     </form>
   );
 }

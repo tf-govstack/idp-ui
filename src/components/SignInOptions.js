@@ -47,7 +47,7 @@ export default function SignInOptions() {
 
   return (
     <>
-      <h1 class="text-center text-black-600 font-bold text-lg">
+      <h1 class="text-center text-black-600 mb-10 font-bold text-lg">
         {t("login_option_heading")}
       </h1>
 
@@ -64,21 +64,24 @@ export default function SignInOptions() {
       )}
 
       {status.state === states.LOADED && singinOptions && (
-        <div className="divide-y">
+        <div className="divide-y-2">
           {singinOptions.map((option) => (
-            <Link
-              class="text-gray-500 font-semibold text-base"
-              to={option.navigateTo}
-            >
-              <div class="flex items-center">
-                <img class="w-7" src={option.icon} />
-                <span class="ml-4 mb-4 mt-4">
-                  {t("login_with", {
-                    option: option.value,
-                  })}
-                </span>
-              </div>
-            </Link>
+            <div>
+              <Link
+                class="text-gray-500 font-semibold text-base"
+                to={option.navigateTo}
+                replace="true"
+              >
+                <div class="flex items-center">
+                  <img class="w-7" src={option.icon} />
+                  <span class="ml-4 mb-4 mt-4">
+                    {t("login_with", {
+                      option: option.value,
+                    })}
+                  </span>
+                </div>
+              </Link>
+            </div>
           ))}
         </div>
       )}
