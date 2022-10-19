@@ -11,6 +11,8 @@ import {
 
 const SBI_DOMAIN_URI = window.origin;
 const purpose = "Auth";
+const certification = "L1";
+const DeviceStatusReady = "Ready";
 
 const deviceEndPoint = "/device";
 const infoEndPoint = "/info";
@@ -23,8 +25,6 @@ const mosip_CaptureMethod = "CAPTURE";
 const FACE_TYPE = "Face";
 const FINGER_TYPE = "Finger";
 const IRIS_TYPE = "Iris";
-
-const DeviceStatusReady = "Ready";
 
 const fromPort = 4501;
 const tillPort = 4600;
@@ -50,28 +50,29 @@ const capture_Auth = async (
   const env =
     getIdpConfiguration(configurationKeys.sbiEnv) ??
     process.env.REACT_APP_SBI_ENV;
-  const timeout =
-    getIdpConfiguration(configurationKeys.sbiCaptureTimeoutInSeconds) ??
-    process.env.REACT_APP_SBI_TIMEOUT_IN_SECONDS;
+
+  const captureTimeout =
+    getIdpConfiguration(configurationKeys.sbiCAPTURETimeoutInSeconds) ??
+    process.env.REACT_APP_SBI_CAPTURE_TIMEOUT;
 
   const faceCount =
-    getIdpConfiguration(configurationKeys.sbiFaceCount) ??
+    getIdpConfiguration(configurationKeys.sbiFaceCaptureCount) ??
     process.env.REACT_APP_SBI_FACE_CAPTURE_COUNT;
   const fingerCount =
-    getIdpConfiguration(configurationKeys.sbiFingerCount) ??
+    getIdpConfiguration(configurationKeys.sbiFingerCaptureCount) ??
     process.env.REACT_APP_SBI_FINGER_CAPTURE_COUNT;
   const irisCount =
-    getIdpConfiguration(configurationKeys.sbiIrisCount) ??
+    getIdpConfiguration(configurationKeys.sbiIrisCaptureCount) ??
     process.env.REACT_APP_SBI_IRIS_CAPTURE_COUNT;
 
   const faceScore =
-    getIdpConfiguration(configurationKeys.sbiThresholdFace) ??
+    getIdpConfiguration(configurationKeys.sbiFaceCaptureScore) ??
     process.env.REACT_APP_SBI_FACE_CAPTURE_SCORE;
   const fingerScore =
-    getIdpConfiguration(configurationKeys.sbiThresholdFinger) ??
+    getIdpConfiguration(configurationKeys.sbiFingerCaptureScore) ??
     process.env.REACT_APP_SBI_FINGER_CAPTURE_SCORE;
   const irisScore =
-    getIdpConfiguration(configurationKeys.sbiThresholdIris) ??
+    getIdpConfiguration(configurationKeys.sbiIrisCaptureScore) ??
     process.env.REACT_APP_SBI_IRIS_CAPTURE_SCORE;
 
   let count = 1;
@@ -95,7 +96,7 @@ const capture_Auth = async (
     env: env,
     purpose: purpose,
     specVersion: specVersion,
-    timeout: timeout * 1000,
+    timeout: captureTimeout * 1000,
     captureTime: new Date().toISOString(),
     domainUri: SBI_DOMAIN_URI,
     transactionId: transactionId,
@@ -122,7 +123,7 @@ const capture_Auth = async (
     headers: {
       "Content-Type": "application/json",
     },
-    timeout: timeout * 1000,
+    timeout: captureTimeout * 1000,
   });
 
   return response?.data;
@@ -155,6 +156,10 @@ const mosipdisc_DiscoverDevicesAsync = async (host) => {
  * @returns MOSIPDISC request for the give host and port
  */
 const discoverRequestBuilder = async (host, port) => {
+  const discTimeout =
+    getIdpConfiguration(configurationKeys.sbiDISCTimeoutInSeconds) ??
+    process.env.REACT_APP_SBI_DISC_TIMEOUT;
+
   let endpoint = host + ":" + port + deviceEndPoint;
 
   let request = {
@@ -165,6 +170,7 @@ const discoverRequestBuilder = async (host, port) => {
     method: mosip_DiscoverMethod,
     url: endpoint,
     data: request,
+    timeout: discTimeout + 1000,
   })
     .then(async (response) => {
       if (response?.data !== null) {
@@ -184,11 +190,16 @@ const discoverRequestBuilder = async (host, port) => {
  * @param {int} port port on which SBI is listening to.
  */
 const mosipdinfo_DeviceInfo = async (host, port) => {
+  const dinfoTimeout =
+    getIdpConfiguration(configurationKeys.sbiDINFOTimeoutInSeconds) ??
+    process.env.REACT_APP_SBI_DINFO_TIMEOUT;
+
   let endpoint = host + ":" + port + infoEndPoint;
 
   await axios({
     method: mosip_DeviceInfoMethod,
     url: endpoint,
+    timeout: dinfoTimeout * 1000,
   })
     .then(async (response) => {
       if (response?.data !== null) {
@@ -227,10 +238,6 @@ const decodeAndValidateDeviceInfo = async (deviceInfoList) => {
  * @returns {boolean}
  */
 const validateDeviceInfo = (deviceInfo) => {
-  const certification =
-    getIdpConfiguration(configurationKeys.sbiDeviceCertification) ??
-    process.env.REACT_APP_SBI_CERTIFICATION;
-
   if (
     deviceInfo.certification === certification &&
     deviceInfo.purpose === purpose &&

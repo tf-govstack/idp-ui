@@ -12,14 +12,18 @@ const challengeTypes = {
 
 const configurationKeys = {
   sbiEnv: "sbi.env",
-  sbiThresholdFace: "sbi.threshold.face",
-  sbiThresholdFinger: "sbi.threshold.finger",
-  sbiThresholdIris: "sbi.threshold.iris",
-  sbiFaceCount: "sbi.count.face",
-  sbiFingerCount: "sbi.count.finger",
-  sbiIrisCount: "sbi.count.iris",
-  sbiCaptureTimeoutInSeconds: "sbi.timeout.capture",
-  sbiDeviceCertification: "sbi.device.certification",
+
+  sbiCAPTURETimeoutInSeconds: "sbi.timeout.CAPTURE",
+  sbiDISCTimeoutInSeconds: "sbi.timeout.DISC",
+  sbiDINFOTimeoutInSeconds: "sbi.timeout.DINFO",
+
+  sbiFaceCaptureCount: "sbi.capture.count.face",
+  sbiFingerCaptureCount: "sbi.capture.count.finger",
+  sbiIrisCaptureCount: "sbi.capture.count.iris",
+
+  sbiFaceCaptureScore: "sbi.capture.score.face",
+  sbiFingerCaptureScore: "sbi.capture.score.finger",
+  sbiIrisCaptureScore: "sbi.capture.score.iris",
 };
 
 export { deviceType, challengeTypes, configurationKeys };
