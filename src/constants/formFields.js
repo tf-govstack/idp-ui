@@ -9,7 +9,7 @@ const pinFields = [
     type: "text",
     autoComplete: "uin",
     isRequired: true,
-    placeholder: "UIN or VID",
+    placeholder: "uin_vid_placeholder",//transaction key
   },
   {
     labelText: "Pin",
@@ -19,7 +19,7 @@ const pinFields = [
     type: "password",
     autoComplete: "",
     isRequired: true,
-    placeholder: "Enter PIN",
+    placeholder: "pin_placeholder",//transaction key
   },
 ];
 

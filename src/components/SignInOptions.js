@@ -6,7 +6,7 @@ import LoadingIndicator from "../common/LoadingIndicator";
 import { LoadingStates as states } from "../constants/states";
 
 export default function SignInOptions() {
-  const { t } = useTranslation();
+  const { t } = useTranslation("signInOption");
 
   const [status, setStatus] = useState({ state: states.LOADED, msg: "" });
   const [singinOptions, setSinginOptions] = useState(null);

@@ -13,7 +13,7 @@ let fieldsState = {};
 fields.forEach((field) => (fieldsState["Pin" + field.id] = ""));
 
 export default function Pin({ param, authService, localStorageService }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("pin");
 
   const fields = param;
   const { post_AuthenticateUser } = { ...authService };
@@ -95,7 +95,7 @@ export default function Pin({ param, authService, localStorageService }) {
             name={field.name}
             type={field.type}
             isRequired={field.isRequired}
-            placeholder={field.placeholder}
+            placeholder={t(field.placeholder)}
           />
         ))}
       </div>

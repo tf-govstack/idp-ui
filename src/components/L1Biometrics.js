@@ -32,7 +32,7 @@ export default function L1Biometrics({
   cryptoService,
   sbiService,
 }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("l1Biometrics");
 
   const inputFields = param.inputFields;
   const biometricFields = param.bioFields;

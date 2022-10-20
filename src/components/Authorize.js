@@ -7,7 +7,7 @@ import LoadingIndicator from "../common/LoadingIndicator";
 import { LoadingStates as states } from "../constants/states";
 
 export default function Authorize({ authService, localStorageService }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation("authorize");
 
   const { post_OauthDetails } = { ...authService };
   const { storeOauthDetails, storeTransactionId } = { ...localStorageService };
@@ -80,10 +80,18 @@ export default function Authorize({ authService, localStorageService }) {
 
   useEffect(() => {
     if (status === states.LOADED) {
+      let uiLocales = searchParams.get("ui_locales");
+      if (uiLocales) changeLanguage(uiLocales);
       redirectToLogin();
     }
   }, [status]);
 
+  const changeLanguage = async (uiLocales) => {
+    //TODO logic for lang change
+    let langs = uiLocales.split(" ");
+
+    i18n.changeLanguage(langs[0]);
+  };
   const redirectToLogin = async () => {
     if (oAuthDetailResponse === null) {
       return;

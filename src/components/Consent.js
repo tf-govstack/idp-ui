@@ -4,7 +4,7 @@ import LoadingIndicator from "../common/LoadingIndicator";
 import { LoadingStates as states } from "../constants/states";
 
 export default function Consent({ authService, localStorageService }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("consent");
 
   const { post_AuthCode } = { ...authService };
   const { getTransactionId } = { ...localStorageService };
@@ -149,7 +149,12 @@ export default function Consent({ authService, localStorageService }) {
           </div>
 
           <div className="flex justify-center">
-            <b>{t("request_msg", { clientName: clientName })}</b>
+            <b>
+              {t("consent_request_msg", {
+                ns: "consent",
+                clientName: clientName,
+              })}
+            </b>
           </div>
 
           {authorizeScopes?.length > 0 && (

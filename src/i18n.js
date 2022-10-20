@@ -10,10 +10,20 @@ import translationAr from "./locales/ar.json";
 //Creating object with the variables of imported translation files
 const resources = {
   en: {
-    translation: translationEN,
+    consent: translationEN.consent,
+    l1Biometrics: translationEN.l1Biometrics,
+    pin: translationEN.pin,
+    signInOption: translationEN.signInOption,
+    header: translationEN.header,
+    authorize: translationEN.authorize,
   },
   hn: {
-    translation: translationHE,
+    consent: translationHE.consent,
+    l1Biometrics: translationHE.l1Biometrics,
+    pin: translationHE.pin,
+    signInOption: translationHE.signInOption,
+    header: translationHE.header,
+    authorize: translationEN.authorize,
   },
   ar: {
     translation: translationAr,

@@ -89,7 +89,7 @@ tabs.map((tab) => {
 });
 
 export default function LoginPage() {
-  const { t } = useTranslation();
+  const { t } = useTranslation("header");
 
   return (
     <>
