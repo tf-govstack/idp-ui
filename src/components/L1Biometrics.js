@@ -289,13 +289,13 @@ export default function L1Biometrics({
               key={"sbi_" + field.id}
               handleChange={handleInputChange}
               value={loginState["sbi_" + field.id]}
-              labelText={field.labelText}
+              labelText={t(field.labelText)}
               labelFor={field.labelFor}
               id={"sbi_" + field.id}
               name={field.name}
               type={field.type}
               isRequired={field.isRequired}
-              placeholder={field.placeholder}
+              placeholder={t(field.placeholder)}
               imgPath="images/photo_scan.png"
             />
           ))}

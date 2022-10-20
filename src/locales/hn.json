@@ -28,14 +28,19 @@
     "authentication_failed_msg": "प्रमाणीकरण विफल होना: {{errorMsg}}",
     "no_response_msg": "कोई जवाब नहीं",
     "authenticating_msg": "प्रमाणीकरण। कृपया प्रतीक्षा करें...",
-    "retry": "पुन: प्रयास करें!"
+    "retry": "पुन: प्रयास करें!",
+    "vid_label_text": "अपना वीआईडी ​​दर्ज करें",
+    "vid_placeholder": "वीआईडी"
   },
   "pin": {
     "authentication_failed_msg": "प्रमाणीकरण विफल होना: {{errorMsg}}",
     "remember_me": "याद रखे",
     "login": "लॉग इन करें",
     "authenticating_msg": "प्रमाणीकरण। कृपया प्रतीक्षा करें...",
-    "uin_vid_placeholder": "यूआईएन या वीआईडी"
+    "uin_label_text": "यूआईएन",
+    "pin_label_text": "पिन",
+    "uin_placeholder": "यूआईएन या वीआईडी",
+    "pin_placeholder": "पिन दर्ज करें"
   },
   "signInOption": {
     "loading_msg": "लोड हो रहा है। कृपया प्रतीक्षा करें...",
@@ -46,5 +51,10 @@
     "login_heading": "अपने अकाउंट में लॉग इन करें",
     "login_paragraph": "अभी तक एमओएसआईपी के लिए पंजीकरण नहीं किया है?",
     "login_linkName": "पूर्व-पंजीकरण"
+  },
+  "tabs": {
+    "pin_tab_name": "पिन से साइन इन करें",
+    "inji_tab_name": "इंजि के साथ साइन इन करें",
+    "biometric_tab_name": "बायोमेट्रिक्स के साथ साइन इन करें"
   }
 }

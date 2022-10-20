@@ -28,14 +28,19 @@
     "scan_and_verify": "Scan and verify",
     "more_ways_to_sign_in": "More ways to sign in",
     "sign_in_with_biometric": "Sign in with Biometric",
-    "retry": "Retry!"
+    "retry": "Retry!",
+    "vid_label_text": "Enter your VID",
+    "vid_placeholder": "VID"
   },
   "pin": {
     "authentication_failed_msg": "Authentication failed: {{errorMsg}}",
     "remember_me": "Remember me",
     "login": "Login",
     "authenticating_msg": "Authenticating. Please wait...",
-    "uin_vid_placeholder":"UIN or VID"
+    "uin_label_text": "UIN",
+    "pin_label_text": "PIN",
+    "uin_placeholder": "UIN or VID",
+    "pin_placeholder": "Enter PIN"
   },
   "signInOption": {
     "loading_msg": "Loading. Please wait...",
@@ -46,5 +51,10 @@
     "login_heading": "Login to your account",
     "login_paragraph": "Have not registered for MOSIP yet?",
     "login_linkName": "Preregister"
+  },
+  "tabs": {
+    "pin_tab_name": "Sign in with PIN",
+    "inji_tab_name": "Sign in with Inji",
+    "biometric_tab_name": "Sign in with Biometrics"
   }
 }

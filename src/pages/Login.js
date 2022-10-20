@@ -16,7 +16,6 @@ import { authService } from "../services/authService";
 import { localStorageService } from "../services/local-storageService";
 import { cryptoService } from "../services/cryptoService";
 import { sbiService } from "../services/sbiService";
-import Background from "../components/Background";
 
 const tabs = tabList;
 

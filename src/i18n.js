@@ -16,6 +16,7 @@ const resources = {
     signInOption: translationEN.signInOption,
     header: translationEN.header,
     authorize: translationEN.authorize,
+    tabs: translationEN.tabs,
   },
   hn: {
     consent: translationHE.consent,
@@ -23,7 +24,8 @@ const resources = {
     pin: translationHE.pin,
     signInOption: translationHE.signInOption,
     header: translationHE.header,
-    authorize: translationEN.authorize,
+    authorize: translationHE.authorize,
+    tabs: translationHE.tabs,
   },
   ar: {
     translation: translationAr,

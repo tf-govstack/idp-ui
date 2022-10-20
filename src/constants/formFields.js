@@ -2,6 +2,7 @@ import { deviceType } from "./clientConstants";
 
 const pinFields = [
   {
+    labelText: "uin_label_text", //translation key for pin namespace
     labelText: "Uin",
     labelFor: "Mosip Uin",
     id: "mosip-uin",
@@ -9,17 +10,17 @@ const pinFields = [
     type: "text",
     autoComplete: "uin",
     isRequired: true,
-    placeholder: "uin_vid_placeholder",//transaction key
+    placeholder: "uin_placeholder", //translation key for pin namespace
   },
   {
-    labelText: "Pin",
+    labelText: "pin_label_text",
     labelFor: "pin",
     id: "pin",
     name: "pin",
     type: "password",
     autoComplete: "",
     isRequired: true,
-    placeholder: "pin_placeholder",//transaction key
+    placeholder: "pin_placeholder", //translation key for pin namespace
   },
 ];
 
@@ -49,14 +50,14 @@ const otpFields = [
 const bioLoginFields = {
   inputFields: [
     {
-      labelText: "Enter your VID",
+      labelText: "vid_label_text",
       labelFor: "Mosip vid",
       id: "mosip-vid",
       name: "vid",
       type: "text",
       autoComplete: "vid",
       isRequired: true,
-      placeholder: "VID",
+      placeholder: "vid_placeholder", //translation key for l1biometric namespace
     },
   ],
   bioFields: [deviceType.face, deviceType.finger, deviceType.iris],
@@ -108,26 +109,20 @@ const signupFields = [
 //TODO fetch tablist from oidcDetails response
 const tabList = [
   {
-    name: "Sign in with PIN",
+    name: "pin_tab_name", //translation key for tabs namespace
     icon: "space-shuttle",
     comp: "PIN",
   },
   {
-    name: "Log in with Inji",
+    name: "inji_tab_name", //translation key for tabs namespace
     icon: "cog",
     comp: "QRCode",
   },
   {
-    name: "Log in with Biometrics",
+    name: "biometric_tab_name", //translation key for tabs namespace
     icon: "bio_capture",
     comp: "Biometrics",
   },
 ];
 
-export {
-  pinFields,
-  otpFields,
-  signupFields,
-  tabList,
-  bioLoginFields,
-};
+export { pinFields, otpFields, signupFields, tabList, bioLoginFields };
