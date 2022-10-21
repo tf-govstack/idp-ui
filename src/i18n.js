@@ -17,6 +17,7 @@ const resources = {
     header: translationEN.header,
     authorize: translationEN.authorize,
     tabs: translationEN.tabs,
+    errors: translationEN.errors,
   },
   hn: {
     consent: translationHE.consent,
@@ -26,6 +27,7 @@ const resources = {
     header: translationHE.header,
     authorize: translationHE.authorize,
     tabs: translationHE.tabs,
+    errors: translationHE.errors,
   },
   ar: {
     translation: translationAr,

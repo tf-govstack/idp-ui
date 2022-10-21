@@ -50,6 +50,9 @@ export default function L1Biometrics({
     state: states.LOADED,
     msg: "",
   });
+
+  const [error, setError] = useState(null);
+
   const navigate = useNavigate();
 
   const [modalityDevices, setModalityDevices] = useState(null);
@@ -71,19 +74,12 @@ export default function L1Biometrics({
 
   const startCapture = async () => {
     let transactionId = getTransactionId();
-
-    if (!transactionId) {
-      setStatus({
-        state: states.ERROR,
-        msg: t("invalid_transaction_id_msg"),
-      });
-      return;
-    }
-
     let vid = loginState["sbi_mosip-vid"];
 
     if (selectedDevice === null) {
-      setStatus({ state: states.ERROR, msg: t("device_not_found_msg") });
+      setError({
+        errorCode: "device_not_found_msg",
+      });
       return;
     }
 
@@ -107,25 +103,23 @@ export default function L1Biometrics({
         selectedDevice.deviceId
       );
 
-      let errorMsg = validateBiometricResponse(biometricResponse);
+      let { errorCode, defaultMsg } =
+        validateBiometricResponse(biometricResponse);
 
       setStatus({ state: states.LOADED, msg: "" });
 
-      if (errorMsg !== null) {
-        setStatus({
-          state: states.ERROR,
-          msg: t("biometric_capture_failed_msg", {
-            errorMsg: errorMsg,
-          }),
+      if (errorCode !== null) {
+        setError({
+          prefix: t("biometric_capture_failed_msg"),
+          errorCode: errorCode,
+          defaultMsg: defaultMsg,
         });
         return;
       }
     } catch (error) {
-      setStatus({
-        state: states.ERROR,
-        msg: t("biometric_capture_failed_msg", {
-          errorMsg: error.message,
-        }),
+      setError({
+        prefix: t("biometric_capture_failed_msg"),
+        errorCode: error.message,
       });
       return;
     }
@@ -137,39 +131,36 @@ export default function L1Biometrics({
         await encodeBase64(biometricResponse)
       );
     } catch (error) {
-      setStatus({
-        state: states.ERROR,
-        msg: t("authentication_failed_msg", {
-          errorMsg: error.message,
-        }),
+      setError({
+        prefix: t("authentication_failed_msg"),
+        errorCode: error.message,
       });
     }
   };
 
+  /**
+   *
+   * @param {*} response is the SBI capture response
+   * @returns first errorCode with error info, or null errorCode for no error
+   */
   const validateBiometricResponse = (response) => {
     if (
       response === null ||
       response["biometrics"] === null ||
       response["biometrics"].length === 0
     ) {
-      return t("no_response_msg");
+      return { errorCode: "no_response_msg", defaultMsg: null };
     }
 
     let biometrics = response["biometrics"];
 
-    let errorMsg = null;
     for (let i = 0; i < biometrics.length; i++) {
       let error = biometrics[i]["error"];
       if (error !== null && error.errorCode !== "0") {
-        errorMsg = t("error_code_with_info", {
-          errorCode: error.errorCode,
-          errorInfo: error.errorInfo,
-        });
-        break;
+        return { errorCode: error.errorCode, defaultMsg: error.errorInfo };
       }
     }
-
-    return errorMsg;
+    return { errorCode: null, defaultMsg: null };
   };
 
   const Authenticate = async (transactionId, uin, bioValue) => {
@@ -199,11 +190,10 @@ export default function L1Biometrics({
     const { response, errors } = authenticateResponse;
 
     if (errors != null && errors.length > 0) {
-      setStatus({
-        state: states.ERROR,
-        msg: t("authentication_failed_msg", {
-          errorMsg: errors[0].errorCode,
-        }),
+      setError({
+        prefix: t("authentication_failed_msg"),
+        errorCode: errors[0].errorCode,
+        defaultMsg: errors[0].errorMessage,
       });
     } else {
       storeTransactionId(response.transactionId);
@@ -223,6 +213,7 @@ export default function L1Biometrics({
   }, []);
 
   const scanDevices = () => {
+    setError(null);
     try {
       setStatus({
         state: states.LOADING,
@@ -233,13 +224,22 @@ export default function L1Biometrics({
         setStatus({ state: states.LOADED, msg: "" });
         refreshDeviceList();
       });
-    } catch (errormsg) {
-      setStatus({ state: states.ERROR, msg: errormsg.message });
+    } catch (error) {
+      setError({
+        errorCode: error.errorMessage,
+      });
     }
   };
 
   const refreshDeviceList = () => {
     let deviceInfosPortsWise = getDeviceInfos();
+
+    if (!deviceInfosPortsWise) {
+      setError({
+        errorCode: "no_devices_found_msg",
+      });
+      return;
+    }
 
     let modalitydevices = [];
 
@@ -266,9 +266,8 @@ export default function L1Biometrics({
     setModalityDevices(modalitydevices);
 
     if (modalitydevices.size === 0) {
-      setStatus({
-        state: states.ERROR,
-        msg: t("no_devices_found_msg"),
+      setError({
+        errorCode: "no_devices_found_msg",
       });
       return;
     }
@@ -307,19 +306,6 @@ export default function L1Biometrics({
           </div>
         )}
 
-        {status.state === states.ERROR && (
-          <>
-            <ErrorIndicator message={status.msg} />
-            <button
-              type="button"
-              class="flex justify-center w-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 light:bg-gray-800 light:text-white light:border-gray-600 light:hover:bg-gray-700 light:hover:border-gray-600 light:focus:ring-gray-700"
-              onClick={handleScan}
-            >
-              {t("retry")}
-            </button>
-          </>
-        )}
-
         {(status.state === states.LOADED ||
           status.state === states.AUTHENTICATING) &&
           modalityDevices && (
@@ -341,7 +327,7 @@ export default function L1Biometrics({
                     />
                   </div>
                   <BiometricInput
-                    modality={selectedDevice.type}
+                    modality={t(selectedDevice.type)}
                     buttonImgPath={modalityImgPath[selectedDevice.type]}
                     loadingMsg={
                       status.state === states.AUTHENTICATING ? status.msg : ""
@@ -358,6 +344,23 @@ export default function L1Biometrics({
             {t("more_ways_to_sign_in")}
           </Link>
         </div>
+
+        {error && (
+          <>
+            <ErrorIndicator
+              prefix={error.prefix}
+              errorCode={error.errorCode}
+              defaultMsg={error.defaultMsg}
+            />
+            <button
+              type="button"
+              class="flex justify-center w-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 light:bg-gray-800 light:text-white light:border-gray-600 light:hover:bg-gray-700 light:hover:border-gray-600 light:focus:ring-gray-700"
+              onClick={handleScan}
+            >
+              {t("retry")}
+            </button>
+          </>
+        )}
       </form>
     </>
   );

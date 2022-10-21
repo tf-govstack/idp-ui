@@ -92,6 +92,7 @@ export default function Authorize({ authService, localStorageService }) {
 
     i18n.changeLanguage(langs[0]);
   };
+
   const redirectToLogin = async () => {
     if (oAuthDetailResponse === null) {
       return;
@@ -124,7 +125,12 @@ export default function Authorize({ authService, localStorageService }) {
       break;
     case states.LOADED:
       if (oAuthDetailResponse === null) {
-        el = <ErrorIndicator message={t("no_response_msg")} />;
+        el = (
+          <ErrorIndicator
+            errorCode="no_response_msg"
+            defaultMsg="No response"
+          />
+        );
         break;
       }
 
@@ -133,13 +139,13 @@ export default function Authorize({ authService, localStorageService }) {
       if (errors != null && errors.length > 0) {
         el = errors?.map(({ errorCode, errorMessage }, idx) => (
           <div key={idx}>
-            <ErrorIndicator message={errorMessage} />
+            <ErrorIndicator errorCode={errorCode} defaultMsg={errorMessage} />
           </div>
         ));
       }
       break;
     case states.ERROR:
-      el = <ErrorIndicator message={error} />;
+      el = <ErrorIndicator errorCode={error} defaultMsg={error} />;
       break;
   }
 

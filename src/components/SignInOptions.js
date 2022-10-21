@@ -57,12 +57,6 @@ export default function SignInOptions() {
         </div>
       )}
 
-      {status.state === states.ERROR && (
-        <>
-          <ErrorIndicator message={status.msg} />
-        </>
-      )}
-
       {status.state === states.LOADED && singinOptions && (
         <div className="divide-y-2">
           {singinOptions.map((option) => (
@@ -76,7 +70,7 @@ export default function SignInOptions() {
                   <img class="w-7" src={option.icon} />
                   <span class="ml-4 mb-4 mt-4">
                     {t("login_with", {
-                      option: option.value,
+                      option: t(option.value),
                     })}
                   </span>
                 </div>

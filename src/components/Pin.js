@@ -62,11 +62,11 @@ export default function Pin({ param, authService, localStorageService }) {
       const { response, errors } = authenticateResponse;
 
       if (errors != null && errors.length > 0) {
-        setError(
-          t("authentication_failed_msg", {
-            errorMsg: errors[0].errorCode,
-          })
-        );
+        setError({
+          prefix: t("authentication_failed_msg"),
+          errorCode: errors[0].errorCode,
+          defaultMsg: errors[0].errorMessage,
+        });
         return;
       } else {
         setError(null);
@@ -75,8 +75,11 @@ export default function Pin({ param, authService, localStorageService }) {
           replace: true,
         });
       }
-    } catch (errormsg) {
-      setError(errormsg.message);
+    } catch (error) {
+      setError({
+        prefix: t("authentication_failed_msg"),
+        errorCode: error.message,
+      });
       setStatus(states.ERROR);
     }
   };
@@ -124,7 +127,13 @@ export default function Pin({ param, authService, localStorageService }) {
           )}
         </div>
       }
-      {status !== states.LOADING && error && <ErrorIndicator message={error} />}
+      {status !== states.LOADING && error && (
+        <ErrorIndicator
+          prefix={error.prefix}
+          errorCode={error.errorCode}
+          defaultMsg={error.defaultMsg}
+        />
+      )}
     </form>
   );
 }
