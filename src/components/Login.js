@@ -7,7 +7,7 @@ import Input from "./Input";
 
 const fields=loginFields;
 let fieldsState = {};
-fields.forEach(field=>fieldsState[field.id]='');
+fields.forEach(field=>fieldsState["login_"+field.id]='');
 
 
 export default function Login(){
@@ -53,12 +53,12 @@ export default function Login(){
             {
                 fields.map(field=>
                         <Input
-                            key={field.id}
+                            key={"login_"+field.id}
                             handleChange={handleChange}
-                            value={loginState[field.id]}
+                            value={loginState["login_"+field.id]}
                             labelText={field.labelText}
                             labelFor={field.labelFor}
-                            id={field.id}
+                            id={"login_"+field.id}
                             name={field.name}
                             type={field.type}
                             isRequired={field.isRequired}
