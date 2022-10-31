@@ -181,7 +181,7 @@ export default function Consent({ authService, localStorageService }) {
                       </div>
                       <div className="flex justify-end relative items-center mb-1 mt-1 cursor-pointer">
                         <span className="ml-3 text-sm font-medium text-black-900 dark:text-black-300">
-                          {item}
+                          {t(item)}
                         </span>
                       </div>
                     </div>
@@ -215,7 +215,7 @@ export default function Consent({ authService, localStorageService }) {
                       </div>
                       <div className="flex justify-end relative items-center mb-1 mt-1 cursor-pointer">
                         <span className="ml-3 text-sm font-medium text-black-900 dark:text-black-300">
-                          {item}
+                          {t(item)}
                         </span>
                       </div>
                     </div>
@@ -249,7 +249,7 @@ export default function Consent({ authService, localStorageService }) {
                       </div>
                       <div className="flex justify-end relative items-center mb-1 mt-1 cursor-pointer">
                         <span className="ml-3 text-sm font-medium text-black-900 dark:text-black-300">
-                          {item}
+                          {t(item)}
                         </span>
                       </div>
                     </div>
