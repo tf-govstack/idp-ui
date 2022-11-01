@@ -94,10 +94,11 @@ export default function L1Biometrics({
         }),
       });
 
+      let transId = new Date().getTime(); //millis Now
       biometricResponse = await capture_Auth(
         host,
         selectedDevice.port,
-        transactionId,
+        transId,
         selectedDevice.specVersion,
         selectedDevice.type,
         selectedDevice.deviceId
