@@ -1,4 +1,4 @@
 window["envConfigs"] = {
-  idpApiUrl: "http://localhost:8088/v1/idp",
+  idpApiUrl: "https://idp.dev.mosip.net/v1/idp",
   defaultLang: "en",
 };
