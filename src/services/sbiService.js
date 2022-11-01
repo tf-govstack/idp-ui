@@ -75,32 +75,20 @@ const capture_Auth = async (
     getIdpConfiguration(configurationKeys.sbiIrisCaptureScore) ??
     process.env.REACT_APP_SBI_IRIS_CAPTURE_SCORE;
 
-  const irisBioSubtypes =
-    getIdpConfiguration(configurationKeys.sbiIrisBioSubtypes) ??
-    process.env.REACT_APP_SBI_IRIS_BIO_SUBTYPES;
-
-  const fingerBioSubtypes =
-    getIdpConfiguration(configurationKeys.sbiFingerBioSubtypes) ??
-    process.env.REACT_APP_SBI_FINGER_BIO_SUBTYPES;
-
   let count = 1;
   let requestedScore = 70;
-  let bioSubType = ["UNKNOWN"];
   switch (type) {
     case FACE_TYPE:
       count = faceCount;
       requestedScore = faceScore;
-      bioSubType = null; //For Face: No bioSubType
       break;
     case FINGER_TYPE:
       count = fingerCount;
       requestedScore = fingerScore;
-      bioSubType = fingerBioSubtypes.split(",").map((x) => x.trim());
       break;
     case IRIS_TYPE:
       count = irisCount;
       requestedScore = irisScore;
-      bioSubType = irisBioSubtypes.split(",").map((x) => x.trim());
       break;
   }
 
@@ -116,7 +104,7 @@ const capture_Auth = async (
       {
         type: type, //modality
         count: count, // from configuration
-        bioSubType: bioSubType,
+        //bioSubType: , // ignored
         requestedScore: requestedScore, // from configuration
         deviceId: deviceId, // from discovery
         deviceSubId: 0, //Set as 0, not required for Auth capture.

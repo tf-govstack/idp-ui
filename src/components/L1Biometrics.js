@@ -89,16 +89,15 @@ export default function L1Biometrics({
       setStatus({
         state: states.AUTHENTICATING,
         msg: t("capture_initiated_msg", {
-          modality: t(selectedDevice.type),
+          modality: selectedDevice.type,
           deviceModel: selectedDevice.model,
         }),
       });
 
-      let transId = new Date().getTime(); //millis Now
       biometricResponse = await capture_Auth(
         host,
         selectedDevice.port,
-        transId,
+        transactionId,
         selectedDevice.specVersion,
         selectedDevice.type,
         selectedDevice.deviceId

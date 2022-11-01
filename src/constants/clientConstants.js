@@ -24,9 +24,6 @@ const configurationKeys = {
   sbiFaceCaptureScore: "sbi.capture.score.face",
   sbiFingerCaptureScore: "sbi.capture.score.finger",
   sbiIrisCaptureScore: "sbi.capture.score.iris",
-
-  sbiIrisBioSubtypes: "sbi.bio.subtypes.iris", //comma separated list of bio-subtypes. default is "UNKNOWN"
-  sbiFingerBioSubtypes: "sbi.bio.subtypes.finger", //comma separated list of bio-subtypes. default is "UNKNOWN"
 };
 
 export { deviceType, challengeTypes, configurationKeys };
