@@ -89,7 +89,7 @@ export default function L1Biometrics({
       setStatus({
         state: states.AUTHENTICATING,
         msg: t("capture_initiated_msg", {
-          modality: selectedDevice.type,
+          modality: t(selectedDevice.type),
           deviceModel: selectedDevice.model,
         }),
       });

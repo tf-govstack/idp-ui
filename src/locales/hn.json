@@ -33,7 +33,7 @@
   },
   "l1Biometrics": {
     "device_not_found_msg": "डिवाइस नहीं मिला!",
-    "capture_initiated_msg": "{{deviceModel}} पर {{modality}} capture शुरू किया गया",
+    "capture_initiated_msg": "{{deviceModel}} पर {{modality}} कैप्चर शुरू किया गया",
     "biometric_capture_failed_msg": "बायोमेट्रिक कैप्चर विफल: ",
     "scanning_devices_msg": "स्कैनिंग डिवाइस। कृपया प्रतीक्षा करें...",
     "authentication_failed_msg": "प्रमाणीकरण विफल होना: ",

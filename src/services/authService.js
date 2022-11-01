@@ -1,6 +1,11 @@
 import axios from "axios";
 
 const IDP_SERVER_API_URL = window["envConfigs"].idpApiUrl;
+
+const baseUrl = IDP_SERVER_API_URL.startsWith("/")
+  ? window.origin + IDP_SERVER_API_URL
+  : IDP_SERVER_API_URL;
+
 const authenticateEndPoint = "/authorization/authenticate";
 const oauthDetailsEndPoint = "/authorization/oauth-details";
 const authCodeEndPoint = "/authorization/auth-code";
@@ -28,7 +33,7 @@ const post_AuthenticateUser = async (
     },
   };
 
-  const endpoint = IDP_SERVER_API_URL + authenticateEndPoint;
+  const endpoint = baseUrl + authenticateEndPoint;
 
   const response = await axios.post(endpoint, request, {
     headers: {
@@ -91,7 +96,7 @@ const post_OauthDetails = async (
     },
   };
 
-  var endpoint = IDP_SERVER_API_URL + oauthDetailsEndPoint;
+  var endpoint = baseUrl + oauthDetailsEndPoint;
 
   const response = await axios.post(endpoint, request, {
     headers: {
@@ -124,7 +129,7 @@ const post_AuthCode = async (
     },
   };
 
-  const endpoint = IDP_SERVER_API_URL + authCodeEndPoint;
+  const endpoint = baseUrl + authCodeEndPoint;
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
