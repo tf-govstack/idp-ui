@@ -7,7 +7,13 @@ export default function Consent({ authService, localStorageService }) {
   const { t } = useTranslation("consent");
 
   const { post_AuthCode } = { ...authService };
-  const { getTransactionId } = { ...localStorageService };
+  const {
+    getTransactionId,
+    getRedirectUri,
+    getNonce,
+    getState,
+    getOuthDetails,
+  } = { ...localStorageService };
 
   const [status, setStatus] = useState(states.LOADED);
   const [claims, setClaims] = useState([]);
@@ -47,9 +53,7 @@ export default function Consent({ authService, localStorageService }) {
 
   useEffect(() => {
     const enableEssentialClaims = async () => {
-      let oAuthDetails = JSON.parse(
-        window.localStorage.getItem("oauth_details")
-      );
+      let oAuthDetails = JSON.parse(getOuthDetails());
       let claims = oAuthDetails?.essentialClaims;
       setClaims(claims);
     };
@@ -66,7 +70,7 @@ export default function Consent({ authService, localStorageService }) {
     onError(t("authorization_failed_msg"));
   };
 
-  let oAuthDetails = JSON.parse(window.localStorage.getItem("oauth_details"));
+  let oAuthDetails = JSON.parse(getOuthDetails());
 
   let authorizeScopes = oAuthDetails?.authorizeScopes;
   let essentialClaims = oAuthDetails?.essentialClaims;
@@ -117,9 +121,9 @@ export default function Consent({ authService, localStorageService }) {
   };
 
   const onError = async (errorMsg) => {
-    let nonce = window.localStorage.getItem("nonce");
-    let state = window.localStorage.getItem("state");
-    let redirect_uri = window.localStorage.getItem("redirect_uri");
+    let nonce = getNonce();
+    let state = getState();
+    let redirect_uri = getRedirectUri();
 
     if (!redirect_uri) {
       return;

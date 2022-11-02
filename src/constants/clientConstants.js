@@ -8,6 +8,7 @@ const challengeTypes = {
   bio: "BIO",
   pin: "PIN",
   otp: "OTP",
+  qrCode: "QRCode",
 };
 
 const configurationKeys = {

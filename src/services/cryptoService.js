@@ -27,4 +27,4 @@ const cryptoService = {
   encodeBase64: encodeBase64,
 };
 
-export { decodeJWT, encodeBase64, cryptoService };
+export { cryptoService };

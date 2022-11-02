@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import ErrorIndicator from "../common/ErrorIndicator";
 import LoadingIndicator from "../common/LoadingIndicator";
+import { challengeTypes } from "../constants/clientConstants";
 import { otpFields } from "../constants/formFields";
 import { LoadingStates as states } from "../constants/states";
 import FormAction from "./FormAction";
@@ -40,7 +41,7 @@ export default function Pin({ param, authService, localStorageService }) {
       let transactionId = getTransactionId();
 
       let uin = loginState["Pin_mosip-uin"];
-      let challengeType = "PIN";
+      let challengeType = challengeTypes.pin;
       let challenge = loginState["Pin_pin"];
 
       let challengeList = [
