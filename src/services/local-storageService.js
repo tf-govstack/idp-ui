@@ -5,6 +5,7 @@ const redirect_uri_keyname = "redirect_uri";
 const nonce_keyname = "nonce";
 const state_keyname = "state";
 const oauth_details_keyname = "oauth_details";
+const ui_locale_key = "ui_locale";
 
 /**
  * Clear the cache of discovered devices
@@ -114,6 +115,20 @@ const getIdpConfiguration = (configKey) => {
   return oauthDetails?.configs[configKey];
 };
 
+/**
+ * @returns last stored language.
+ */
+const getLanguage = () => {
+  return localStorage.getItem(ui_locale_key);
+};
+
+/**
+ * @param {string} langCode user's language preference.
+ */
+const setLanguage = (langCode) => {
+  localStorage.setItem(ui_locale_key, langCode);
+};
+
 const localStorageService = {
   addDeviceInfos: addDeviceInfos,
   getDeviceInfos: getDeviceInfos,
@@ -128,6 +143,8 @@ const localStorageService = {
   getNonce: getNonce,
   getState: getState,
   getOuthDetails: getOuthDetails,
+  getLanguage: getLanguage,
+  setLanguage: setLanguage,
 };
 
 export { localStorageService };
