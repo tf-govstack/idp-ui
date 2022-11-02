@@ -4,13 +4,16 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ErrorIndicator from "../common/ErrorIndicator";
 import LoadingIndicator from "../common/LoadingIndicator";
+import { supportedLanguages } from "../constants/clientConstants";
 import { LoadingStates as states } from "../constants/states";
 
 export default function Authorize({ authService, localStorageService }) {
   const { t, i18n } = useTranslation("authorize");
 
   const { post_OauthDetails } = { ...authService };
-  const { storeOauthDetails, storeTransactionId } = { ...localStorageService };
+  const { storeOauthDetails, storeTransactionId, getLanguage } = {
+    ...localStorageService,
+  };
 
   const [status, setStatus] = useState(states.LOADING);
   const [oAuthDetailResponse, setOAuthDetailResponse] = useState(null);
@@ -80,17 +83,34 @@ export default function Authorize({ authService, localStorageService }) {
 
   useEffect(() => {
     if (status === states.LOADED) {
-      let uiLocales = searchParams.get("ui_locales");
-      if (uiLocales) changeLanguage(uiLocales);
+      changeLanguage();
       redirectToLogin();
     }
   }, [status]);
 
-  const changeLanguage = async (uiLocales) => {
-    //TODO logic for lang change
-    let langs = uiLocales.split(" ");
+  const changeLanguage = async () => {
+    //1. Check for cookie
+    let lang = getLanguage();
+    if (lang && supportedLanguages[lang]) {
+      i18n.changeLanguage(lang);
+      return;
+    }
 
-    i18n.changeLanguage(langs[0]);
+    //2. TODO check for system locale
+
+    //3. Check for ui locales param
+    let uiLocales = searchParams.get("ui_locales");
+    if (uiLocales) {
+      let languages = uiLocales.split(" ");
+      for (let idx in languages) {
+        if (supportedLanguages[languages[idx]]) {
+          i18n.changeLanguage(languages[idx]);
+          return;
+        }
+      }
+    }
+
+    //4. default lang set in env_configs file.
   };
 
   const redirectToLogin = async () => {

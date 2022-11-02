@@ -1,43 +1,49 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Select from "react-select";
+import { supportedLanguages } from "../constants/clientConstants";
 
-export default function NavHeader() {
+export default function NavHeader({ localStorageService }) {
   const { i18n } = useTranslation();
   const [selectedLang, setSelectedLang] = useState(null);
 
-  const changeLanguageHandler = (e) => {
-    i18n.changeLanguage(e.value);
-    setSelectedLang(e);
+  const { setLanguage } = {
+    ...localStorageService,
   };
 
-  const data = [
-    {
-      value: "en",
-      label: "English (US)",
-    },
-    {
-      value: "hn",
-      label: "Hindi",
-    },
-    {
-      value: "ar",
-      label: "Arabic",
-    },
-  ];
+  const changeLanguageHandler = (e) => {
+    i18n.changeLanguage(e.value);
+    setLanguage(e.value);
+  };
 
-  useEffect(() => {
-    setSelectedLang(data[0]);
-  }, []);
+  const customStyles = {
+    control: (base) => ({
+      ...base,
+      border: 0,
+      boxShadow: "none",
+    }),
+  };
+
+  const data = [];
+
+  for (let lang in supportedLanguages) {
+    data.push({
+      label: supportedLanguages[lang],
+      value: lang,
+    });
+  }
 
   return (
     <nav class="bg-white border-gray-500 shadow px-2 sm:px-4 py-2">
       <div class="flex items-center md:order-2 justify-end">
         <img src="images/language_icon.png" className="mr-2" />
         <Select
-          className="appearance-none w-2/12"
+          styles={customStyles}
+          isSearchable={false}
+          className="appearance-none"
           value={selectedLang}
           options={data}
+          placeholder="Language"
           onChange={changeLanguageHandler}
         />
       </div>
