@@ -63,7 +63,7 @@ const addDeviceInfos = (port, decodedDeviceInfo) => {
  * @returns deviceInfoList
  */
 const getDeviceInfos = () => {
-  return JSON.parse(window.localStorage.getItem(device_info_keyname));
+  return JSON.parse(localStorage.getItem(device_info_keyname));
 };
 
 /**
@@ -74,18 +74,34 @@ const getDeviceInfos = () => {
  * @param {*} response
  */
 const storeOauthDetails = (redirectUri, nonce, state, response) => {
-  window.localStorage.setItem(redirect_uri_keyname, redirectUri);
-  window.localStorage.setItem(nonce_keyname, nonce);
-  window.localStorage.setItem(state_keyname, state);
-  window.localStorage.setItem(oauth_details_keyname, JSON.stringify(response));
+  localStorage.setItem(redirect_uri_keyname, redirectUri);
+  localStorage.setItem(nonce_keyname, nonce);
+  localStorage.setItem(state_keyname, state);
+  localStorage.setItem(oauth_details_keyname, JSON.stringify(response));
+};
+
+const getRedirectUri = () => {
+  return localStorage.getItem(redirect_uri_keyname);
+};
+
+const getNonce = () => {
+  return localStorage.getItem(nonce_keyname);
+};
+
+const getState = () => {
+  return localStorage.getItem(state_keyname);
+};
+
+const getOuthDetails = () => {
+  return localStorage.getItem(oauth_details_keyname);
 };
 
 const storeTransactionId = (transactionId) => {
-  window.localStorage.setItem(transaction_id_keyname, transactionId);
+  localStorage.setItem(transaction_id_keyname, transactionId);
 };
 
 const getTransactionId = () => {
-  return window.localStorage.getItem(transaction_id_keyname);
+  return localStorage.getItem(transaction_id_keyname);
 };
 
 /**
@@ -94,9 +110,7 @@ const getTransactionId = () => {
  * @returns configuration value of the given config key
  */
 const getIdpConfiguration = (configKey) => {
-  let oauthDetails = JSON.parse(
-    window.localStorage.getItem(oauth_details_keyname)
-  );
+  let oauthDetails = JSON.parse(localStorage.getItem(oauth_details_keyname));
   return oauthDetails?.configs[configKey];
 };
 
@@ -110,17 +124,10 @@ const localStorageService = {
   getIdpConfiguration: getIdpConfiguration,
   getTransactionId: getTransactionId,
   storeTransactionId: storeTransactionId,
+  getRedirectUri: getRedirectUri,
+  getNonce: getNonce,
+  getState: getState,
+  getOuthDetails: getOuthDetails,
 };
 
-export {
-  addDeviceInfos,
-  getDeviceInfos,
-  clearDeviceInfos,
-  clearDiscoveredDevices,
-  addDiscoveredDevices,
-  storeOauthDetails,
-  getIdpConfiguration,
-  getTransactionId,
-  storeTransactionId,
-  localStorageService,
-};
+export { localStorageService };

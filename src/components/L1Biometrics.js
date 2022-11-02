@@ -164,7 +164,7 @@ export default function L1Biometrics({
   };
 
   const Authenticate = async (transactionId, uin, bioValue) => {
-    let challengeType = challengeTypes.bio; //TODO Get these values from config
+    let challengeType = challengeTypes.bio;
     let challenge = bioValue;
 
     let challengeList = [
@@ -338,12 +338,6 @@ export default function L1Biometrics({
               )}
             </>
           )}
-
-        <div class="flex justify-center">
-          <Link class="text-center text-gray-500 font-semibold" to="#">
-            {t("more_ways_to_sign_in")}
-          </Link>
-        </div>
 
         {error && (
           <>

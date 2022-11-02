@@ -1,13 +1,21 @@
 import axios from "axios";
 import { configurationKeys } from "../constants/clientConstants";
-import { decodeJWT } from "./cryptoService";
-import {
+import { cryptoService } from "./cryptoService";
+import { localStorageService } from "./local-storageService";
+
+const {
   addDeviceInfos,
   addDiscoveredDevices,
   clearDeviceInfos,
   clearDiscoveredDevices,
   getIdpConfiguration,
-} from "./local-storageService";
+} = {
+  ...localStorageService,
+};
+
+const { decodeJWT } = {
+  ...cryptoService,
+};
 
 const SBI_DOMAIN_URI = window.origin;
 const purpose = "Auth";

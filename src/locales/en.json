@@ -40,7 +40,6 @@
     "no_response_msg": "No response",
     "authenticating_msg": "Authenticating. Please wait...",
     "scan_and_verify": "Scan and verify",
-    "more_ways_to_sign_in": "More ways to sign in",
     "sign_in_with_biometric": "Sign in with Biometric",
     "retry": "Retry!",
     "vid_label_text": "Enter your VID",
@@ -70,7 +69,9 @@
   "header": {
     "login_heading": "Login to your account",
     "login_paragraph": "Have not registered for MOSIP yet?",
-    "login_linkName": "Preregister"
+    "login_linkName": "Preregister",
+    "more_ways_to_sign_in": "More ways to sign in",
+    "invalid_auth_factor":"Invalid auth factors! Please try again..."
   },
   "tabs": {
     "pin_tab_name": "Sign in with PIN",

@@ -1,11 +1,16 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export default function Background({
   heading,
   logoPath,
   backgroundImgPath,
   component,
+  handleMoreWaysToSignIn,
+  showMoreOption,
 }) {
+  const { t } = useTranslation("header");
+  let moreOptionClass = showMoreOption ? "flex justify-center pb-5" : "hidden";
   return (
     <>
       <section class="text-gray-600 mt-7 body-font">
@@ -27,8 +32,16 @@ export default function Background({
               </h1>
             </div>
             <div class="w-full flex justify-center">
-              <div className="w-96 h-96 shadow-lg rounded bg-[#F8F8F8]">
-                <div className="px-5 py-5">{component}</div>
+              <div className="w-96 h-min shadow-lg rounded bg-[#F8F8F8]">
+                <div className="px-5 py-3">{component}</div>
+                <div class={moreOptionClass}>
+                  <button
+                    class="text-center text-gray-500 font-semibold"
+                    onClick={handleMoreWaysToSignIn}
+                  >
+                    {t("more_ways_to_sign_in")}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
