@@ -5,11 +5,12 @@ import AuthorizePage from "./pages/Authorize";
 import ConsentPage from "./pages/Consent";
 import NavHeader from "./components/NavHeader";
 import SignInOptionsPage from "./pages/SignInOptions";
+import { localStorageService } from "./services/local-storageService";
 
 function App() {
   return (
     <>
-      <NavHeader />
+      <NavHeader localStorageService={localStorageService} />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<SignInOptionsPage />} />
