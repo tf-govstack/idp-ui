@@ -14,6 +14,10 @@ export default function SignInOptions({
     ...localStorageService,
   };
 
+  const { getOuthDetails } = {
+    ...localStorageService,
+  };
+
   const [status, setStatus] = useState({ state: states.LOADED, msg: "" });
   const [singinOptions, setSinginOptions] = useState(null);
 
