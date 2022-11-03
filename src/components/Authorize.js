@@ -11,7 +11,7 @@ export default function Authorize({ authService, localStorageService }) {
   const { t, i18n } = useTranslation("authorize");
 
   const { post_OauthDetails } = { ...authService };
-  const { storeOauthDetails, storeTransactionId, getLanguage } = {
+  const { storeOauthDetails, storeTransactionId } = {
     ...localStorageService,
   };
 
@@ -89,16 +89,11 @@ export default function Authorize({ authService, localStorageService }) {
   }, [status]);
 
   const changeLanguage = async () => {
-    //1. Check for cookie
-    let lang = getLanguage();
-    if (lang && supportedLanguages[lang]) {
-      i18n.changeLanguage(lang);
-      return;
-    }
+    //Language detector priotity order: ['querystring', 'cookie', 'localStorage',
+    //      'sessionStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
 
-    //2. TODO check for system locale
-
-    //3. Check for ui locales param
+    //1. Check for ui locales param. Highest priority.
+    //This will override the language detectors selected language
     let uiLocales = searchParams.get("ui_locales");
     if (uiLocales) {
       let languages = uiLocales.split(" ");
@@ -110,7 +105,13 @@ export default function Authorize({ authService, localStorageService }) {
       }
     }
 
-    //4. default lang set in env_configs file.
+    //2. Check for cookie
+    //Language detector will store and use cookie "i18nextLng"
+
+    //3. Check for system locale
+    //Language detector will check navigator and subdomain to select proper language
+
+    //4. default lang set in env_configs file as fallback language.
   };
 
   const redirectToLogin = async () => {

@@ -64,14 +64,16 @@
     "login_with": "Login with {{option}}",
     "PIN": "PIN",
     "Inji": "Inji",
-    "Biometrics": "Biometrics"
+    "Biometrics": "Biometrics",
+    "BIO": "Biometrics",
+    "QRCode": "QR Code"
   },
   "header": {
     "login_heading": "Login to your account",
     "login_paragraph": "Have not registered for MOSIP yet?",
     "login_linkName": "Preregister",
     "more_ways_to_sign_in": "More ways to sign in",
-    "invalid_auth_factor":"Invalid auth factors! Please try again..."
+    "invalid_auth_factor": "Invalid auth factors! Please try again..."
   },
   "tabs": {
     "pin_tab_name": "Sign in with PIN",
