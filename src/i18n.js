@@ -19,6 +19,7 @@ const resources = {
     authorize: translationEN.authorize,
     tabs: translationEN.tabs,
     errors: translationEN.errors,
+    idpDetails: translationEN.idpDetails,
   },
   hi: {
     consent: translationHI.consent,
@@ -29,6 +30,7 @@ const resources = {
     authorize: translationHI.authorize,
     tabs: translationHI.tabs,
     errors: translationHI.errors,
+    idpDetails: translationHI.idpDetails,
   },
   ar: {
     translation: translationAr,
@@ -42,7 +44,7 @@ i18n
   .use(initReactI18next)
   // init i18next
   .init({
-    debug: true,
+    debug: false,
     resources: resources,
     fallbackLng: window["envConfigs"].defaultLang, //default language
     interpolation: {

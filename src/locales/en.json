@@ -68,6 +68,11 @@
     "BIO": "Biometrics",
     "QRCode": "QR Code"
   },
+  "idpDetails": {
+    "idp_details_heading": "IDP Details",
+    "internal_api": "Internal API",
+    "wellknown_api":".wellknown API"
+  },
   "header": {
     "login_heading": "Login to your account",
     "login_paragraph": "Have not registered for MOSIP yet?",
