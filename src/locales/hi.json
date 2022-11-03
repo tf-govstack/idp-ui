@@ -87,15 +87,12 @@
     "Biometrics": "बायोमेट्रिक्स",
     "BIO": "बायोमेट्रिक्स",
     "QRCode": "क्यू आर कोड"
-<<<<<<< HEAD:public/locales/hi.json
   },
   "idpDetails": {
     "idp_details_heading": "आईडीपी विवरण",
     "internal_api": "आंतरिक एपीआई",
     "wellknown_api": ".प्रसिद्ध एपीआई"
-=======
->>>>>>> 04f3044 (locale change's based on browser locale):src/locales/hi.json
-  },
+},
   "header": {
     "login_heading": "अपने अकाउंट में लॉग इन करें",
     "login_paragraph": "अभी तक एमओएसआईपी के लिए पंजीकरण नहीं किया है?",
