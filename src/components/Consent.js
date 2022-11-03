@@ -67,7 +67,7 @@ export default function Consent({ authService, localStorageService }) {
 
   const handleCancel = (e) => {
     e.preventDefault();
-    onError(t("authorization_failed_msg"));
+    onError("consent_request_rejected", t("consent_request_rejected"));
   };
 
   let oAuthDetails = JSON.parse(getOuthDetails());
@@ -108,7 +108,7 @@ export default function Consent({ authService, localStorageService }) {
 
       //TODO redirect with server response
       if (errors != null && errors.length > 0) {
-        onError(errors[0].errorCode);
+        onError(errors[0].errorCode, t(errors[0].errorCode));
         return;
       }
 
@@ -116,11 +116,12 @@ export default function Consent({ authService, localStorageService }) {
         response.redirectUri + params + "code=" + response.code
       );
     } catch (error) {
-      onError(error.message);
+      onError("authorization_failed_msg", error.message);
     }
   };
 
-  const onError = async (errorMsg) => {
+  //errorCode is REQUIRED, errorDescription is OPTIONAL
+  const onError = async (errorCode, errorDescription) => {
     let nonce = getNonce();
     let state = getState();
     let redirect_uri = getRedirectUri();
@@ -134,11 +135,17 @@ export default function Consent({ authService, localStorageService }) {
       params = params + "nonce=" + nonce + "&";
     }
 
-    if (state) {
-      params = params + "state=" + state + "&";
+    if (errorDescription) {
+      params = params + "error_description=" + errorDescription + "&";
     }
 
-    window.location.replace(redirect_uri + params + "error=" + errorMsg);
+    //REQUIRED
+    params = params + "state=" + state + "&";
+
+    //REQUIRED
+    params = params + "error=" + errorCode;
+
+    window.location.replace(redirect_uri + params);
   };
 
   return (

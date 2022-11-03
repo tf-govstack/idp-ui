@@ -1,4 +1,4 @@
 window["envConfigs"] = {
-  idpApiUrl: "/v1/idp",
+  idpApiUrl: "http://localhost:8088/v1/idp",
   defaultLang: "en",
 };
