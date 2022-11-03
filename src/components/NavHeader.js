@@ -1,19 +1,12 @@
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Select from "react-select";
 import { supportedLanguages } from "../constants/clientConstants";
 
-export default function NavHeader({ localStorageService }) {
+export default function NavHeader() {
   const { i18n } = useTranslation();
-  const [selectedLang, setSelectedLang] = useState(null);
-
-  const { setLanguage } = {
-    ...localStorageService,
-  };
 
   const changeLanguageHandler = (e) => {
     i18n.changeLanguage(e.value);
-    setLanguage(e.value);
   };
 
   const customStyles = {
@@ -41,7 +34,7 @@ export default function NavHeader({ localStorageService }) {
           styles={customStyles}
           isSearchable={false}
           className="appearance-none"
-          value={selectedLang}
+          value={null}
           options={data}
           placeholder="Language"
           onChange={changeLanguageHandler}

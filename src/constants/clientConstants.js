@@ -32,7 +32,8 @@ const configurationKeys = {
 
 const supportedLanguages = {
   en: "English (US)",
-  hn: "Hindi",
+  hi: "Hindi",
+  ar: "Arabic",
 };
 
 export { deviceType, challengeTypes, configurationKeys, supportedLanguages };
