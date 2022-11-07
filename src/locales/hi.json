@@ -41,7 +41,7 @@
     "no_response_msg": "कोई जवाब नहीं",
     "authenticating_msg": "प्रमाणीकरण। कृपया प्रतीक्षा करें...",
     "scan_and_verify": "स्कैन करें और सत्यापित करें",
-    "sign_in_with_biometric": "बायोमेट्रिक के साथ साइन इन करें",
+    "sign_in_with_biometric": "बायोमेट्रिक के साथ लॉगिन करें",
     "retry": "पुन: प्रयास करें!",
     "vid_label_text": "अपना वीआईडी ​​दर्ज करें",
     "vid_placeholder": "वीआईडी",
@@ -50,14 +50,33 @@
     "Iris": "आँख"
   },
   "pin": {
+    "sign_in_with_pin": "पिन से लॉगिन करें",
     "authentication_failed_msg": "प्रमाणीकरण विफल होना: ",
     "remember_me": "याद रखे",
-    "login": "लॉग इन करें",
+    "login": "लॉगिन करें",
     "authenticating_msg": "प्रमाणीकरण। कृपया प्रतीक्षा करें...",
     "uin_label_text": "यूआईएन",
     "pin_label_text": "पिन",
     "uin_placeholder": "यूआईएन या वीआईडी",
     "pin_placeholder": "पिन दर्ज करें"
+  },
+  "otp": {
+    "sign_in_with_otp": "ओटीपी के साथ लॉगिन करें",
+    "authentication_failed_msg": "प्रमाणीकरण विफल होना: ",
+    "resent_otp": "ओटीपी फिर से भेजें?",
+    "not_a_robot": "मैं रोबोट नहीं हु",
+    "get_otp": "ओटीपी प्राप्त करें",
+    "verify": "सत्यापित करना",
+    "sending_otp_msg": "ओटीपी भेजा जा रहा है। कृपया प्रतीक्षा करें...",
+    "authenticating_msg": "प्रमाणीकरण। कृपया प्रतीक्षा करें...",
+    "vid_label_text": "अपना वीआईडी ​​दर्ज करें",
+    "otp_label_text": "ओटीपी",
+    "vid_placeholder": "वीआईडी",
+    "otp_placeholder": "1234",
+    "send_otp_failed": "ओटीपी भेजने में विफल!",
+    "mobile_number": "मोबाइल नंबर: {{mobileNumber}}",
+    "email_address": "ईमेल पता: {{emailAddress}}",
+    "otp_sent_msg": "आपके पंजीकृत {{otpChannels}} पर ओटीपी भेज दिया गया है"
   },
   "signInOption": {
     "loading_msg": "लोड हो रहा है। कृपया प्रतीक्षा करें...",

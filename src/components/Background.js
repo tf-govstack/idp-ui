@@ -10,7 +10,6 @@ export default function Background({
   showMoreOption,
 }) {
   const { t } = useTranslation("header");
-  let moreOptionClass = showMoreOption ? "flex justify-center pb-5" : "hidden";
   return (
     <>
       <section class="text-gray-600 mt-7 body-font">
@@ -33,10 +32,13 @@ export default function Background({
             </div>
             <div class="w-full flex justify-center">
               <div className="w-96 h-min shadow-lg rounded bg-[#F8F8F8]">
-                <div className="px-5 py-3">{component}</div>
-                <div class={moreOptionClass}>
+                <div className="px-5 py-2">{component}</div>
+                <div class="flex justify-center py-5">
                   <button
-                    class="text-center text-gray-500 font-semibold"
+                    class={
+                      "text-gray-500 font-semibold" +
+                      (showMoreOption ? " block" : " hidden")
+                    }
                     onClick={handleMoreWaysToSignIn}
                   >
                     {t("more_ways_to_sign_in")}

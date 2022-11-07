@@ -42,6 +42,7 @@ function InitiateOtp(inst) {
   return React.createElement(comp[inst], {
     param: otpFields,
     authService: authService,
+    localStorageService: localStorageService,
   });
 }
 
@@ -114,7 +115,7 @@ export default function LoginPage() {
       let firstLoginOption = authFactors[0];
       let authFactor = firstLoginOption[0].type;
       setShowMoreOption(authFactors.length > 1);
-      setCompToShow(createDynamicLoginElements(authFactor));
+      setCompToShow(createDynamicLoginElements("OTP"));
     } catch (error) {
       setShowMoreOption(false);
       setCompToShow(InitiateInvalidAuthFactor(t("invalid_auth_factor")));

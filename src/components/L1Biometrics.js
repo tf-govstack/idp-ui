@@ -35,7 +35,6 @@ export default function L1Biometrics({
   const { t } = useTranslation("l1Biometrics");
 
   const inputFields = param.inputFields;
-  const biometricFields = param.bioFields;
 
   const { encodeBase64 } = { ...cryptoService };
   const { capture_Auth, mosipdisc_DiscoverDevicesAsync } = { ...sbiService };
