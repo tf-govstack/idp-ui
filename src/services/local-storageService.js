@@ -5,7 +5,6 @@ const redirect_uri_keyname = "redirect_uri";
 const nonce_keyname = "nonce";
 const state_keyname = "state";
 const oauth_details_keyname = "oauth_details";
-const ui_locale_key = "ui_locale";
 
 /**
  * Clear the cache of discovered devices
