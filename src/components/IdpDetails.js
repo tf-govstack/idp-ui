@@ -12,10 +12,9 @@ export default function IdpDetails() {
     setStatus({ state: states.LOADING, msg: t("loading_msg") });
 
     let detailList = [
-      { icon: null, name: "internal_api", value: "https://api.dev.mosip.net" },
       {
         name: "wellknown_api",
-        value: window.origin + "/v1/idp/oidc/.well-known/openid-configuration",
+        value: window.origin + "/.well-known/openid-configuration",
       },
     ];
 

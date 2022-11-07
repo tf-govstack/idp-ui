@@ -20,6 +20,7 @@ const resources = {
     tabs: translationEN.tabs,
     errors: translationEN.errors,
     idpDetails: translationEN.idpDetails,
+    otp: translationEN.otp,
   },
   hi: {
     consent: translationHI.consent,
@@ -31,6 +32,7 @@ const resources = {
     tabs: translationHI.tabs,
     errors: translationHI.errors,
     idpDetails: translationHI.idpDetails,
+    otp: translationHI.otp,
   },
   ar: {
     translation: translationAr,

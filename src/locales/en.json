@@ -41,7 +41,7 @@
     "no_response_msg": "No response",
     "authenticating_msg": "Authenticating. Please wait...",
     "scan_and_verify": "Scan and verify",
-    "sign_in_with_biometric": "Sign in with Biometric",
+    "sign_in_with_biometric": "Login with Biometric",
     "retry": "Retry!",
     "vid_label_text": "Enter your VID",
     "vid_placeholder": "VID",
@@ -50,6 +50,7 @@
     "Iris": "Iris"
   },
   "pin": {
+    "sign_in_with_pin": "Login with PIN",
     "authentication_failed_msg": "Authentication failed: ",
     "remember_me": "Remember me",
     "login": "Login",
@@ -58,6 +59,24 @@
     "pin_label_text": "PIN",
     "uin_placeholder": "UIN or VID",
     "pin_placeholder": "Enter PIN"
+  },
+  "otp": {
+    "sign_in_with_otp": "Login with OTP",
+    "authentication_failed_msg": "Authentication failed: ",
+    "resent_otp": "Resent OTP?",
+    "not_a_robot": "I'm not a robot",
+    "get_otp": "Get OTP",
+    "verify": "Verify",
+    "sending_otp_msg": "Sending OTP. Please wait...",
+    "authenticating_msg": "Authenticating. Please wait...",
+    "vid_label_text": "Enter your VID",
+    "otp_label_text": "OTP",
+    "vid_placeholder": "VID",
+    "otp_placeholder": "1234",
+    "send_otp_failed": "Failed to send OTP!",
+    "mobile_number": "Mobile Number: {{mobileNumber}}",
+    "email_address": "Email Address: {{emailAddress}}",
+    "otp_sent_msg": "OTP has been sent to your registered {{otpChannels}}"
   },
   "signInOption": {
     "loading_msg": "Loading. Please wait...",
@@ -72,7 +91,7 @@
   "idpDetails": {
     "idp_details_heading": "IDP Details",
     "internal_api": "Internal API",
-    "wellknown_api":".wellknown API"
+    "wellknown_api": ".wellknown API"
   },
   "header": {
     "login_heading": "Login to your account",

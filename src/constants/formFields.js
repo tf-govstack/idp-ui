@@ -3,7 +3,6 @@ import { deviceType } from "./clientConstants";
 const pinFields = [
   {
     labelText: "uin_label_text", //translation key for pin namespace
-    labelText: "Uin",
     labelFor: "Mosip Uin",
     id: "mosip-uin",
     name: "uin",
@@ -26,24 +25,14 @@ const pinFields = [
 
 const otpFields = [
   {
-    labelText: "Vid",
+    labelText: "vid_label_text",
     labelFor: "Mosip vid",
     id: "mosip-vid",
     name: "vid",
     type: "text",
     autoComplete: "vid",
     isRequired: true,
-    placeholder: "VID",
-  },
-  {
-    labelText: "Otp",
-    labelFor: "otp",
-    id: "otp",
-    name: "otp",
-    type: "password",
-    autoComplete: "",
-    isRequired: true,
-    placeholder: "1234",
+    placeholder: "vid_placeholder",
   },
 ];
 
@@ -60,7 +49,6 @@ const bioLoginFields = {
       placeholder: "vid_placeholder", //translation key for l1biometric namespace
     },
   ],
-  bioFields: [deviceType.face, deviceType.finger, deviceType.iris],
 };
 
 const signupFields = [
