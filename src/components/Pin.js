@@ -13,8 +13,13 @@ const fields = otpFields;
 let fieldsState = {};
 fields.forEach((field) => (fieldsState["Pin" + field.id] = ""));
 
-export default function Pin({ param, authService, localStorageService }) {
-  const { t } = useTranslation("pin");
+export default function Pin({
+  param,
+  authService,
+  localStorageService,
+  i18nKeyPrefix = "pin",
+}) {
+  const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
 
   const fields = param;
   const { post_AuthenticateUser } = { ...authService };

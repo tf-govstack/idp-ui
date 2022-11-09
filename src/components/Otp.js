@@ -18,8 +18,13 @@ const OTPStatusEnum = {
   verifyOtp: "VERIFYOTP",
 };
 
-export default function Otp({ param, authService, localStorageService }) {
-  const { t } = useTranslation("otp");
+export default function Otp({
+  param,
+  authService,
+  localStorageService,
+  i18nKeyPrefix = "otp",
+}) {
+  const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
 
   const fields = param;
   const { post_AuthenticateUser, post_SendOtp } = { ...authService };

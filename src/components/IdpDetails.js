@@ -2,8 +2,8 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { LoadingStates as states } from "../constants/states";
 
-export default function IdpDetails() {
-  const { t } = useTranslation("idpDetails");
+export default function IdpDetails({ i18nKeyPrefix = "idpDetails" }) {
+  const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
 
   const [status, setStatus] = useState({ state: states.LOADED, msg: "" });
   const [details, setDetails] = useState(null);

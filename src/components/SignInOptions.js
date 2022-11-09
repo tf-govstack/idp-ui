@@ -6,8 +6,9 @@ import { LoadingStates as states } from "../constants/states";
 export default function SignInOptions({
   localStorageService,
   handleSignInOptionClick,
+  i18nKeyPrefix = "signInOption",
 }) {
-  const { t } = useTranslation("signInOption");
+  const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
 
   const { getOuthDetails } = {
     ...localStorageService,
