@@ -1,9 +1,14 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Select from "react-select";
-import { supportedLanguages } from "../constants/clientConstants";
 
-export default function NavHeader() {
+export default function NavHeader({ langConfigService }) {
   const { i18n } = useTranslation();
+  const { getConfiguration } = {
+    ...langConfigService,
+  };
+
+  const [langOptions, setLangOptions] = useState([]);
 
   const changeLanguageHandler = (e) => {
     i18n.changeLanguage(e.value);
@@ -17,14 +22,23 @@ export default function NavHeader() {
     }),
   };
 
-  const data = [];
-
-  for (let lang in supportedLanguages) {
-    data.push({
-      label: supportedLanguages[lang],
-      value: lang,
-    });
-  }
+  useEffect(() => {
+    try {
+      getConfiguration().then((response) => {
+        let supportedLanguages = response.languages;
+        let langData = [];
+        for (let lang in supportedLanguages) {
+          langData.push({
+            label: supportedLanguages[lang],
+            value: lang,
+          });
+        }
+        setLangOptions(langData);
+      });
+    } catch (error) {
+      console.error("Failed to load i18n bundle!");
+    }
+  }, []);
 
   return (
     <nav class="bg-white border-gray-500 shadow px-2 sm:px-4 py-2">
@@ -35,7 +49,7 @@ export default function NavHeader() {
           isSearchable={false}
           className="appearance-none"
           value={null}
-          options={data}
+          options={langOptions}
           placeholder="Language"
           onChange={changeLanguageHandler}
         />

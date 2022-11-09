@@ -8,8 +8,9 @@ export default function Background({
   component,
   handleMoreWaysToSignIn,
   showMoreOption,
+  i18nKeyPrefix = "header",
 }) {
-  const { t } = useTranslation("header");
+  const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
   return (
     <>
       <section class="text-gray-600 mt-7 body-font">

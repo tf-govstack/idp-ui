@@ -4,15 +4,25 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ErrorIndicator from "../common/ErrorIndicator";
 import LoadingIndicator from "../common/LoadingIndicator";
-import { supportedLanguages } from "../constants/clientConstants";
 import { LoadingStates as states } from "../constants/states";
 
-export default function Authorize({ authService, localStorageService }) {
-  const { t, i18n } = useTranslation("authorize");
+export default function Authorize({
+  authService,
+  localStorageService,
+  langConfigService,
+  i18nKeyPrefix = "authorize",
+}) {
+  const { t, i18n } = useTranslation("translation", {
+    keyPrefix: i18nKeyPrefix,
+  });
 
   const { post_OauthDetails } = { ...authService };
   const { storeOauthDetails, storeTransactionId } = {
     ...localStorageService,
+  };
+
+  const { getConfiguration } = {
+    ...langConfigService,
   };
 
   const [status, setStatus] = useState(states.LOADING);
@@ -94,6 +104,8 @@ export default function Authorize({ authService, localStorageService }) {
 
     //1. Check for ui locales param. Highest priority.
     //This will override the language detectors selected language
+    let defaultConfigs = await getConfiguration();
+    let supportedLanguages = defaultConfigs.languages;
     let uiLocales = searchParams.get("ui_locales");
     if (uiLocales) {
       let languages = uiLocales.split(" ");

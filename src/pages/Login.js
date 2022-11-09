@@ -87,8 +87,8 @@ function createDynamicLoginElements(inst) {
   return React.createElement(comp[inst]);
 }
 
-export default function LoginPage() {
-  const { t } = useTranslation("header");
+export default function LoginPage({ i18nKeyPrefix = "header" }) {
+  const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
   const [compToShow, setCompToShow] = useState(null);
   const [showMoreOption, setShowMoreOption] = useState(false);
 

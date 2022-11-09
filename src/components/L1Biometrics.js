@@ -31,8 +31,9 @@ export default function L1Biometrics({
   localStorageService,
   cryptoService,
   sbiService,
+  i18nKeyPrefix = "l1Biometrics",
 }) {
-  const { t } = useTranslation("l1Biometrics");
+  const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
 
   const inputFields = param.inputFields;
 

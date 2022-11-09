@@ -3,8 +3,12 @@ import { useTranslation } from "react-i18next";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { LoadingStates as states } from "../constants/states";
 
-export default function Consent({ authService, localStorageService }) {
-  const { t } = useTranslation("consent");
+export default function Consent({
+  authService,
+  localStorageService,
+  i18nKeyPrefix = "consent",
+}) {
+  const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
 
   const { post_AuthCode } = { ...authService };
   const {
@@ -162,7 +166,6 @@ export default function Consent({ authService, localStorageService }) {
           <div className="flex justify-center">
             <b>
               {t("consent_request_msg", {
-                ns: "consent",
                 clientName: clientName,
               })}
             </b>
