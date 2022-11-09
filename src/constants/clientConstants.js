@@ -30,10 +30,4 @@ const configurationKeys = {
   sbiFingerBioSubtypes: "sbi.bio.subtypes.finger", //comma separated list of bio-subtypes. default is "UNKNOWN"
 };
 
-const supportedLanguages = {
-  en: "English (US)",
-  hi: "Hindi",
-  ar: "Arabic",
-};
-
-export { deviceType, challengeTypes, configurationKeys, supportedLanguages };
+export { deviceType, challengeTypes, configurationKeys };

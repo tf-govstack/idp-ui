@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Select from "react-select";
-import { supportedLanguages } from "../constants/clientConstants";
 
 export default function NavHeader({ langConfigService }) {
   const { i18n } = useTranslation();

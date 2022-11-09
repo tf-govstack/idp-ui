@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ErrorIndicator from "../common/ErrorIndicator";
 import LoadingIndicator from "../common/LoadingIndicator";
-import { supportedLanguages } from "../constants/clientConstants";
 import { LoadingStates as states } from "../constants/states";
 
 export default function Authorize({
