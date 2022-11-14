@@ -10,10 +10,6 @@ export default function NavHeader({ langConfigService }) {
 
   const [langOptions, setLangOptions] = useState([]);
 
-  const { setLanguage } = {
-    ...localStorageService,
-  };
-
   const changeLanguageHandler = (e) => {
     i18n.changeLanguage(e.value);
   };
