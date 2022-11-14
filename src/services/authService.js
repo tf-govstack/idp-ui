@@ -1,6 +1,9 @@
 import axios from "axios";
 
-const IDP_SERVER_API_URL = window["envConfigs"].idpApiUrl;
+const idpApiUrl = window["envConfigs"].idpApiUrl;
+const IDP_SERVER_API_URL = idpApiUrl.startsWith("/")
+  ? window.origin + window["envConfigs"].idpApiUrl
+  : window["envConfigs"].idpApiUrl;
 const authenticateEndPoint = "/authorization/authenticate";
 const oauthDetailsEndPoint = "/authorization/oauth-details";
 const authCodeEndPoint = "/authorization/auth-code";
@@ -18,8 +21,6 @@ const post_AuthenticateUser = async (
   challengeList
 ) => {
   let request = {
-    id: "String",
-    version: "String",
     requestTime: new Date().toISOString(),
     request: {
       transactionId: transactionId,
@@ -71,8 +72,6 @@ const post_OauthDetails = async (
   uiLocales
 ) => {
   let request = {
-    id: "String",
-    version: "String",
     requestTime: new Date().toISOString(),
     request: {
       nonce: nonce,
@@ -114,8 +113,6 @@ const post_AuthCode = async (
   permittedAuthorizeScopes
 ) => {
   let request = {
-    id: "String",
-    version: "String",
     requestTime: new Date().toISOString(),
     request: {
       transactionId: transactionId,
