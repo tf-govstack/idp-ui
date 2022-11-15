@@ -134,8 +134,6 @@ const post_AuthCode = async (
 
 const post_SendOtp = async (transactionId, individualId, otpChannels) => {
   let request = {
-    id: "String",
-    version: "String",
     requestTime: new Date().toISOString(),
     request: {
       transactionId: transactionId,
