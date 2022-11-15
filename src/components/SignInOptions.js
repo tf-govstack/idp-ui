@@ -20,7 +20,7 @@ export default function SignInOptions({
   const modalityIconPath = {
     PIN: "images/sign_in_with_otp.png",
     OTP: "images/sign_in_with_otp.png",
-    QRCode: "images/Sign in with Inji.png",
+    WALLET: "images/Sign in with Inji.png",
     BIO: "images/Sign in with fingerprint.png",
   };
 

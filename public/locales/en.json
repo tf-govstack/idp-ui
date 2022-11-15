@@ -86,7 +86,9 @@
     "Inji": "Inji",
     "Biometrics": "Biometrics",
     "BIO": "Biometrics",
-    "QRCode": "QR Code"
+    "QRCode": "QR Code",
+    "WALLET": "Inji",
+    "OTP":"OTP"
   },
   "idpDetails": {
     "idp_details_heading": "IDP Details",

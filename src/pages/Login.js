@@ -16,7 +16,7 @@ import SignInOptions from "../components/SignInOptions";
 const comp = {
   PIN: Pin,
   OTP: Otp,
-  QRCode: IDPQRCode,
+  WALLET: IDPQRCode,
   BIO: L1Biometrics,
 };
 
