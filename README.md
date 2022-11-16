@@ -10,19 +10,24 @@ IDP UI contains the following pages:
 3. Consent
 
 
-* /Authorize:
-    /Authorize a redirect URI which needs to be called from the relying party portal. This is the endpoint that handles the oidc authorization. For API details, refer to this [document](https://mosip.stoplight.io/docs/identity-provider/85f761d237115-authorization-endpoint). 
+* /authorize:
+    This is a redirect URI that needs to be called from the relying party portal. This is the endpoint that handles the oidc authorization. For API details, refer to this [document](https://mosip.stoplight.io/docs/identity-provider/85f761d237115-authorization-endpoint). 
 
-* /Login:
-    Login is a page that has the following components.
+* /login:
+    It is a page that can be loaded with any one of the following components.
     -   Sign in with Biometrics
     -   Sign in with OTP
     -   Sign in with PIN(MOCK)
-    -   Sign in with Inji(impl in progress)
 
-    Each component is capable of authorizing the user using its challenge details. These options to sign in will be presented to the user based on the auth factors that get returned from the /Authorize endpoint.
+    Each component allows the user to authenticate in a different way. Each component is mapped to an auth-factor constant. 
+    For example
+    -   BIO: Sign in with Biometrics
+    -   OTP: Sign in with OTP
+    -   PIN: Sign in with PIN
 
-* /Consent: Consent is a page that prompts the user to provide consent to share one's details from the MOSIP to the relying party. It shows authorize scope that needs to be permitted and essential and voluntary claims that need to be accepted or rejected.
+    Loading of the component in this page depends on the auth-factors returned from the oauth-details endpoint (auth-factors are derived based on the acr_values parameter in authorize request).
+
+* /consent:  is a page that prompts the user to provide consent to share one's details from the MOSIP to the relying party. It shows authorize scope that needs to be permitted and, essential and voluntary claims that need to be accepted or rejected.
 
 ## Build & run (for developers)
 
