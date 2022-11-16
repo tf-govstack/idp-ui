@@ -30,7 +30,8 @@
     "email": "ईमेल पता",
     "email_verified": "ईमेल पता",
     "phone_number": "फ़ोन नंबर",
-    "phone_number_verified": "फ़ोन नंबर"
+    "phone_number_verified": "फ़ोन नंबर",
+    "required": "आवश्यक"
   },
   "l1Biometrics": {
     "device_not_found_msg": "डिवाइस नहीं मिला!",
@@ -88,7 +89,7 @@
     "BIO": "बायोमेट्रिक्स",
     "QRCode": "क्यू आर कोड",
     "WALLET": "इंजि",
-    "OTP":"ओटीपी"
+    "OTP": "ओटीपी"
   },
   "idpDetails": {
     "idp_details_heading": "आईडीपी विवरण",

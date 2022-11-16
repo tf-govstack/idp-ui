@@ -178,7 +178,12 @@ export default function Consent({
                 {authorizeScopes?.map((item) => (
                   <div key={item}>
                     <div class="grid grid-cols-2 gap-4">
-                      <div className="flex justify-start">
+                      <div className="flex justify-start relative items-center mb-1 mt-1 cursor-pointer">
+                        <span className="ml-3 text-sm font-medium text-black-900">
+                          {t(item)}
+                        </span>
+                      </div>
+                      <div className="flex justify-end">
                         <label
                           labelfor={item}
                           className="inline-flex relative items-center mb-1 mt-1 cursor-pointer"
@@ -190,13 +195,8 @@ export default function Consent({
                             className="sr-only peer"
                             onChange={handleScopeChange}
                           />
-                          <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 dark:peer-focus:ring-cyan-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-cyan-600"></div>
+                          <div className="w-9 h-5 border border-neutral-400 bg-white rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-neutral-400 after:border after:border-neutral-400 peer-checked:after:border-sky-500 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:bg-sky-500 peer-checked:after:bg-sky-500 peer-checked:border-sky-500"></div>
                         </label>
-                      </div>
-                      <div className="flex justify-end relative items-center mb-1 mt-1 cursor-pointer">
-                        <span className="ml-3 text-sm font-medium text-black-900 dark:text-black-300">
-                          {t(item)}
-                        </span>
                       </div>
                     </div>
                   </div>
@@ -211,26 +211,18 @@ export default function Consent({
                 {essentialClaims?.map((item) => (
                   <div key={item}>
                     <div class="grid grid-cols-2 gap-4">
-                      <div className="flex justify-start">
-                        <label
-                          labelfor={item}
-                          className="inline-flex relative items-center mb-1 mt-1 cursor-pointer"
-                        >
-                          <input
-                            type="checkbox"
-                            value=""
-                            id={item}
-                            className="sr-only peer"
-                            onChange={handleClaimChange}
-                            checked
-                          />
-                          <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 dark:peer-focus:ring-cyan-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-cyan-600"></div>
-                        </label>
-                      </div>
-                      <div className="flex justify-end relative items-center mb-1 mt-1 cursor-pointer">
-                        <span className="ml-3 text-sm font-medium text-black-900 dark:text-black-300">
+                      <div className="flex justify-start relative items-center mb-1 mt-1 cursor-pointer">
+                        <span className="ml-3 text-sm font-medium text-black-900">
                           {t(item)}
                         </span>
+                      </div>
+                      <div className="flex justify-end">
+                        <label
+                          labelfor={item}
+                          className="inline-flex relative items-center mb-1 mt-1 cursor-pointer text-gray-400"
+                        >
+                          {t("required")}
+                        </label>
                       </div>
                     </div>
                   </div>
@@ -246,7 +238,12 @@ export default function Consent({
                 {voluntaryClaims?.map((item) => (
                   <div key={item}>
                     <div class="grid grid-cols-2 gap-4">
-                      <div className="flex justify-start">
+                      <div className="flex justify-start relative items-center mb-1 mt-1 cursor-pointer">
+                        <span className="ml-3 text-sm font-medium text-black-900">
+                          {t(item)}
+                        </span>
+                      </div>
+                      <div className="flex justify-end">
                         <label
                           labelfor={item}
                           className="inline-flex relative items-center mb-1 mt-1 cursor-pointer"
@@ -258,13 +255,8 @@ export default function Consent({
                             className="sr-only peer"
                             onChange={handleClaimChange}
                           />
-                          <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 dark:peer-focus:ring-cyan-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-cyan-600"></div>
+                          <div className="w-9 h-5 border border-neutral-400 bg-white rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-neutral-400 after:border after:border-neutral-400 peer-checked:after:border-sky-500 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:bg-sky-500 peer-checked:after:bg-sky-500 peer-checked:border-sky-500"></div>
                         </label>
-                      </div>
-                      <div className="flex justify-end relative items-center mb-1 mt-1 cursor-pointer">
-                        <span className="ml-3 text-sm font-medium text-black-900 dark:text-black-300">
-                          {t(item)}
-                        </span>
                       </div>
                     </div>
                   </div>

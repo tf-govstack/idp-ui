@@ -30,7 +30,8 @@
     "email": "Email Address",
     "email_verified": "Email Address",
     "phone_number": "Phone Number",
-    "phone_number_verified": "Phone Number"
+    "phone_number_verified": "Phone Number",
+    "required": "REQUIRED"
   },
   "l1Biometrics": {
     "device_not_found_msg": "Device not found!",
@@ -88,7 +89,7 @@
     "BIO": "Biometrics",
     "QRCode": "QR Code",
     "WALLET": "Inji",
-    "OTP":"OTP"
+    "OTP": "OTP"
   },
   "idpDetails": {
     "idp_details_heading": "IDP Details",
