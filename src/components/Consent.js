@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import LoadingIndicator from "../common/LoadingIndicator";
@@ -101,19 +102,21 @@ export default function Consent({
 
       const { response, errors } = authCodeResponse;
 
+      if (errors != null && errors.length > 0) {
+        onError(
+          errors[0].errorCode,
+          i18next.t("errors." + errors[0].errorCode)
+        );
+        return;
+      }
+
       let params = "?";
-      if (response.nonce !== null && response.nonce !== undefined) {
+      if (response.nonce) {
         params = params + "nonce=" + response.nonce + "&";
       }
 
-      if (response.state !== null && response.state !== undefined) {
+      if (response.state) {
         params = params + "state=" + response.state + "&";
-      }
-
-      //TODO redirect with server response
-      if (errors != null && errors.length > 0) {
-        onError(errors[0].errorCode, t(errors[0].errorCode));
-        return;
       }
 
       window.location.replace(
