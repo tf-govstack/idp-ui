@@ -5,13 +5,33 @@
   },
   "consent": {
     "authorization_failed_msg": "Authorization failed!",
+    "consent_request_rejected": "Consent Request Rejected!",
     "consent_request_msg": "{{clientName}} is requesting access to the following: ",
     "authorize_scope": "Authorize Scopes",
     "essential_claims": "Essential Claims",
     "voluntary_claims": "Voluntary Claims",
     "cancel": "Cancel",
     "allow": "Allow",
-    "redirecting_msg": "Redirecting. Please wait..."
+    "redirecting_msg": "Redirecting. Please wait...",
+    "resident-service": "Resident Service",
+    "name": "Name",
+    "given_name": "Name",
+    "middle_name": "Middle Name",
+    "preferred_username": "Preferred User Name",
+    "picture": "Picture",
+    "gender": "Gender",
+    "birthdate": "Birthdate",
+    "locale": "Locale",
+    "nickname": "Nickname",
+    "family_name": "Family Name",
+    "zoneinfo": "Zone Info",
+    "updated_at": "Updated At",
+    "address": "Address",
+    "email": "Email Address",
+    "email_verified": "Email Address",
+    "phone_number": "Phone Number",
+    "phone_number_verified": "Phone Number",
+    "required": "REQUIRED"
   },
   "l1Biometrics": {
     "device_not_found_msg": "Device not found!",
@@ -22,8 +42,7 @@
     "no_response_msg": "No response",
     "authenticating_msg": "Authenticating. Please wait...",
     "scan_and_verify": "Scan and verify",
-    "more_ways_to_sign_in": "More ways to sign in",
-    "sign_in_with_biometric": "Sign in with Biometric",
+    "sign_in_with_biometric": "Login with Biometric",
     "retry": "Retry!",
     "vid_label_text": "Enter your VID",
     "vid_placeholder": "VID",
@@ -32,6 +51,7 @@
     "Iris": "Iris"
   },
   "pin": {
+    "sign_in_with_pin": "Login with PIN",
     "authentication_failed_msg": "Authentication failed: ",
     "remember_me": "Remember me",
     "login": "Login",
@@ -41,18 +61,47 @@
     "uin_placeholder": "UIN or VID",
     "pin_placeholder": "Enter PIN"
   },
+  "otp": {
+    "sign_in_with_otp": "Login with OTP",
+    "authentication_failed_msg": "Authentication failed: ",
+    "resent_otp": "Resent OTP?",
+    "not_a_robot": "I'm not a robot",
+    "get_otp": "Get OTP",
+    "verify": "Verify",
+    "sending_otp_msg": "Sending OTP. Please wait...",
+    "authenticating_msg": "Authenticating. Please wait...",
+    "vid_label_text": "Enter your VID",
+    "otp_label_text": "OTP",
+    "vid_placeholder": "VID",
+    "otp_placeholder": "1234",
+    "send_otp_failed": "Failed to send OTP!",
+    "mobile_number": "Mobile Number: {{mobileNumber}}",
+    "email_address": "Email Address: {{emailAddress}}",
+    "otp_sent_msg": "OTP has been sent to your registered {{otpChannels}}"
+  },
   "signInOption": {
     "loading_msg": "Loading. Please wait...",
     "login_option_heading": "Choose how you want to login:",
     "login_with": "Login with {{option}}",
     "PIN": "PIN",
     "Inji": "Inji",
-    "Biometrics": "Biometrics"
+    "Biometrics": "Biometrics",
+    "BIO": "Biometrics",
+    "QRCode": "QR Code",
+    "WALLET": "Inji",
+    "OTP": "OTP"
+  },
+  "idpDetails": {
+    "idp_details_heading": "IDP Details",
+    "internal_api": "Internal API",
+    "wellknown_api": ".wellknown API"
   },
   "header": {
-    "login_heading": "Login to your account",
+    "login_heading": "Login with MOSIP",
     "login_paragraph": "Have not registered for MOSIP yet?",
-    "login_linkName": "Preregister"
+    "login_linkName": "Preregister",
+    "more_ways_to_sign_in": "More ways to sign in",
+    "invalid_auth_factor": "Invalid auth factors! Please try again..."
   },
   "tabs": {
     "pin_tab_name": "Sign in with PIN",

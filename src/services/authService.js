@@ -1,9 +1,11 @@
 import axios from "axios";
 
-const idpApiUrl = window["envConfigs"].idpApiUrl;
-const IDP_SERVER_API_URL = idpApiUrl.startsWith("/")
-  ? window.origin + window["envConfigs"].idpApiUrl
-  : window["envConfigs"].idpApiUrl;
+const baseUrl =
+  process.env.NODE_ENV === "development"
+    ? process.env.REACT_APP_IDP_API_URL
+    : window.origin + process.env.REACT_APP_IDP_API_URL;
+
+const sendOtpEndPoint = "/authorization/send-otp";
 const authenticateEndPoint = "/authorization/authenticate";
 const oauthDetailsEndPoint = "/authorization/oauth-details";
 const authCodeEndPoint = "/authorization/auth-code";
@@ -29,7 +31,7 @@ const post_AuthenticateUser = async (
     },
   };
 
-  const endpoint = IDP_SERVER_API_URL + authenticateEndPoint;
+  const endpoint = baseUrl + authenticateEndPoint;
 
   const response = await axios.post(endpoint, request, {
     headers: {
@@ -90,7 +92,7 @@ const post_OauthDetails = async (
     },
   };
 
-  var endpoint = IDP_SERVER_API_URL + oauthDetailsEndPoint;
+  var endpoint = baseUrl + oauthDetailsEndPoint;
 
   const response = await axios.post(endpoint, request, {
     headers: {
@@ -121,7 +123,27 @@ const post_AuthCode = async (
     },
   };
 
-  const endpoint = IDP_SERVER_API_URL + authCodeEndPoint;
+  const endpoint = baseUrl + authCodeEndPoint;
+  const response = await axios.post(endpoint, request, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
+const post_SendOtp = async (transactionId, individualId, otpChannels) => {
+  let request = {
+    requestTime: new Date().toISOString(),
+    request: {
+      transactionId: transactionId,
+      individualId: individualId,
+      otpChannels: otpChannels,
+    },
+  };
+
+  const endpoint = baseUrl + sendOtpEndPoint;
+
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
@@ -134,6 +156,7 @@ const authService = {
   post_AuthenticateUser: post_AuthenticateUser,
   post_OauthDetails: post_OauthDetails,
   post_AuthCode: post_AuthCode,
+  post_SendOtp: post_SendOtp,
 };
 
 export { authService };

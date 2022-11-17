@@ -31,11 +31,11 @@ export default function L1Biometrics({
   localStorageService,
   cryptoService,
   sbiService,
+  i18nKeyPrefix = "l1Biometrics",
 }) {
-  const { t } = useTranslation("l1Biometrics");
+  const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
 
   const inputFields = param.inputFields;
-  const biometricFields = param.bioFields;
 
   const { encodeBase64 } = { ...cryptoService };
   const { capture_Auth, mosipdisc_DiscoverDevicesAsync } = { ...sbiService };
@@ -89,7 +89,7 @@ export default function L1Biometrics({
       setStatus({
         state: states.AUTHENTICATING,
         msg: t("capture_initiated_msg", {
-          modality: selectedDevice.type,
+          modality: t(selectedDevice.type),
           deviceModel: selectedDevice.model,
         }),
       });
@@ -164,7 +164,7 @@ export default function L1Biometrics({
   };
 
   const Authenticate = async (transactionId, uin, bioValue) => {
-    let challengeType = challengeTypes.bio; //TODO Get these values from config
+    let challengeType = challengeTypes.bio;
     let challenge = bioValue;
 
     let challengeList = [
@@ -338,12 +338,6 @@ export default function L1Biometrics({
               )}
             </>
           )}
-
-        <div class="flex justify-center">
-          <Link class="text-center text-gray-500 font-semibold" to="#">
-            {t("more_ways_to_sign_in")}
-          </Link>
-        </div>
 
         {error && (
           <>

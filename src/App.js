@@ -4,15 +4,16 @@ import LoginPage from "./pages/Login";
 import AuthorizePage from "./pages/Authorize";
 import ConsentPage from "./pages/Consent";
 import NavHeader from "./components/NavHeader";
-import SignInOptionsPage from "./pages/SignInOptions";
+import IdpDetailsPage from "./pages/IdpDetails";
+import { langConfigService } from "./services/langConfigService";
 
 function App() {
   return (
     <>
-      <NavHeader />
+      <NavHeader langConfigService={langConfigService} />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<SignInOptionsPage />} />
+          <Route path="/" element={<IdpDetailsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/authorize" element={<AuthorizePage />} />
           <Route path="/consent" element={<ConsentPage />} />

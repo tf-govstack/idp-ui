@@ -1,147 +1,280 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import LoadingIndicator from '../common/LoadingIndicator';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import LoadingIndicator from "../common/LoadingIndicator";
 import { otpFields } from "../constants/formFields";
 import FormAction from "./FormAction";
-import Input from "./Input";
-
+import { LoadingStates as states } from "../constants/states";
+import { challengeTypes } from "../constants/clientConstants";
+import { useTranslation } from "react-i18next";
+import ErrorIndicator from "../common/ErrorIndicator";
+import InputWithImage from "./InputWithImage";
 
 const fields = otpFields;
 let fieldsState = {};
-fields.forEach(field => fieldsState["Otp" + field.id] = '');
+fields.forEach((field) => (fieldsState["Otp" + field.id] = ""));
 
+const OTPStatusEnum = {
+  getOtp: "GETOTP",
+  verifyOtp: "VERIFYOTP",
+};
 
-export default function Otp({ param, authService }) {
+export default function Otp({
+  param,
+  authService,
+  localStorageService,
+  i18nKeyPrefix = "otp",
+}) {
+  const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
+
   const fields = param;
-  const { post_AuthenticateUser } = { ...authService };
+  const { post_AuthenticateUser, post_SendOtp } = { ...authService };
+  const { getTransactionId, storeTransactionId } = { ...localStorageService };
 
   const [loginState, setLoginState] = useState(fieldsState);
-  const [error, setError] = useState(null)
-  const [transactionId, setTransactionId] = useState(null)
-  const [status, setStatus] = useState("LOADED")
+  const [error, setError] = useState(null);
+  const [status, setStatus] = useState({ state: states.LOADED, msg: "" });
+  const [otpStatus, setOtpStatus] = useState(OTPStatusEnum.getOtp);
+  const [formErrors, setFormErrors] = useState({});
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [otpSentMsg, setOtpSentMsg] = useState("");
 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setLoginState({ ...loginState, [e.target.id]: e.target.value })
-  }
+    setLoginState({ ...loginState, [e.target.id]: e.target.value });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     authenticateUser();
-  }
+  };
 
+  const handleSendOtp = (e) => {
+    e.preventDefault();
+    sendOTP();
+  };
 
-  useEffect(() => {
-    setTransactionId(searchParams.get("transactionId"));
-  }, [])
+  const sendOTP = async () => {
+    try {
+      let transactionId = getTransactionId();
+      let vid = loginState["Otp_mosip-vid"];
+      let otpChannels = ["email", "sms"];
+
+      if (!vid) {
+        setFormErrors({ "Otp_mosip-vid": "*Required" });
+        return;
+      }
+
+      setStatus({ state: states.LOADING, msg: t("sending_otp_msg") });
+      const sendOtpResponse = await post_SendOtp(
+        transactionId,
+        vid,
+        otpChannels
+      );
+      setStatus({ state: states.LOADED, msg: "" });
+
+      const { response, errors } = sendOtpResponse;
+
+      if (errors != null && errors.length > 0) {
+        setError({
+          prefix: t("send_otp_failed"),
+          errorCode: errors[0].errorCode,
+          defaultMsg: errors[0].errorMessage,
+        });
+        return;
+      } else {
+        setOtpStatus(OTPStatusEnum.verifyOtp);
+        setFormErrors({});
+        setError(null);
+
+        let otpChannels = "";
+
+        if (response.maskedMobile) {
+          otpChannels =
+            " " +
+            t("mobile_number", {
+              mobileNumber: t(response.maskedMobile),
+            });
+        }
+
+        if (response.maskedEmail) {
+          otpChannels +=
+            ", " +
+            t("email_address", {
+              emailAddress: t(response.maskedEmail),
+            });
+        }
+
+        let msg = t("otp_sent_msg", {
+          otpChannels: otpChannels,
+        });
+        setOtpSentMsg(msg);
+      }
+    } catch (error) {
+      setError({
+        prefix: t("send_otp_failed"),
+        errorCode: error.message,
+      });
+      setStatus({ state: states.ERROR, msg: "" });
+    }
+  };
 
   //Handle Login API Integration here
   const authenticateUser = async () => {
-
     try {
-      let vid = loginState['Otp_mosip-vid'];
-      let challengeType = "OTP";
-      let challenge = loginState['Otp_otp'];
+      let transactionId = getTransactionId();
+
+      let vid = loginState["Otp_mosip-vid"];
+      let challengeType = challengeTypes.otp;
+      let challenge = loginState["Otp_otp"];
 
       let challengeList = [
         {
-          type: challengeType,
-          challenge: challenge
-        }
-      ]
+          authFactorType: challengeType,
+          challenge: challenge,
+        },
+      ];
 
-      setStatus("LOADING");
+      setStatus({ state: states.LOADING, msg: t("authenticating_msg") });
+      const authenticateResponse = await post_AuthenticateUser(
+        transactionId,
+        vid,
+        challengeList
+      );
+      setStatus({ state: states.LOADED, msg: "" });
 
-      const authenticateResponse = await post_AuthenticateUser(transactionId, vid, challengeList);
-
-      setStatus("LOADED");
-
-      const { response, errors } = authenticateResponse
+      const { response, errors } = authenticateResponse;
 
       if (errors != null && errors.length > 0) {
-        console.log(errors);
-        setError("Authentication failed: " + errors[0].errorCode)
+        setError({
+          prefix: t("authentication_failed_msg"),
+          errorCode: errors[0].errorCode,
+          defaultMsg: errors[0].errorMessage,
+        });
         return;
       } else {
-        console.log(response);
-        setError(null)
-        navigate("/consent", { replace: false });
+        setError(null);
+        storeTransactionId(response.transactionId);
+        navigate("/consent", {
+          replace: true,
+        });
       }
+    } catch (error) {
+      setError({
+        prefix: t("authentication_failed_msg"),
+        errorCode: error.message,
+      });
+      setStatus({ state: states.ERROR, msg: "" });
     }
-    catch (errormsg) {
-      // setError(errormsg)
-      // setStatus("ERROR")
-    }
-  }
+  };
 
   return (
-    <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-      <div className="-space-y-px">
-        {
-          fields.map(field =>
-            <Input
+    <>
+      <div className="grid grid-cols-6 items-center">
+        {otpStatus === OTPStatusEnum.verifyOtp && (
+          <button
+            onClick={() => {
+              setOtpStatus(OTPStatusEnum.getOtp);
+            }}
+            class="text-sky-600 text-3xl flex justify-left"
+          >
+            &#8592;
+          </button>
+        )}
+        <div className="flex justify-center col-start-2 col-span-4">
+          <h1 class="text-center text-sky-600 font-semibold">
+            {t("sign_in_with_otp")}
+          </h1>
+        </div>
+      </div>
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <div className={"space-y-px"}>
+          {fields.map((field) => (
+            <InputWithImage
               key={"Otp_" + field.id}
               handleChange={handleChange}
               value={loginState["Otp_" + field.id]}
-              labelText={field.labelText}
+              labelText={t(field.labelText)}
               labelFor={field.labelFor}
               id={"Otp_" + field.id}
               name={field.name}
               type={field.type}
               isRequired={field.isRequired}
-              placeholder={field.placeholder}
+              placeholder={t(field.placeholder)}
+              imgPath="images/photo_scan.png"
+              disabled={otpStatus !== OTPStatusEnum.getOtp}
+              formError={formErrors["Otp_" + field.id]}
             />
+          ))}
+        </div>
 
-          )
-        }
-      </div>
+        {otpStatus === OTPStatusEnum.getOtp && (
+          <div className="flex items-center justify-between ">
+            <div className="flex items-center rounded-md appearance-none w-full px-3 py-3 border border-gray-300">
+              <input
+                id="captcha"
+                name="captcha"
+                type="checkbox"
+                className="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+              />
+              <label
+                htmlFor="captcha"
+                className="ml-2 block font-semibold text-gray-900"
+              >
+                {t("not_a_robot")}
+              </label>
+            </div>
+          </div>
+        )}
 
-      <div className="flex items-center justify-between ">
-        <div className="flex items-center">
-          <input
-            id="remember-me"
-            name="remember-me"
-            type="checkbox"
-            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+        {otpStatus === OTPStatusEnum.verifyOtp && (
+          <div className={"space-y-px"}>
+            <InputWithImage
+              key={"Otp_" + "otp"}
+              handleChange={handleChange}
+              value={loginState["Otp_" + "otp"]}
+              labelText={t("otp_label_text")}
+              labelFor={"otp"}
+              id={"Otp_" + "otp"}
+              name={"otp"}
+              type={"password"}
+              isRequired={true}
+              placeholder={t("otp_placeholder")}
+              imgPath="images/photo_scan.png"
+              disabled={otpStatus !== OTPStatusEnum.verifyOtp}
+              formError={formErrors["Otp_" + "otp"]}
+            />
+          </div>
+        )}
+
+        {otpStatus === OTPStatusEnum.getOtp && (
+          <FormAction
+            type="Button"
+            text={t("get_otp")}
+            handleClick={handleSendOtp}
           />
-          <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-            Remember me
-          </label>
-        </div>
+        )}
+        {otpStatus === OTPStatusEnum.verifyOtp && (
+          <>
+            <FormAction type="Submit" text={t("verify")} />
+            <span class="w-full flex justify-center text-sm text-gray-500">
+              {otpSentMsg}
+            </span>
+          </>
+        )}
 
-        <div className="text-sm">
-          <a href="#" className="font-medium text-purple-600 hover:text-purple-500">
-            Resend OTP?
-          </a>
-        </div>
-      </div>
-      {
-        <div>
-          {
-            (status === "LOADING") && <LoadingIndicator size="medium" message="Authenticating. Please wait...." />
-          }
-        </div>
-      }
-      {
-        (status !== "LOADING") && error && (
-          <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
-            {error}
-          </div>
-        )
-      }
-      {
-        (transactionId === null || transactionId === "") && (
-          <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
-            Invalid transactionId
-          </div>
-        )
-      }
-      {
-        (transactionId !== null && transactionId !== "") && <FormAction handleSubmit={handleSubmit} text="Login" />
-      }
-    </form>
-  )
+        {status.state === states.LOADING && (
+          <LoadingIndicator size="medium" message={status.msg} />
+        )}
+
+        {status.state !== states.LOADING && error && (
+          <ErrorIndicator
+            prefix={error.prefix}
+            errorCode={error.errorCode}
+            defaultMsg={error.defaultMsg}
+          />
+        )}
+      </form>
+    </>
+  );
 }

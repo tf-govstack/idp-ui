@@ -1,6 +1,7 @@
 import React from "react";
 import Authorize from "../components/Authorize";
 import { authService } from "../services/authService";
+import { langConfigService } from "../services/langConfigService";
 import { localStorageService } from "../services/local-storageService";
 
 export default function AuthorizePage() {
@@ -11,6 +12,7 @@ export default function AuthorizePage() {
           <Authorize
             authService={authService}
             localStorageService={localStorageService}
+            langConfigService={langConfigService}
           />
         </div>
       </div>

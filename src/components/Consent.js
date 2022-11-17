@@ -1,13 +1,24 @@
+import i18next from "i18next";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { LoadingStates as states } from "../constants/states";
 
-export default function Consent({ authService, localStorageService }) {
-  const { t } = useTranslation("consent");
+export default function Consent({
+  authService,
+  localStorageService,
+  i18nKeyPrefix = "consent",
+}) {
+  const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
 
   const { post_AuthCode } = { ...authService };
-  const { getTransactionId } = { ...localStorageService };
+  const {
+    getTransactionId,
+    getRedirectUri,
+    getNonce,
+    getState,
+    getOuthDetails,
+  } = { ...localStorageService };
 
   const [status, setStatus] = useState(states.LOADED);
   const [claims, setClaims] = useState([]);
@@ -47,9 +58,7 @@ export default function Consent({ authService, localStorageService }) {
 
   useEffect(() => {
     const enableEssentialClaims = async () => {
-      let oAuthDetails = JSON.parse(
-        window.localStorage.getItem("oauth_details")
-      );
+      let oAuthDetails = JSON.parse(getOuthDetails());
       let claims = oAuthDetails?.essentialClaims;
       setClaims(claims);
     };
@@ -63,10 +72,10 @@ export default function Consent({ authService, localStorageService }) {
 
   const handleCancel = (e) => {
     e.preventDefault();
-    onError(t("authorization_failed_msg"));
+    onError("consent_request_rejected", t("consent_request_rejected"));
   };
 
-  let oAuthDetails = JSON.parse(window.localStorage.getItem("oauth_details"));
+  let oAuthDetails = JSON.parse(getOuthDetails());
 
   let authorizeScopes = oAuthDetails?.authorizeScopes;
   let essentialClaims = oAuthDetails?.essentialClaims;
@@ -93,33 +102,36 @@ export default function Consent({ authService, localStorageService }) {
 
       const { response, errors } = authCodeResponse;
 
+      if (errors != null && errors.length > 0) {
+        onError(
+          errors[0].errorCode,
+          i18next.t("errors." + errors[0].errorCode)
+        );
+        return;
+      }
+
       let params = "?";
-      if (response.nonce !== null && response.nonce !== undefined) {
+      if (response.nonce) {
         params = params + "nonce=" + response.nonce + "&";
       }
 
-      if (response.state !== null && response.state !== undefined) {
+      if (response.state) {
         params = params + "state=" + response.state + "&";
-      }
-
-      //TODO redirect with server response
-      if (errors != null && errors.length > 0) {
-        onError(errors[0].errorCode);
-        return;
       }
 
       window.location.replace(
         response.redirectUri + params + "code=" + response.code
       );
     } catch (error) {
-      onError(error.message);
+      onError("authorization_failed_msg", error.message);
     }
   };
 
-  const onError = async (errorMsg) => {
-    let nonce = window.localStorage.getItem("nonce");
-    let state = window.localStorage.getItem("state");
-    let redirect_uri = window.localStorage.getItem("redirect_uri");
+  //errorCode is REQUIRED, errorDescription is OPTIONAL
+  const onError = async (errorCode, errorDescription) => {
+    let nonce = getNonce();
+    let state = getState();
+    let redirect_uri = getRedirectUri();
 
     if (!redirect_uri) {
       return;
@@ -130,11 +142,17 @@ export default function Consent({ authService, localStorageService }) {
       params = params + "nonce=" + nonce + "&";
     }
 
-    if (state) {
-      params = params + "state=" + state + "&";
+    if (errorDescription) {
+      params = params + "error_description=" + errorDescription + "&";
     }
 
-    window.location.replace(redirect_uri + params + "error=" + errorMsg);
+    //REQUIRED
+    params = params + "state=" + state + "&";
+
+    //REQUIRED
+    params = params + "error=" + errorCode;
+
+    window.location.replace(redirect_uri + params);
   };
 
   return (
@@ -151,7 +169,6 @@ export default function Consent({ authService, localStorageService }) {
           <div className="flex justify-center">
             <b>
               {t("consent_request_msg", {
-                ns: "consent",
                 clientName: clientName,
               })}
             </b>
@@ -164,7 +181,12 @@ export default function Consent({ authService, localStorageService }) {
                 {authorizeScopes?.map((item) => (
                   <div key={item}>
                     <div class="grid grid-cols-2 gap-4">
-                      <div className="flex justify-start">
+                      <div className="flex justify-start relative items-center mb-1 mt-1 cursor-pointer">
+                        <span className="ml-3 text-sm font-medium text-black-900">
+                          {t(item)}
+                        </span>
+                      </div>
+                      <div className="flex justify-end">
                         <label
                           labelfor={item}
                           className="inline-flex relative items-center mb-1 mt-1 cursor-pointer"
@@ -176,13 +198,8 @@ export default function Consent({ authService, localStorageService }) {
                             className="sr-only peer"
                             onChange={handleScopeChange}
                           />
-                          <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 dark:peer-focus:ring-cyan-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-cyan-600"></div>
+                          <div className="w-9 h-5 border border-neutral-400 bg-white rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-neutral-400 after:border after:border-neutral-400 peer-checked:after:border-sky-500 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:bg-sky-500 peer-checked:after:bg-sky-500 peer-checked:border-sky-500"></div>
                         </label>
-                      </div>
-                      <div className="flex justify-end relative items-center mb-1 mt-1 cursor-pointer">
-                        <span className="ml-3 text-sm font-medium text-black-900 dark:text-black-300">
-                          {item}
-                        </span>
                       </div>
                     </div>
                   </div>
@@ -197,26 +214,18 @@ export default function Consent({ authService, localStorageService }) {
                 {essentialClaims?.map((item) => (
                   <div key={item}>
                     <div class="grid grid-cols-2 gap-4">
-                      <div className="flex justify-start">
+                      <div className="flex justify-start relative items-center mb-1 mt-1 cursor-pointer">
+                        <span className="ml-3 text-sm font-medium text-black-900">
+                          {t(item)}
+                        </span>
+                      </div>
+                      <div className="flex justify-end">
                         <label
                           labelfor={item}
-                          className="inline-flex relative items-center mb-1 mt-1 cursor-pointer"
+                          className="inline-flex relative items-center mb-1 mt-1 cursor-pointer text-gray-400"
                         >
-                          <input
-                            type="checkbox"
-                            value=""
-                            id={item}
-                            className="sr-only peer"
-                            onChange={handleClaimChange}
-                            checked
-                          />
-                          <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 dark:peer-focus:ring-cyan-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-cyan-600"></div>
+                          {t("required")}
                         </label>
-                      </div>
-                      <div className="flex justify-end relative items-center mb-1 mt-1 cursor-pointer">
-                        <span className="ml-3 text-sm font-medium text-black-900 dark:text-black-300">
-                          {item}
-                        </span>
                       </div>
                     </div>
                   </div>
@@ -232,7 +241,12 @@ export default function Consent({ authService, localStorageService }) {
                 {voluntaryClaims?.map((item) => (
                   <div key={item}>
                     <div class="grid grid-cols-2 gap-4">
-                      <div className="flex justify-start">
+                      <div className="flex justify-start relative items-center mb-1 mt-1 cursor-pointer">
+                        <span className="ml-3 text-sm font-medium text-black-900">
+                          {t(item)}
+                        </span>
+                      </div>
+                      <div className="flex justify-end">
                         <label
                           labelfor={item}
                           className="inline-flex relative items-center mb-1 mt-1 cursor-pointer"
@@ -244,13 +258,8 @@ export default function Consent({ authService, localStorageService }) {
                             className="sr-only peer"
                             onChange={handleClaimChange}
                           />
-                          <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 dark:peer-focus:ring-cyan-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-cyan-600"></div>
+                          <div className="w-9 h-5 border border-neutral-400 bg-white rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-neutral-400 after:border after:border-neutral-400 peer-checked:after:border-sky-500 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:bg-sky-500 peer-checked:after:bg-sky-500 peer-checked:border-sky-500"></div>
                         </label>
-                      </div>
-                      <div className="flex justify-end relative items-center mb-1 mt-1 cursor-pointer">
-                        <span className="ml-3 text-sm font-medium text-black-900 dark:text-black-300">
-                          {item}
-                        </span>
                       </div>
                     </div>
                   </div>

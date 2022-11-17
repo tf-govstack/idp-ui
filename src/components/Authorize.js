@@ -6,11 +6,24 @@ import ErrorIndicator from "../common/ErrorIndicator";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { LoadingStates as states } from "../constants/states";
 
-export default function Authorize({ authService, localStorageService }) {
-  const { t, i18n } = useTranslation("authorize");
+export default function Authorize({
+  authService,
+  localStorageService,
+  langConfigService,
+  i18nKeyPrefix = "authorize",
+}) {
+  const { t, i18n } = useTranslation("translation", {
+    keyPrefix: i18nKeyPrefix,
+  });
 
   const { post_OauthDetails } = { ...authService };
-  const { storeOauthDetails, storeTransactionId } = { ...localStorageService };
+  const { storeOauthDetails, storeTransactionId } = {
+    ...localStorageService,
+  };
+
+  const { getConfiguration } = {
+    ...langConfigService,
+  };
 
   const [status, setStatus] = useState(states.LOADING);
   const [oAuthDetailResponse, setOAuthDetailResponse] = useState(null);
@@ -80,17 +93,37 @@ export default function Authorize({ authService, localStorageService }) {
 
   useEffect(() => {
     if (status === states.LOADED) {
-      let uiLocales = searchParams.get("ui_locales");
-      if (uiLocales) changeLanguage(uiLocales);
+      changeLanguage();
       redirectToLogin();
     }
   }, [status]);
 
-  const changeLanguage = async (uiLocales) => {
-    //TODO logic for lang change
-    let langs = uiLocales.split(" ");
+  const changeLanguage = async () => {
+    //Language detector priotity order: ['querystring', 'cookie', 'localStorage',
+    //      'sessionStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
 
-    i18n.changeLanguage(langs[0]);
+    //1. Check for ui locales param. Highest priority.
+    //This will override the language detectors selected language
+    let defaultConfigs = await getConfiguration();
+    let supportedLanguages = defaultConfigs.languages;
+    let uiLocales = searchParams.get("ui_locales");
+    if (uiLocales) {
+      let languages = uiLocales.split(" ");
+      for (let idx in languages) {
+        if (supportedLanguages[languages[idx]]) {
+          i18n.changeLanguage(languages[idx]);
+          return;
+        }
+      }
+    }
+
+    //2. Check for cookie
+    //Language detector will store and use cookie "i18nextLng"
+
+    //3. Check for system locale
+    //Language detector will check navigator and subdomain to select proper language
+
+    //4. default lang set in env_configs file as fallback language.
   };
 
   const redirectToLogin = async () => {

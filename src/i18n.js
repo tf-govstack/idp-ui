@@ -1,48 +1,25 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
+import Backend from "i18next-http-backend";
 
-// Importing translation files
-
-import translationEN from "./locales/en.json";
-import translationHE from "./locales/hn.json";
-import translationAr from "./locales/ar.json";
-
-//Creating object with the variables of imported translation files
-const resources = {
-  en: {
-    consent: translationEN.consent,
-    l1Biometrics: translationEN.l1Biometrics,
-    pin: translationEN.pin,
-    signInOption: translationEN.signInOption,
-    header: translationEN.header,
-    authorize: translationEN.authorize,
-    tabs: translationEN.tabs,
-    errors: translationEN.errors,
-  },
-  hn: {
-    consent: translationHE.consent,
-    l1Biometrics: translationHE.l1Biometrics,
-    pin: translationHE.pin,
-    signInOption: translationHE.signInOption,
-    header: translationHE.header,
-    authorize: translationHE.authorize,
-    tabs: translationHE.tabs,
-    errors: translationHE.errors,
-  },
-  ar: {
-    translation: translationAr,
-  },
-};
-
-//i18N Initialization
-
-i18n.use(initReactI18next).init({
-  resources,
-  lng: window["envConfigs"].defaultLang, //default language
-  keySeparator: false,
-  interpolation: {
-    escapeValue: false,
-  },
-});
+i18n
+  // detect available locale files
+  .use(Backend)
+  // detect user language
+  .use(LanguageDetector)
+  // pass the i18n instance to react-i18next.
+  .use(initReactI18next)
+  // init i18next
+  .init({
+    debug: false,
+    fallbackLng: window["envConfigs"].defaultLang, //default language
+    interpolation: {
+      escapeValue: false, // not needed for react as it escapes by default
+    },
+    backend: {
+      loadPath: "/locales/{{lng}}.json",
+    },
+  });
 
 export default i18n;

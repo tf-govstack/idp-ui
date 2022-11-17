@@ -2,32 +2,42 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Select from "react-select";
 
-export default function NavHeader() {
+export default function NavHeader({ langConfigService }) {
   const { i18n } = useTranslation();
-  const [selectedLang, setSelectedLang] = useState(null);
+  const { getConfiguration } = {
+    ...langConfigService,
+  };
+
+  const [langOptions, setLangOptions] = useState([]);
 
   const changeLanguageHandler = (e) => {
     i18n.changeLanguage(e.value);
-    setSelectedLang(e);
   };
 
-  const data = [
-    {
-      value: "en",
-      label: "English (US)",
-    },
-    {
-      value: "hn",
-      label: "Hindi",
-    },
-    {
-      value: "ar",
-      label: "Arabic",
-    },
-  ];
+  const customStyles = {
+    control: (base) => ({
+      ...base,
+      border: 0,
+      boxShadow: "none",
+    }),
+  };
 
   useEffect(() => {
-    setSelectedLang(data[0]);
+    try {
+      getConfiguration().then((response) => {
+        let supportedLanguages = response.languages;
+        let langData = [];
+        for (let lang in supportedLanguages) {
+          langData.push({
+            label: supportedLanguages[lang],
+            value: lang,
+          });
+        }
+        setLangOptions(langData);
+      });
+    } catch (error) {
+      console.error("Failed to load i18n bundle!");
+    }
   }, []);
 
   return (
@@ -35,9 +45,12 @@ export default function NavHeader() {
       <div class="flex items-center md:order-2 justify-end">
         <img src="images/language_icon.png" className="mr-2" />
         <Select
-          className="appearance-none w-2/12"
-          value={selectedLang}
-          options={data}
+          styles={customStyles}
+          isSearchable={false}
+          className="appearance-none"
+          value={null}
+          options={langOptions}
+          placeholder="Language"
           onChange={changeLanguageHandler}
         />
       </div>
