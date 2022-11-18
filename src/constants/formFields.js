@@ -1,5 +1,3 @@
-import { deviceType } from "./clientConstants";
-
 const pinFields = [
   {
     labelText: "uin_label_text", //translation key for pin namespace

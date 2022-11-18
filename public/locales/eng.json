@@ -101,7 +101,9 @@
     "login_paragraph": "Have not registered for MOSIP yet?",
     "login_linkName": "Preregister",
     "more_ways_to_sign_in": "More ways to sign in",
-    "invalid_auth_factor": "Invalid auth factors! Please try again..."
+    "invalid_auth_factor": "Invalid auth factors! Please try again...",
+    "here_tab_name": "Log In Here",
+    "inji_tab_name": "Log In with Inji"
   },
   "tabs": {
     "pin_tab_name": "Sign in with PIN",

@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import IDPQRCode from "./IDPQRCode";
 
 export default function Background({
   heading,
@@ -10,6 +11,16 @@ export default function Background({
   showMoreOption,
   i18nKeyPrefix = "header",
 }) {
+  const tabs = [
+    {
+      name: "inji_tab_name",
+    },
+    {
+      name: "here_tab_name",
+    },
+  ];
+
+  const [openTab, setOpenTab] = useState(0);
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
   return (
     <>
@@ -33,17 +44,52 @@ export default function Background({
             </div>
             <div class="w-full flex justify-center">
               <div className="w-96 h-min shadow-lg rounded bg-[#F8F8F8]">
-                <div className="px-5 py-2">{component}</div>
-                <div class="flex justify-center py-5">
-                  <button
-                    class={
-                      "text-gray-500 font-semibold" +
-                      (showMoreOption ? " block" : " hidden")
-                    }
-                    onClick={handleMoreWaysToSignIn}
+                <div class="w-full flex justify-center">
+                  <ul
+                    className="divide-dashed w-full flex mb-0 list-none flex-wrap pb-2 flex-row grid grid-cols-2"
+                    role="tablist"
                   >
-                    {t("more_ways_to_sign_in")}
-                  </button>
+                    {tabs.map((tab, index) => (
+                      <li
+                        key={tab.name + index}
+                        className="-mb-px mr-2 last:mr-0 flex-auto text-center"
+                      >
+                        <a
+                          className={
+                            "text-xs font-bold uppercase px-5 py-3 border border-2 rounded block leading-normal " +
+                            (openTab === index
+                              ? "text-white bg-gradient-to-t from-cyan-500 to-blue-500"
+                              : "text-slate-400 bg-white")
+                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setOpenTab(index);
+                          }}
+                        >
+                          {t(tab.name)}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="px-5 py-2">
+                  <div className={openTab === 0 ? "block" : "hidden"}>
+                    <IDPQRCode />
+                  </div>
+                  <div className={openTab === 1 ? "block" : "hidden"}>
+                    {component}
+                    <div class="flex justify-center py-5">
+                      <button
+                        class={
+                          "text-gray-500 font-semibold" +
+                          (showMoreOption ? " block" : " hidden")
+                        }
+                        onClick={handleMoreWaysToSignIn}
+                      >
+                        {t("more_ways_to_sign_in")}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

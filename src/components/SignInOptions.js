@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import LoadingIndicator from "../common/LoadingIndicator";
+import { validAuthFactors } from "../constants/clientConstants";
 import { LoadingStates as states } from "../constants/states";
 
 export default function SignInOptions({
@@ -33,11 +34,13 @@ export default function SignInOptions({
     let loginOptions = [];
 
     authFactors.forEach((authFactor) => {
-      loginOptions.push({
-        label: authFactor[0].type,
-        value: authFactor,
-        icon: modalityIconPath[authFactor[0].type],
-      });
+      if (validAuthFactors[authFactor[0].type]) {
+        loginOptions.push({
+          label: authFactor[0].type,
+          value: authFactor,
+          icon: modalityIconPath[authFactor[0].type],
+        });
+      }
     });
 
     setSinginOptions(loginOptions);

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Otp from "../components/Otp";
 import Pin from "../components/Pin";
 import { otpFields, pinFields, bioLoginFields } from "../constants/formFields";
-import IDPQRCode from "../components/IDPQRCode";
 import L1Biometrics from "../components/L1Biometrics";
 import { useTranslation } from "react-i18next";
 import { authService } from "../services/authService";
@@ -11,12 +10,12 @@ import { cryptoService } from "../services/cryptoService";
 import { sbiService } from "../services/sbiService";
 import Background from "../components/Background";
 import SignInOptions from "../components/SignInOptions";
+import { validAuthFactors } from "../constants/clientConstants";
 
 //authFactorComponentMapping
 const comp = {
   PIN: Pin,
   OTP: Otp,
-  WALLET: IDPQRCode,
   BIO: L1Biometrics,
 };
 
@@ -46,10 +45,6 @@ function InitiateOtp(inst) {
   });
 }
 
-function InitiateQRCode(inst) {
-  return React.createElement(comp[inst]);
-}
-
 function InitiateSignInOptions(handleSignInOptionClick) {
   return React.createElement(SignInOptions, {
     localStorageService: localStorageService,
@@ -66,10 +61,6 @@ function createDynamicLoginElements(inst) {
     return InitiateInvalidAuthFactor(
       "The component " + { inst } + " has not been created yet."
     );
-  }
-
-  if (comp[inst] === IDPQRCode) {
-    return InitiateQRCode(inst);
   }
 
   if (comp[inst] === Otp) {
@@ -112,9 +103,19 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
 
     try {
       let authFactors = oAuthDetails?.authFactors;
-      let firstLoginOption = authFactors[0];
+
+      let validComponents = [];
+
+      //checking for valid auth factors
+      authFactors.forEach((authFactor) => {
+        if (validAuthFactors[authFactor[0].type]) {
+          validComponents.push(authFactor);
+        }
+      });
+
+      let firstLoginOption = validComponents[0];
       let authFactor = firstLoginOption[0].type;
-      setShowMoreOption(authFactors.length > 1);
+      setShowMoreOption(validComponents.length > 1);
       setCompToShow(createDynamicLoginElements(authFactor));
     } catch (error) {
       setShowMoreOption(false);
