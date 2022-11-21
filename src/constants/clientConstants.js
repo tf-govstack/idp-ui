@@ -34,6 +34,7 @@ const configurationKeys = {
   sbiIrisBioSubtypes: "sbi.bio.subtypes.iris", //comma separated list of bio-subtypes. default is "UNKNOWN"
   sbiFingerBioSubtypes: "sbi.bio.subtypes.finger", //comma separated list of bio-subtypes. default is "UNKNOWN"
   resendOtpTimeout: "resend.otp.delay.secs",
+  sendOtpChannels: "send.otp.channels",//comma separated list of otp channels.
 };
 
 export { deviceType, challengeTypes, configurationKeys, validAuthFactors };

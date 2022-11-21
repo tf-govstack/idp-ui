@@ -64,7 +64,7 @@
   "otp": {
     "sign_in_with_otp": "Login with OTP",
     "authentication_failed_msg": "Authentication failed: ",
-    "resent_otp": "Resent OTP?",
+    "resent_otp": "Resent OTP",
     "not_a_robot": "I'm not a robot",
     "get_otp": "Get OTP",
     "verify": "Verify",
@@ -77,7 +77,8 @@
     "send_otp_failed": "Failed to send OTP!",
     "mobile_number": "Mobile Number: {{mobileNumber}}",
     "email_address": "Email Address: {{emailAddress}}",
-    "otp_sent_msg": "OTP has been sent to your registered {{otpChannels}}"
+    "otp_sent_msg": "OTP has been sent to your registered {{otpChannels}}",
+    "resent_otp_counter": "Resent OTP in {{timeLeft}}"
   },
   "signInOption": {
     "loading_msg": "Loading. Please wait...",

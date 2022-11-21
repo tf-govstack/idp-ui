@@ -4,7 +4,10 @@ import LoadingIndicator from "../common/LoadingIndicator";
 import { otpFields } from "../constants/formFields";
 import FormAction from "./FormAction";
 import { LoadingStates as states } from "../constants/states";
-import { challengeTypes } from "../constants/clientConstants";
+import {
+  challengeTypes,
+  configurationKeys,
+} from "../constants/clientConstants";
 import { useTranslation } from "react-i18next";
 import ErrorIndicator from "../common/ErrorIndicator";
 import InputWithImage from "./InputWithImage";
@@ -25,17 +28,25 @@ export default function Otp({
   i18nKeyPrefix = "otp",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
-
   const fields = param;
   const { post_AuthenticateUser, post_SendOtp } = { ...authService };
-  const { getTransactionId, storeTransactionId } = { ...localStorageService };
+  const { getTransactionId, storeTransactionId, getIdpConfiguration } = {
+    ...localStorageService,
+  };
+
+  const resendOtpTimeout =
+    getIdpConfiguration(configurationKeys.resendOtpTimeout) ?? "30";
+  const commaSeparatedChannels =
+    getIdpConfiguration(configurationKeys.sendOtpChannels) ?? "email,mobile";
 
   const [loginState, setLoginState] = useState(fieldsState);
   const [error, setError] = useState(null);
   const [status, setStatus] = useState({ state: states.LOADED, msg: "" });
   const [otpStatus, setOtpStatus] = useState(OTPStatusEnum.getOtp);
   const [formErrors, setFormErrors] = useState({});
-
+  const [resendOtpCountDown, setResendOtpCountDown] = useState();
+  const [showResendOtp, setShowResendOtp] = useState(false);
+  const [showTimmer, setShowTimmer] = useState(false);
   const [otpSentMsg, setOtpSentMsg] = useState("");
 
   const navigate = useNavigate();
@@ -56,9 +67,15 @@ export default function Otp({
 
   const sendOTP = async () => {
     try {
+      setShowTimmer(false);
+      setShowResendOtp(false);
+      setFormErrors({});
+      setError(null);
+
       let transactionId = getTransactionId();
       let vid = loginState["Otp_mosip-vid"];
-      let otpChannels = ["email", "sms"];
+
+      let otpChannels = commaSeparatedChannels.split(",").map((x) => x.trim());
 
       if (!vid) {
         setFormErrors({ "Otp_mosip-vid": "*Required" });
@@ -83,9 +100,8 @@ export default function Otp({
         });
         return;
       } else {
+        startTimer();
         setOtpStatus(OTPStatusEnum.verifyOtp);
-        setFormErrors({});
-        setError(null);
 
         let otpChannels = "";
 
@@ -93,16 +109,19 @@ export default function Otp({
           otpChannels =
             " " +
             t("mobile_number", {
-              mobileNumber: t(response.maskedMobile),
+              mobileNumber: response.maskedMobile,
             });
         }
 
         if (response.maskedEmail) {
-          otpChannels +=
-            ", " +
-            t("email_address", {
-              emailAddress: t(response.maskedEmail),
-            });
+          if (otpChannels.length > 0) {
+            otpChannels += " & ";
+          } else {
+            otpChannels += " ";
+          }
+          otpChannels += t("email_address", {
+            emailAddress: response.maskedEmail,
+          });
         }
 
         let msg = t("otp_sent_msg", {
@@ -117,6 +136,30 @@ export default function Otp({
       });
       setStatus({ state: states.ERROR, msg: "" });
     }
+  };
+
+  const startTimer = async () => {
+    setResendOtpCountDown(
+      t("resent_otp_counter", { timeLeft: resendOtpTimeout + "s" })
+    );
+    setShowResendOtp(false);
+    setShowTimmer(true);
+    let timePassed = 0;
+
+    let x = setInterval(function () {
+      timePassed++;
+      let timeLeft = resendOtpTimeout - timePassed;
+
+      setResendOtpCountDown(
+        t("resent_otp_counter", { timeLeft: timeLeft + "s" })
+      );
+
+      if (timeLeft === 0) {
+        clearInterval(x);
+        setShowTimmer(false);
+        setShowResendOtp(true);
+      }
+    }, 1000);
   };
 
   //Handle Login API Integration here
@@ -254,12 +297,25 @@ export default function Otp({
             handleClick={handleSendOtp}
           />
         )}
+
         {otpStatus === OTPStatusEnum.verifyOtp && (
           <>
-            <FormAction type="Submit" text={t("verify")} />
             <span class="w-full flex justify-center text-sm text-gray-500">
               {otpSentMsg}
             </span>
+            <FormAction type="Submit" text={t("verify")} />
+            {showTimmer && (
+              <span class="w-full flex justify-center text-md text-gray-500">
+                {resendOtpCountDown}
+              </span>
+            )}
+            {showResendOtp && (
+              <FormAction
+                type="Button"
+                text={t("resent_otp")}
+                handleClick={handleSendOtp}
+              />
+            )}
           </>
         )}
 
