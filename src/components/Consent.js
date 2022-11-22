@@ -7,6 +7,7 @@ import { LoadingStates as states } from "../constants/states";
 export default function Consent({
   authService,
   localStorageService,
+  mosipLogoPath = "logo.png",
   i18nKeyPrefix = "consent",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
@@ -81,7 +82,7 @@ export default function Consent({
   let essentialClaims = oAuthDetails?.essentialClaims;
   let voluntaryClaims = oAuthDetails?.voluntaryClaims;
   let clientName = oAuthDetails?.clientName;
-  let logoUrl = oAuthDetails?.logoUrl;
+  let clientLogoPath = oAuthDetails?.logoUrl;
 
   //Handle Login API Integration here
   const submitConsent = async () => {
@@ -162,8 +163,10 @@ export default function Consent({
     >
       <div className="px-4 py-4 flex-auto">
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="flex justify-center">
-            <img src={logoUrl}></img>
+          <div className="flex justify-center items-center">
+            <img class="h-20 mr-5" src={clientLogoPath} />
+            <span class="text-6xl flex mr-5">&#8651;</span>
+            <img class="h-20" src={mosipLogoPath} />
           </div>
 
           <div className="flex justify-center">

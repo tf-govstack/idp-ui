@@ -4,7 +4,8 @@ import IDPQRCode from "./IDPQRCode";
 
 export default function Background({
   heading,
-  logoPath,
+  mosipLogoPath,
+  clientLogoPath,
   backgroundImgPath,
   component,
   handleMoreWaysToSignIn,
@@ -34,8 +35,10 @@ export default function Background({
             />
           </div>
           <div class="lg:flex-grow md:w-1/2 lg:pl-24 md:pl-16 flex flex-col md:items-start md:text-left items-center text-center">
-            <div class="w-full flex justify-center">
-              <img class="mb-4 h-20" src={logoPath} />
+            <div class="w-full flex mb-4 justify-center items-center">
+              <img class="h-20 mr-5" src={clientLogoPath} />
+              <span class="text-6xl flex mr-5">&#8651;</span>
+              <img class="h-20" src={mosipLogoPath} />
             </div>
             <div class="w-full">
               <h1 class="flex justify-center title-font sm:text-3xl text-3xl mb-16 font-medium text-gray-900">
