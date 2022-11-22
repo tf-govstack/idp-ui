@@ -113,7 +113,7 @@
   },
   "errors": {
     "no_response_msg": "No response",
-    "no_devices_found_msg": "No devices found!",
+    "no_devices_found_msg": "Device not found. Please check the connectivity and retry.",
     "0": "Success",
     "100": "Device not registered",
     "101": "Unable to detect a biometric object",

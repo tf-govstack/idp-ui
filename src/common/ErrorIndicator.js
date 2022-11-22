@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
  * If defaultMsg is not passed then errorCode key itself became the fallback value.
  */
 const ErrorIndicator = ({
-  prefix,
+  prefix = "",
   errorCode,
   defaultMsg,
   i18nKeyPrefix = "errors",
