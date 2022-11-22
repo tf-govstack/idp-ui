@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { otpFields } from "../constants/formFields";
@@ -11,6 +11,7 @@ import {
 import { useTranslation } from "react-i18next";
 import ErrorIndicator from "../common/ErrorIndicator";
 import InputWithImage from "./InputWithImage";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const fields = otpFields;
 let fieldsState = {};
@@ -27,7 +28,9 @@ export default function Otp({
   localStorageService,
   i18nKeyPrefix = "otp",
 }) {
-  const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
+  const { t } = useTranslation("translation", {
+    keyPrefix: i18nKeyPrefix,
+  });
   const fields = param;
   const { post_AuthenticateUser, post_SendOtp } = { ...authService };
   const { getTransactionId, storeTransactionId, getIdpConfiguration } = {
@@ -38,6 +41,12 @@ export default function Otp({
     getIdpConfiguration(configurationKeys.resendOtpTimeout) ?? "30";
   const commaSeparatedChannels =
     getIdpConfiguration(configurationKeys.sendOtpChannels) ?? "email,mobile";
+  const sendOTPShowCaptcha =
+    getIdpConfiguration(configurationKeys.sendOTPShowCaptcha) ??
+    process.env.REACT_APP_SEND_OTP_CAPTCHA_ENABLED;
+  const sendOtpCaptchaSiteKey =
+    getIdpConfiguration(configurationKeys.sendOtpCaptchaSiteKey) ??
+    process.env.REACT_APP_SITE_KEY;
 
   const [loginState, setLoginState] = useState(fieldsState);
   const [error, setError] = useState(null);
@@ -48,6 +57,10 @@ export default function Otp({
   const [showResendOtp, setShowResendOtp] = useState(false);
   const [showTimmer, setShowTimmer] = useState(false);
   const [otpSentMsg, setOtpSentMsg] = useState("");
+  const [enableGetOtp, setEnableGetOtp] = useState(false);
+  const [timer, setTimer] = useState(null);
+
+  const captchaRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -60,12 +73,23 @@ export default function Otp({
     authenticateUser();
   };
 
-  const handleSendOtp = (e) => {
-    e.preventDefault();
-    sendOTP();
+  const onSuccessfulCaptcha = (value) => {
+    if (value) {
+      setEnableGetOtp(true);
+    } else {
+      setEnableGetOtp(false);
+    }
   };
 
-  const sendOTP = async () => {
+  const handleSendOtp = (e) => {
+    e.preventDefault();
+    setEnableGetOtp(false);
+    const token = captchaRef.current.getValue();
+    captchaRef.current.reset();
+    sendOTP(token);
+  };
+
+  const sendOTP = async (token) => {
     try {
       setShowTimmer(false);
       setShowResendOtp(false);
@@ -86,7 +110,8 @@ export default function Otp({
       const sendOtpResponse = await post_SendOtp(
         transactionId,
         vid,
-        otpChannels
+        otpChannels,
+        token
       );
       setStatus({ state: states.LOADED, msg: "" });
 
@@ -139,14 +164,14 @@ export default function Otp({
   };
 
   const startTimer = async () => {
+    clearInterval(timer);
     setResendOtpCountDown(
       t("resent_otp_counter", { timeLeft: resendOtpTimeout + "s" })
     );
     setShowResendOtp(false);
     setShowTimmer(true);
     let timePassed = 0;
-
-    let x = setInterval(function () {
+    var interval = setInterval(function () {
       timePassed++;
       let timeLeft = resendOtpTimeout - timePassed;
 
@@ -155,11 +180,12 @@ export default function Otp({
       );
 
       if (timeLeft === 0) {
-        clearInterval(x);
+        clearInterval(interval);
         setShowTimmer(false);
         setShowResendOtp(true);
       }
     }, 1000);
+    setTimer(interval);
   };
 
   //Handle Login API Integration here
@@ -251,25 +277,6 @@ export default function Otp({
           ))}
         </div>
 
-        {otpStatus === OTPStatusEnum.getOtp && (
-          <div className="flex items-center justify-between ">
-            <div className="flex items-center rounded-md appearance-none w-full px-3 py-3 border border-gray-300">
-              <input
-                id="captcha"
-                name="captcha"
-                type="checkbox"
-                className="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-              />
-              <label
-                htmlFor="captcha"
-                className="ml-2 block font-semibold text-gray-900"
-              >
-                {t("not_a_robot")}
-              </label>
-            </div>
-          </div>
-        )}
-
         {otpStatus === OTPStatusEnum.verifyOtp && (
           <div className={"space-y-px"}>
             <InputWithImage
@@ -289,12 +296,23 @@ export default function Otp({
             />
           </div>
         )}
+        <div className="flex items-center justify-center items-center w-full">
+          <ReCAPTCHA
+            id="recaptchaId"
+            hidden={otpStatus !== OTPStatusEnum.getOtp}
+            size="normal"
+            sitekey={sendOtpCaptchaSiteKey}
+            ref={captchaRef}
+            onChange={onSuccessfulCaptcha}
+          />
+        </div>
 
         {otpStatus === OTPStatusEnum.getOtp && (
           <FormAction
             type="Button"
             text={t("get_otp")}
             handleClick={handleSendOtp}
+            disabled={!enableGetOtp || !loginState["Otp_mosip-vid"]}
           />
         )}
 

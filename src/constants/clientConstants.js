@@ -35,6 +35,8 @@ const configurationKeys = {
   sbiFingerBioSubtypes: "sbi.bio.subtypes.finger", //comma separated list of bio-subtypes. default is "UNKNOWN"
   resendOtpTimeout: "resend.otp.delay.secs",
   sendOtpChannels: "send.otp.channels",//comma separated list of otp channels.
+  sendOTPShowCaptcha: "mosip.preregistration.captcha.enable",//display captcha or not
+  sendOtpCaptchaSiteKey: "mosip.preregistration.captcha.sitekey",//site key for ReCAPTCHA
 };
 
 export { deviceType, challengeTypes, configurationKeys, validAuthFactors };
