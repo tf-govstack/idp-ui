@@ -2,7 +2,11 @@ import axios from "axios";
 
 const defaultConfigEndpoint = "/locales/default.json";
 
-const getConfiguration = async () => {
+/**
+ * fetchs and return the locale configuration stored in public folder
+ * @returns json object
+ */
+const getLocaleConfiguration = async () => {
   const endpoint = window.origin + defaultConfigEndpoint;
 
   const response = await axios.get(endpoint);
@@ -10,7 +14,7 @@ const getConfiguration = async () => {
 };
 
 const langConfigService = {
-  getConfiguration: getConfiguration,
+  getLocaleConfiguration,
 };
 
 export { langConfigService };

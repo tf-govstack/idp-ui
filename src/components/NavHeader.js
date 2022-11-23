@@ -4,7 +4,7 @@ import Select from "react-select";
 
 export default function NavHeader({ langConfigService }) {
   const { i18n } = useTranslation();
-  const { getConfiguration } = {
+  const { getLocaleConfiguration } = {
     ...langConfigService,
   };
 
@@ -24,7 +24,7 @@ export default function NavHeader({ langConfigService }) {
 
   useEffect(() => {
     try {
-      getConfiguration().then((response) => {
+      getLocaleConfiguration().then((response) => {
         let supportedLanguages = response.languages;
         let langData = [];
         for (let lang in supportedLanguages) {
