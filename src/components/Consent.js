@@ -164,9 +164,9 @@ export default function Consent({
       <div className="px-4 py-4 flex-auto">
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="flex justify-center items-center">
-            <img class="h-20 mr-5" src={clientLogoPath} />
+            <img class="h-20 mr-5" src={clientLogoPath} alt={clientName} />
             <span class="text-6xl flex mr-5">&#8651;</span>
-            <img class="h-20" src={mosipLogoPath} />
+            <img class="h-20" src={mosipLogoPath} alt="MOSIP" />
           </div>
 
           <div className="flex justify-center">

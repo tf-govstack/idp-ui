@@ -83,6 +83,7 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
   const [compToShow, setCompToShow] = useState(null);
   const [showMoreOption, setShowMoreOption] = useState(false);
   const [clientLogoURL, setClientLogoURL] = useState(null);
+  const [clientName, setClientName] = useState(null);
 
   const handleSignInOptionClick = (authFactor) => {
     //TODO handle multifactor auth
@@ -104,6 +105,7 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
 
     try {
       setClientLogoURL(oAuthDetails?.logoUrl);
+      setClientName(oAuthDetails?.clientName);
       let authFactors = oAuthDetails?.authFactors;
       let validComponents = [];
 
@@ -130,6 +132,7 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
         heading={t("login_heading")}
         mosipLogoPath="logo.png"
         clientLogoPath={clientLogoURL}
+        clientName={clientName}
         backgroundImgPath="images/illustration_one.png"
         component={compToShow}
         handleMoreWaysToSignIn={handleMoreWaysToSignIn}
