@@ -139,19 +139,13 @@ const post_AuthCode = async (
  * @param {List<string>} otpChannels list of channels(ie. phone, email)
  * @returns /send-otp API response
  */
-const post_SendOtp = async (
-  transactionId,
-  individualId,
-  otpChannels,
-  token
-) => {
+const post_SendOtp = async (transactionId, individualId, otpChannels) => {
   let request = {
     requestTime: new Date().toISOString(),
     request: {
       transactionId: transactionId,
       individualId: individualId,
       otpChannels: otpChannels,
-      token: token,
     },
   };
 
