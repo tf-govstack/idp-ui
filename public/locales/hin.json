@@ -48,7 +48,8 @@
     "vid_placeholder": "वीआईडी",
     "Face": "चेहरा",
     "Finger": "उँगलिया",
-    "Iris": "आँख"
+    "Iris": "आँख",
+    "select_a_device": "कोई डिवाइस चुनें"
   },
   "pin": {
     "sign_in_with_pin": "पिन से लॉगिन करें",

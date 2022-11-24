@@ -53,20 +53,20 @@ export default function Background({
                 <div className="w-96 h-min shadow-lg rounded bg-[#F8F8F8]">
                   <div class="w-full flex justify-center">
                     <ul
-                      className="divide-dashed w-full flex mb-0 list-none flex-wrap pb-2 flex-row grid grid-cols-2"
+                      className="divide-dashed w-full mr-2 ml-2 mt-3 flex mb-0 list-none flex-wrap pb-2 flex-row grid grid-cols-2"
                       role="tablist"
                     >
                       {tabs.map((tab, index) => (
                         <li
                           key={tab.name + index}
-                          className="-mb-px mr-2 last:mr-0 flex-auto text-center"
+                          className="-mb-px flex-auto text-center"
                         >
                           <a
                             className={
-                              "text-xs font-bold uppercase px-5 py-3 border border-2 rounded block leading-normal " +
+                              "text-xs font-bold uppercase px-5 py-3 rounded block leading-normal " +
                               (openTab === index
-                                ? "text-white bg-gradient-to-t from-cyan-500 to-blue-500"
-                                : "text-slate-400 bg-white")
+                                ? "shadow-lg text-white border border-transparent bg-gradient-to-t from-cyan-500 to-blue-500"
+                                : "shadow-inner border border-2 text-slate-400 bg-white")
                             }
                             onClick={(e) => {
                               e.preventDefault();

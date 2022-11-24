@@ -48,7 +48,8 @@
     "vid_placeholder": "VID",
     "Face": "Face",
     "Finger": "Finger",
-    "Iris": "Iris"
+    "Iris": "Iris",
+    "select_a_device": "Select a device"
   },
   "pin": {
     "sign_in_with_pin": "Login with PIN",

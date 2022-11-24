@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { challengeTypes } from "../constants/clientConstants";
 import { LoadingStates as states } from "../constants/states";
-import BiometricInput from "./BiometricInput";
 import InputWithImage from "./InputWithImage";
 import Select from "react-select";
 import ErrorIndicator from "../common/ErrorIndicator";
@@ -73,6 +72,8 @@ export default function L1Biometrics({
   };
 
   const startCapture = async () => {
+    setError(null);
+
     let transactionId = getTransactionId();
     let vid = loginState["sbi_mosip-vid"];
 
@@ -235,6 +236,7 @@ export default function L1Biometrics({
     let deviceInfosPortsWise = getDeviceInfos();
 
     if (!deviceInfosPortsWise) {
+      setModalityDevices(null);
       setError({
         errorCode: "no_devices_found_msg",
       });
@@ -281,7 +283,7 @@ export default function L1Biometrics({
       <h1 class="text-center text-sky-600 font-semibold">
         {t("sign_in_with_biometric")}
       </h1>
-      <form className="mt-8 space-y-6" onSubmit={submitHandler}>
+      <form className="relative mt-8 space-y-6" onSubmit={submitHandler}>
         <div className="-space-y-px">
           {inputFields.map((field) => (
             <InputWithImage
@@ -299,8 +301,7 @@ export default function L1Biometrics({
             />
           ))}
         </div>
-
-        {status.state === states.LOADING && (
+        {status.state === states.LOADING && error === null && (
           <div>
             <LoadingIndicator size="medium" message={status.msg} />
           </div>
@@ -312,48 +313,64 @@ export default function L1Biometrics({
             <>
               {selectedDevice && (
                 <>
-                  <div class="flex justify-center w-full">
+                  <div class="flex flex-col justify-center w-full">
+                    <label
+                      htmlFor="modality_device"
+                      class="block mb-2 text-xs font-medium text-gray-900 text-opacity-70"
+                    >
+                      {t("select_a_device")}
+                    </label>
                     <Select
-                      className="w-8/12"
+                      className="bg-white shadow-lg"
                       value={selectedDevice}
                       options={modalityDevices}
                       onChange={handleDeviceChange}
                       getOptionLabel={(e) => (
-                        <div class="flex items-center h-7">
+                        <div class="flex items-center h-8">
                           <img class="w-8" src={e.icon} />
                           <span class="ml-2 text-xs">{e.text}</span>
                         </div>
                       )}
                     />
                   </div>
-                  <BiometricInput
-                    modality={t(selectedDevice.type)}
-                    buttonImgPath={modalityImgPath[selectedDevice.type]}
-                    loadingMsg={
-                      status.state === states.AUTHENTICATING ? status.msg : ""
-                    }
-                    buttonText={t("scan_and_verify")}
-                  />
+
+                  <div class="flex justify-center">
+                    <button
+                      class="w-full mt-3 text-white bg-gradient-to-t from-cyan-500 to-blue-500 hover:bg-gradient-to-b font-medium rounded-lg text-sm py-2.5 text-center"
+                      type="submit"
+                      id={selectedDevice.type}
+                    >
+                      {t("scan_and_verify")}
+                    </button>
+                  </div>
                 </>
               )}
             </>
           )}
 
         {error && (
-          <>
+          <div class="w-full">
             <ErrorIndicator
               prefix={error.prefix}
               errorCode={error.errorCode}
               defaultMsg={error.defaultMsg}
             />
+
             <button
               type="button"
-              class="flex justify-center w-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 light:bg-gray-800 light:text-white light:border-gray-600 light:hover:bg-gray-700 light:hover:border-gray-600 light:focus:ring-gray-700"
+              class="flex justify-center w-full text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5"
               onClick={handleScan}
             >
               {t("retry")}
             </button>
-          </>
+          </div>
+        )}
+        {status.state === states.AUTHENTICATING && error === null && (
+          <div class="absolute bottom-0 left-0 bg-white bg-opacity-90 h-full w-full flex justify-center">
+            <div class="flex items-center">
+              <LoadingIndicator size="medium" message={status.msg} />
+            </div>
+          </div>
         )}
       </form>
     </>
