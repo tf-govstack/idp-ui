@@ -33,12 +33,12 @@ export default function IDPQRCode({ i18nKeyPrefix = "IDPQRCode" }) {
     <>
       <div className="grid grid-cols-6 items-center">
         <div className="flex justify-center col-start-2 col-span-4">
-          <h1 class="text-center text-sky-600 font-semibold">
+          <h1 className="text-center text-sky-600 font-semibold">
             {t("sign_in_with_inji")}
           </h1>
         </div>
       </div>
-      <p class="text-center text-black-600 font-semibold my-4">
+      <p className="text-center text-black-600 font-semibold my-4">
         {t("scan_with_inji")}
       </p>
       <div className="app flex justify-center">
@@ -55,9 +55,9 @@ export default function IDPQRCode({ i18nKeyPrefix = "IDPQRCode" }) {
           </>
         )}
       </div>
-      <p class="text-center text-black-600 font-semibold mt-8 mb-4">
+      <p className="text-center text-black-600 font-semibold mt-8 mb-4">
         {t("dont_have_inji")}&nbsp;
-        <a href="#" class="text-sky-600">
+        <a href="#" className="text-sky-600">
           {t("download_now")}
         </a>
       </p>

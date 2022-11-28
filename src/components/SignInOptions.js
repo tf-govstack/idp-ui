@@ -49,7 +49,7 @@ export default function SignInOptions({
 
   return (
     <>
-      <h1 class="text-center text-black-600 mb-10 font-bold text-lg">
+      <h1 className="text-center text-black-600 mb-10 font-bold text-lg">
         {t("login_option_heading")}
       </h1>
 
@@ -64,12 +64,12 @@ export default function SignInOptions({
           {singinOptions.map((option, idx) => (
             <div key={idx}>
               <button
-                class="text-gray-500 font-semibold text-base"
+                className="text-gray-500 font-semibold text-base"
                 onClick={(e) => handleSignInOptionClick(option.value)}
               >
-                <div class="flex items-center">
-                  <img class="w-7" src={option.icon} />
-                  <span class="ml-4 mb-4 mt-4">
+                <div className="flex items-center">
+                  <img className="w-7" src={option.icon} />
+                  <span className="ml-4 mb-4 mt-4">
                     {t("login_with", {
                       option: t(option.label),
                     })}

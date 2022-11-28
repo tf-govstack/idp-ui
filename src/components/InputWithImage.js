@@ -21,7 +21,7 @@ export default function InputWithImage({
       <div className="flex items-center justify-between">
         <label
           htmlFor={labelFor}
-          class="block mb-2 text-xs font-medium text-gray-900 text-opacity-70"
+          className="block mb-2 text-xs font-medium text-gray-900 text-opacity-70"
         >
           {labelText}
         </label>
@@ -34,9 +34,9 @@ export default function InputWithImage({
           </label>
         )}
       </div>
-      <div class="relative my-5">
-        <div class="flex absolute inset-y-0 right-0 items-center pr-3 pointer-events-none">
-          <img class="w-6 h-6" src={imgPath} />
+      <div className="relative my-5">
+        <div className="flex absolute inset-y-0 right-0 items-center pr-3 pointer-events-none">
+          <img className="w-6 h-6" src={imgPath} />
         </div>
         <input
           disabled={disabled}

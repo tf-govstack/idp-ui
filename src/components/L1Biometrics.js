@@ -280,7 +280,7 @@ export default function L1Biometrics({
 
   return (
     <>
-      <h1 class="text-center text-sky-600 font-semibold">
+      <h1 className="text-center text-sky-600 font-semibold">
         {t("sign_in_with_biometric")}
       </h1>
       <form className="relative mt-8 space-y-6" onSubmit={submitHandler}>
@@ -313,10 +313,10 @@ export default function L1Biometrics({
             <>
               {selectedDevice && (
                 <>
-                  <div class="flex flex-col justify-center w-full">
+                  <div className="flex flex-col justify-center w-full">
                     <label
                       htmlFor="modality_device"
-                      class="block mb-2 text-xs font-medium text-gray-900 text-opacity-70"
+                      className="block mb-2 text-xs font-medium text-gray-900 text-opacity-70"
                     >
                       {t("select_a_device")}
                     </label>
@@ -326,17 +326,17 @@ export default function L1Biometrics({
                       options={modalityDevices}
                       onChange={handleDeviceChange}
                       getOptionLabel={(e) => (
-                        <div class="flex items-center h-8">
-                          <img class="w-8" src={e.icon} />
-                          <span class="ml-2 text-xs">{e.text}</span>
+                        <div className="flex items-center h-8">
+                          <img className="w-8" src={e.icon} />
+                          <span className="ml-2 text-xs">{e.text}</span>
                         </div>
                       )}
                     />
                   </div>
 
-                  <div class="flex justify-center">
+                  <div className="flex justify-center">
                     <button
-                      class="w-full mt-3 text-white bg-gradient-to-t from-cyan-500 to-blue-500 hover:bg-gradient-to-b font-medium rounded-lg text-sm py-2.5 text-center"
+                      className="w-full mt-3 text-white bg-gradient-to-t from-cyan-500 to-blue-500 hover:bg-gradient-to-b font-medium rounded-lg text-sm py-2.5 text-center"
                       type="submit"
                       id={selectedDevice.type}
                     >
@@ -349,7 +349,7 @@ export default function L1Biometrics({
           )}
 
         {error && (
-          <div class="w-full">
+          <div className="w-full">
             <ErrorIndicator
               prefix={error.prefix}
               errorCode={error.errorCode}
@@ -358,7 +358,7 @@ export default function L1Biometrics({
 
             <button
               type="button"
-              class="flex justify-center w-full text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5"
+              className="flex justify-center w-full text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5"
               onClick={handleScan}
             >
               {t("retry")}
@@ -366,8 +366,8 @@ export default function L1Biometrics({
           </div>
         )}
         {status.state === states.AUTHENTICATING && error === null && (
-          <div class="absolute bottom-0 left-0 bg-white bg-opacity-90 h-full w-full flex justify-center">
-            <div class="flex items-center">
+          <div className="absolute bottom-0 left-0 bg-white bg-opacity-90 h-full w-full flex justify-center">
+            <div className="flex items-center">
               <LoadingIndicator size="medium" message={status.msg} />
             </div>
           </div>

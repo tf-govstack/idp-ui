@@ -221,13 +221,13 @@ export default function Otp({
             onClick={() => {
               setOtpStatus(OTPStatusEnum.getOtp);
             }}
-            class="text-sky-600 text-3xl flex justify-left"
+            className="text-sky-600 text-3xl flex justify-left"
           >
             &#8592;
           </button>
         )}
         <div className="flex justify-center col-start-2 col-span-4">
-          <h1 class="text-center text-sky-600 font-semibold">
+          <h1 className="text-center text-sky-600 font-semibold">
             {t("sign_in_with_otp")}
           </h1>
         </div>
@@ -303,12 +303,12 @@ export default function Otp({
 
         {otpStatus === OTPStatusEnum.verifyOtp && (
           <>
-            <span class="w-full flex justify-center text-sm text-gray-500">
+            <span className="w-full flex justify-center text-sm text-gray-500">
               {otpSentMsg}
             </span>
             <FormAction type="Submit" text={t("verify")} />
             {showTimmer && (
-              <span class="w-full flex justify-center text-md text-gray-500">
+              <span className="w-full flex justify-center text-md text-gray-500">
                 {resendOtpCountDown}
               </span>
             )}
