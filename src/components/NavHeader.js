@@ -25,13 +25,18 @@ export default function NavHeader({ langConfigService }) {
   useEffect(() => {
     try {
       getLocaleConfiguration().then((response) => {
+        let lookup = {};
         let supportedLanguages = response.languages;
         let langData = [];
         for (let lang in supportedLanguages) {
-          langData.push({
-            label: supportedLanguages[lang],
-            value: lang,
-          });
+          //check to avoid duplication language labels
+          if (!(supportedLanguages[lang] in lookup)) {
+            lookup[supportedLanguages[lang]] = 1;
+            langData.push({
+              label: supportedLanguages[lang],
+              value: lang,
+            });
+          }
         }
         setLangOptions(langData);
       });

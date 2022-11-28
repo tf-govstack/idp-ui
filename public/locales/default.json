@@ -1,6 +1,8 @@
 {
     "languages": {
         "eng": "English",
-        "hin": "हिंदी"
+        "hin": "हिंदी",
+        "en": "English",
+        "hi": "हिंदी"
     }
 }
