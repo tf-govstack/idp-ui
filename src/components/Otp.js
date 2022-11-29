@@ -11,6 +11,7 @@ import {
 import { useTranslation } from "react-i18next";
 import ErrorIndicator from "../common/ErrorIndicator";
 import InputWithImage from "./InputWithImage";
+import PinInput from "react-pin-input";
 
 const fields = otpFields;
 let fieldsState = {};
@@ -43,12 +44,12 @@ export default function Otp({
   const [error, setError] = useState(null);
   const [status, setStatus] = useState({ state: states.LOADED, msg: "" });
   const [otpStatus, setOtpStatus] = useState(OTPStatusEnum.getOtp);
-  const [formErrors, setFormErrors] = useState({});
   const [resendOtpCountDown, setResendOtpCountDown] = useState();
   const [showResendOtp, setShowResendOtp] = useState(false);
   const [showTimmer, setShowTimmer] = useState(false);
   const [otpSentMsg, setOtpSentMsg] = useState("");
   const [timer, setTimer] = useState(null);
+  const [otpValue, setOtpValue] = useState("");
 
   const navigate = useNavigate();
 
@@ -70,18 +71,12 @@ export default function Otp({
     try {
       setShowTimmer(false);
       setShowResendOtp(false);
-      setFormErrors({});
       setError(null);
 
       let transactionId = getTransactionId();
       let vid = loginState["Otp_mosip-vid"];
 
       let otpChannels = commaSeparatedChannels.split(",").map((x) => x.trim());
-
-      if (!vid) {
-        setFormErrors({ "Otp_mosip-vid": "*Required" });
-        return;
-      }
 
       setStatus({ state: states.LOADING, msg: t("sending_otp_msg") });
       const sendOtpResponse = await post_SendOtp(
@@ -171,7 +166,7 @@ export default function Otp({
 
       let vid = loginState["Otp_mosip-vid"];
       let challengeType = challengeTypes.otp;
-      let challenge = loginState["Otp_otp"];
+      let challenge = otpValue;
 
       let challengeList = [
         {
@@ -248,7 +243,6 @@ export default function Otp({
               placeholder={t(field.placeholder)}
               imgPath="images/photo_scan.png"
               disabled={otpStatus !== OTPStatusEnum.getOtp}
-              formError={formErrors["Otp_" + field.id]}
             />
           ))}
         </div>
@@ -273,21 +267,20 @@ export default function Otp({
         )} */}
 
         {otpStatus === OTPStatusEnum.verifyOtp && (
-          <div className={"space-y-px"}>
-            <InputWithImage
-              key={"Otp_" + "otp"}
-              handleChange={handleChange}
-              value={loginState["Otp_" + "otp"]}
-              labelText={t("otp_label_text")}
-              labelFor={"otp"}
-              id={"Otp_" + "otp"}
-              name={"otp"}
-              type={"password"}
-              isRequired={true}
-              placeholder={t("otp_placeholder")}
-              imgPath="images/photo_scan.png"
-              disabled={otpStatus !== OTPStatusEnum.verifyOtp}
-              formError={formErrors["Otp_" + "otp"]}
+          <div className="space-y-px flex justify-center">
+            <PinInput
+              length={6}
+              initialValue=""
+              onChange={(value, index) => {
+                setOtpValue(value);
+              }}
+              type="numeric"
+              inputMode="number"
+              style={{ padding: "10px" }}
+              inputStyle={{ borderColor: "#9999CC" }}
+              inputFocusStyle={{ borderColor: "blue" }}
+              onComplete={(value, index) => {}}
+              autoSelect={true}
             />
           </div>
         )}
@@ -306,7 +299,11 @@ export default function Otp({
             <span className="w-full flex justify-center text-sm text-gray-500">
               {otpSentMsg}
             </span>
-            <FormAction type="Submit" text={t("verify")} />
+            <FormAction
+              disabled={otpValue.length !== 6}
+              type="Submit"
+              text={t("verify")}
+            />
             {showTimmer && (
               <span className="w-full flex justify-center text-md text-gray-500">
                 {resendOtpCountDown}
