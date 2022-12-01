@@ -227,7 +227,7 @@ export default function Otp({
           </h1>
         </div>
       </div>
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+      <form className="mt-2 space-y-2" onSubmit={handleSubmit}>
         <div className={"space-y-px"}>
           {fields.map((field) => (
             <InputWithImage
@@ -246,25 +246,6 @@ export default function Otp({
             />
           ))}
         </div>
-
-        {/* {otpStatus === OTPStatusEnum.getOtp && (
-          <div className="flex items-center justify-between ">
-            <div className="flex items-center rounded-md appearance-none w-full px-3 py-3 border border-gray-300">
-              <input
-                id="captcha"
-                name="captcha"
-                type="checkbox"
-                className="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-              />
-              <label
-                htmlFor="captcha"
-                className="ml-2 block font-semibold text-gray-900"
-              >
-                {t("not_a_robot")}
-              </label>
-            </div>
-          </div>
-        )} */}
 
         {otpStatus === OTPStatusEnum.verifyOtp && (
           <div className="space-y-px flex justify-center">

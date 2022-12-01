@@ -326,8 +326,8 @@ export default function L1Biometrics({
                       options={modalityDevices}
                       onChange={handleDeviceChange}
                       getOptionLabel={(e) => (
-                        <div className="flex items-center h-8">
-                          <img className="w-8" src={e.icon} />
+                        <div className="flex items-center h-7">
+                          <img className="w-7" src={e.icon} />
                           <span className="ml-2 text-xs">{e.text}</span>
                         </div>
                       )}
@@ -366,7 +366,7 @@ export default function L1Biometrics({
           </div>
         )}
         {status.state === states.AUTHENTICATING && error === null && (
-          <div className="absolute bottom-0 left-0 bg-white bg-opacity-90 h-full w-full flex justify-center">
+          <div className="absolute bottom-0 left-0 bg-white bg-opacity-70 h-full w-full flex justify-center font-semibold">
             <div className="flex items-center">
               <LoadingIndicator size="medium" message={status.msg} />
             </div>

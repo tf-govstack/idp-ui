@@ -14,7 +14,7 @@ const ErrorIndicator = ({
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
   return (
     <div
-      className="p-4 mt-2 mb-2 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
+      className="p-2 mt-2 mb-2 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
       role="alert"
     >
       {prefix + " "}
