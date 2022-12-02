@@ -67,7 +67,17 @@
     "scan_with_inji": "Scan with Inji app to log in",
     "inji_app": "Inji App",
     "dont_have_inji": "Don't have Inji?",
-    "download_now": "Download Now"
+    "download_now": "Download Now",
+    "loading_msg": "Loading. Please wait...",
+    "link_code_refresh_failed": "Failed to load!",
+    "qr_code_expired": "QRCode expired!",
+    "authorization_failed": "Failed to authorize!",
+    "link_code_status": "Link Code Status",
+    "failed": "Failed",
+    "failed_to_link": "Failed to link",
+    "link_auth_waiting": "Please authenticate via INJI! Do not refresh this page!",
+    "refresh": "Refresh QR Code",
+    "redirecting_msg": "Redirecting. Please wait..."
   },
   "otp": {
     "sign_in_with_otp": "Login with OTP",

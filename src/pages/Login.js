@@ -11,6 +11,8 @@ import { sbiService } from "../services/sbiService";
 import Background from "../components/Background";
 import SignInOptions from "../components/SignInOptions";
 import { validAuthFactors } from "../constants/clientConstants";
+import { linkAuthService } from "../services/linkAuthService";
+import IDPQRCode from "../components/IDPQRCode";
 
 //authFactorComponentMapping
 const comp = {
@@ -49,6 +51,13 @@ function InitiateSignInOptions(handleSignInOptionClick) {
   return React.createElement(SignInOptions, {
     localStorageService: localStorageService,
     handleSignInOptionClick: handleSignInOptionClick,
+  });
+}
+
+function InitiateLinkedWallet() {
+  return React.createElement(IDPQRCode, {
+    localStorageService: localStorageService,
+    linkAuthService: linkAuthService,
   });
 }
 
@@ -137,6 +146,7 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
         component={compToShow}
         handleMoreWaysToSignIn={handleMoreWaysToSignIn}
         showMoreOption={showMoreOption}
+        linkedWalletComp={InitiateLinkedWallet()}
       />
     </>
   );

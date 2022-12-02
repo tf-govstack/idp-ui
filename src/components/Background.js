@@ -11,6 +11,7 @@ export default function Background({
   component,
   handleMoreWaysToSignIn,
   showMoreOption,
+  linkedWalletComp,
   i18nKeyPrefix = "header",
 }) {
   const tabs = [
@@ -40,7 +41,11 @@ export default function Background({
           <div className="flex justify-start">
             <div className="lg:flex-grow lg:pl-24 md:pl-16 flex flex-col">
               <div className="w-full flex mb-4 justify-center items-center">
-                <img className="h-20 mr-5" src={clientLogoPath} alt={clientName} />
+                <img
+                  className="h-20 mr-5"
+                  src={clientLogoPath}
+                  alt={clientName}
+                />
                 <span className="text-6xl flex mr-5">&#8651;</span>
                 <img className="h-20" src={mosipLogoPath} alt="MOSIP" />
               </div>
@@ -84,7 +89,7 @@ export default function Background({
                   </div>
                   <div className="px-5 py-2">
                     <div className={openTab === 0 ? "block" : "hidden"}>
-                      <IDPQRCode />
+                      {linkedWalletComp}
                     </div>
                     <div className={openTab === 1 ? "block" : "hidden"}>
                       {component}

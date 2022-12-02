@@ -46,7 +46,7 @@ export default function Otp({
   const [otpStatus, setOtpStatus] = useState(OTPStatusEnum.getOtp);
   const [resendOtpCountDown, setResendOtpCountDown] = useState();
   const [showResendOtp, setShowResendOtp] = useState(false);
-  const [showTimmer, setShowTimmer] = useState(false);
+  const [showTimer, setShowTimer] = useState(false);
   const [otpSentMsg, setOtpSentMsg] = useState("");
   const [timer, setTimer] = useState(null);
   const [otpValue, setOtpValue] = useState("");
@@ -69,7 +69,7 @@ export default function Otp({
 
   const sendOTP = async () => {
     try {
-      setShowTimmer(false);
+      setShowTimer(false);
       setShowResendOtp(false);
       setError(null);
 
@@ -140,7 +140,7 @@ export default function Otp({
       t("resent_otp_counter", { timeLeft: resendOtpTimeout + "s" })
     );
     setShowResendOtp(false);
-    setShowTimmer(true);
+    setShowTimer(true);
     let timePassed = 0;
     var interval = setInterval(function () {
       timePassed++;
@@ -152,7 +152,7 @@ export default function Otp({
 
       if (timeLeft === 0) {
         clearInterval(interval);
-        setShowTimmer(false);
+        setShowTimer(false);
         setShowResendOtp(true);
       }
     }, 1000);
@@ -285,7 +285,7 @@ export default function Otp({
               type="Submit"
               text={t("verify")}
             />
-            {showTimmer && (
+            {showTimer && (
               <span className="w-full flex justify-center text-md text-gray-500">
                 {resendOtpCountDown}
               </span>

@@ -12,12 +12,6 @@ import { useTranslation } from "react-i18next";
 let fieldsState = {};
 const host = "http://127.0.0.1";
 
-const modalityImgPath = {
-  Face: "images/face_capture.png",
-  Finger: "images/fingerprint_scan.png",
-  Iris: "images/iris_code.png",
-};
-
 const modalityIconPath = {
   Face: "images/Sign in with face.png",
   Finger: "images/Sign in with fingerprint.png",
@@ -227,7 +221,7 @@ export default function L1Biometrics({
       });
     } catch (error) {
       setError({
-        errorCode: error.errorMessage,
+        errorCode: error.message,
       });
     }
   };
