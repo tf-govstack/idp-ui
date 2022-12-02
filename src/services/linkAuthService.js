@@ -5,14 +5,14 @@ const baseUrl =
     ? process.env.REACT_APP_IDP_API_URL
     : window.origin + process.env.REACT_APP_IDP_API_URL;
 
-const linkCodeGenerateEndPoint = "/authorization/link-code";
-const linkStatusEndPoint = "/authorization/link-status";
-const linkAuthorizationCodeEndPoint = "/authorization/link-auth-code";
+const linkCodeGenerateEndPoint = "/linked-authorization/link-code";
+const linkStatusEndPoint = "/linked-authorization/link-status";
+const linkAuthorizationCodeEndPoint = "/linked-authorization/authenticate";
 
 /**
- * Triggers /authorization/link-code API on IDP service
+ * Triggers /linked-authorization/link-code API on IDP service
  * @param {string} transactionId same as idp transactionId
- * @returns /authorization/link-code API response
+ * @returns /linked-authorization/link-code API response
  */
 const post_GenerateLinkCode = async (transactionId) => {
   let request = {
@@ -33,10 +33,10 @@ const post_GenerateLinkCode = async (transactionId) => {
 };
 
 /**
- * Triggers /authorization/link-status API on IDP service
+ * Triggers /linked-authorization/link-status API on IDP service
  * @param {string} transactionId same as idp transactionId
  * @param {string} linkCode generated idp linkcode
- * @returns /authorization/link-status API response
+ * @returns /linked-authorization/link-status API response
  */
 const post_LinkStatus = async (transactionId, linkCode) => {
   let request = {
@@ -57,10 +57,10 @@ const post_LinkStatus = async (transactionId, linkCode) => {
 };
 
 /**
- * Triggers /authorization/link-auth-code API on IDP service
+ * Triggers /linked-authorization/authenticate API on IDP service
  * @param {string} transactionId same as idp transactionId
  * @param {string} linkedCode linked idp linkcode
- * @returns /authorization/link-auth-code API response
+ * @returns /linked-authorization/authenticate API response
  */
 const post_AuthorizationCode = async (transactionId, linkedCode) => {
   let request = {
