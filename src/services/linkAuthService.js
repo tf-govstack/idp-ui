@@ -7,7 +7,7 @@ const baseUrl =
 
 const linkCodeGenerateEndPoint = "/linked-authorization/link-code";
 const linkStatusEndPoint = "/linked-authorization/link-status";
-const linkAuthorizationCodeEndPoint = "/linked-authorization/authenticate";
+const linkAuthorizationCodeEndPoint = "/linked-authorization/link-auth-code";
 
 /**
  * Triggers /linked-authorization/link-code API on IDP service
