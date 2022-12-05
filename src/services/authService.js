@@ -132,6 +132,13 @@ const post_AuthCode = async (
   return response.data;
 };
 
+/**
+ * Triggers /send-otp API on IDP service
+ * @param {string} transactionId idp transactionId
+ * @param {string} individualId UIN/VIN of the individual
+ * @param {List<string>} otpChannels list of channels(ie. phone, email)
+ * @returns /send-otp API response
+ */
 const post_SendOtp = async (transactionId, individualId, otpChannels) => {
   let request = {
     requestTime: new Date().toISOString(),

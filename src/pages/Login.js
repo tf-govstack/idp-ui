@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Otp from "../components/Otp";
 import Pin from "../components/Pin";
 import { otpFields, pinFields, bioLoginFields } from "../constants/formFields";
-import IDPQRCode from "../components/IDPQRCode";
 import L1Biometrics from "../components/L1Biometrics";
 import { useTranslation } from "react-i18next";
 import { authService } from "../services/authService";
@@ -11,12 +10,14 @@ import { cryptoService } from "../services/cryptoService";
 import { sbiService } from "../services/sbiService";
 import Background from "../components/Background";
 import SignInOptions from "../components/SignInOptions";
+import { validAuthFactors } from "../constants/clientConstants";
+import { linkAuthService } from "../services/linkAuthService";
+import IDPQRCode from "../components/IDPQRCode";
 
 //authFactorComponentMapping
 const comp = {
   PIN: Pin,
   OTP: Otp,
-  WALLET: IDPQRCode,
   BIO: L1Biometrics,
 };
 
@@ -46,14 +47,17 @@ function InitiateOtp(inst) {
   });
 }
 
-function InitiateQRCode(inst) {
-  return React.createElement(comp[inst]);
-}
-
 function InitiateSignInOptions(handleSignInOptionClick) {
   return React.createElement(SignInOptions, {
     localStorageService: localStorageService,
     handleSignInOptionClick: handleSignInOptionClick,
+  });
+}
+
+function InitiateLinkedWallet() {
+  return React.createElement(IDPQRCode, {
+    localStorageService: localStorageService,
+    linkAuthService: linkAuthService,
   });
 }
 
@@ -66,10 +70,6 @@ function createDynamicLoginElements(inst) {
     return InitiateInvalidAuthFactor(
       "The component " + { inst } + " has not been created yet."
     );
-  }
-
-  if (comp[inst] === IDPQRCode) {
-    return InitiateQRCode(inst);
   }
 
   if (comp[inst] === Otp) {
@@ -91,6 +91,8 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
   const [compToShow, setCompToShow] = useState(null);
   const [showMoreOption, setShowMoreOption] = useState(false);
+  const [clientLogoURL, setClientLogoURL] = useState(null);
+  const [clientName, setClientName] = useState(null);
 
   const handleSignInOptionClick = (authFactor) => {
     //TODO handle multifactor auth
@@ -111,10 +113,21 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
     let oAuthDetails = JSON.parse(localStorageService.getOuthDetails());
 
     try {
+      setClientLogoURL(oAuthDetails?.logoUrl);
+      setClientName(oAuthDetails?.clientName);
       let authFactors = oAuthDetails?.authFactors;
-      let firstLoginOption = authFactors[0];
+      let validComponents = [];
+
+      //checking for valid auth factors
+      authFactors.forEach((authFactor) => {
+        if (validAuthFactors[authFactor[0].type]) {
+          validComponents.push(authFactor);
+        }
+      });
+
+      let firstLoginOption = validComponents[0];
       let authFactor = firstLoginOption[0].type;
-      setShowMoreOption(authFactors.length > 1);
+      setShowMoreOption(validComponents.length > 1);
       setCompToShow(createDynamicLoginElements(authFactor));
     } catch (error) {
       setShowMoreOption(false);
@@ -126,11 +139,14 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
     <>
       <Background
         heading={t("login_heading")}
-        logoPath="logo.png"
+        mosipLogoPath="logo.png"
+        clientLogoPath={clientLogoURL}
+        clientName={clientName}
         backgroundImgPath="images/illustration_one.png"
         component={compToShow}
         handleMoreWaysToSignIn={handleMoreWaysToSignIn}
         showMoreOption={showMoreOption}
+        linkedWalletComp={InitiateLinkedWallet()}
       />
     </>
   );

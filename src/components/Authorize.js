@@ -21,7 +21,7 @@ export default function Authorize({
     ...localStorageService,
   };
 
-  const { getConfiguration } = {
+  const { getLocaleConfiguration } = {
     ...langConfigService,
   };
 
@@ -104,7 +104,7 @@ export default function Authorize({
 
     //1. Check for ui locales param. Highest priority.
     //This will override the language detectors selected language
-    let defaultConfigs = await getConfiguration();
+    let defaultConfigs = await getLocaleConfiguration();
     let supportedLanguages = defaultConfigs.languages;
     let uiLocales = searchParams.get("ui_locales");
     if (uiLocales) {

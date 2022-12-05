@@ -80,26 +80,44 @@ const storeOauthDetails = (redirectUri, nonce, state, response) => {
   localStorage.setItem(oauth_details_keyname, JSON.stringify(response));
 };
 
+/**
+ * @returns redirectUri
+ */
 const getRedirectUri = () => {
   return localStorage.getItem(redirect_uri_keyname);
 };
 
+/**
+ * @returns nonce
+ */
 const getNonce = () => {
   return localStorage.getItem(nonce_keyname);
 };
 
+/**
+ * @returns state
+ */
 const getState = () => {
   return localStorage.getItem(state_keyname);
 };
 
+/**
+ * @returns outhDetails
+ */
 const getOuthDetails = () => {
   return localStorage.getItem(oauth_details_keyname);
 };
 
+/**
+ * @param {*} transactionId stores the transactionId in cache
+ */
 const storeTransactionId = (transactionId) => {
   localStorage.setItem(transaction_id_keyname, transactionId);
 };
 
+/**
+ * @returns transactionId
+ */
 const getTransactionId = () => {
   return localStorage.getItem(transaction_id_keyname);
 };

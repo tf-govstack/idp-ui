@@ -4,10 +4,14 @@ import LoadingIndicator from "../common/LoadingIndicator";
 import { otpFields } from "../constants/formFields";
 import FormAction from "./FormAction";
 import { LoadingStates as states } from "../constants/states";
-import { challengeTypes } from "../constants/clientConstants";
+import {
+  challengeTypes,
+  configurationKeys,
+} from "../constants/clientConstants";
 import { useTranslation } from "react-i18next";
 import ErrorIndicator from "../common/ErrorIndicator";
 import InputWithImage from "./InputWithImage";
+import PinInput from "react-pin-input";
 
 const fields = otpFields;
 let fieldsState = {};
@@ -25,18 +29,27 @@ export default function Otp({
   i18nKeyPrefix = "otp",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
-
   const fields = param;
   const { post_AuthenticateUser, post_SendOtp } = { ...authService };
-  const { getTransactionId, storeTransactionId } = { ...localStorageService };
+  const { getTransactionId, storeTransactionId, getIdpConfiguration } = {
+    ...localStorageService,
+  };
+
+  const resendOtpTimeout =
+    getIdpConfiguration(configurationKeys.resendOtpTimeout) ?? "30";
+  const commaSeparatedChannels =
+    getIdpConfiguration(configurationKeys.sendOtpChannels) ?? "email,mobile";
 
   const [loginState, setLoginState] = useState(fieldsState);
   const [error, setError] = useState(null);
   const [status, setStatus] = useState({ state: states.LOADED, msg: "" });
   const [otpStatus, setOtpStatus] = useState(OTPStatusEnum.getOtp);
-  const [formErrors, setFormErrors] = useState({});
-
+  const [resendOtpCountDown, setResendOtpCountDown] = useState();
+  const [showResendOtp, setShowResendOtp] = useState(false);
+  const [showTimer, setShowTimer] = useState(false);
   const [otpSentMsg, setOtpSentMsg] = useState("");
+  const [timer, setTimer] = useState(null);
+  const [otpValue, setOtpValue] = useState("");
 
   const navigate = useNavigate();
 
@@ -56,14 +69,14 @@ export default function Otp({
 
   const sendOTP = async () => {
     try {
+      setShowTimer(false);
+      setShowResendOtp(false);
+      setError(null);
+
       let transactionId = getTransactionId();
       let vid = loginState["Otp_mosip-vid"];
-      let otpChannels = ["email", "sms"];
 
-      if (!vid) {
-        setFormErrors({ "Otp_mosip-vid": "*Required" });
-        return;
-      }
+      let otpChannels = commaSeparatedChannels.split(",").map((x) => x.trim());
 
       setStatus({ state: states.LOADING, msg: t("sending_otp_msg") });
       const sendOtpResponse = await post_SendOtp(
@@ -83,9 +96,8 @@ export default function Otp({
         });
         return;
       } else {
+        startTimer();
         setOtpStatus(OTPStatusEnum.verifyOtp);
-        setFormErrors({});
-        setError(null);
 
         let otpChannels = "";
 
@@ -93,16 +105,19 @@ export default function Otp({
           otpChannels =
             " " +
             t("mobile_number", {
-              mobileNumber: t(response.maskedMobile),
+              mobileNumber: response.maskedMobile,
             });
         }
 
         if (response.maskedEmail) {
-          otpChannels +=
-            ", " +
-            t("email_address", {
-              emailAddress: t(response.maskedEmail),
-            });
+          if (otpChannels.length > 0) {
+            otpChannels += " & ";
+          } else {
+            otpChannels += " ";
+          }
+          otpChannels += t("email_address", {
+            emailAddress: response.maskedEmail,
+          });
         }
 
         let msg = t("otp_sent_msg", {
@@ -119,6 +134,31 @@ export default function Otp({
     }
   };
 
+  const startTimer = async () => {
+    clearInterval(timer);
+    setResendOtpCountDown(
+      t("resent_otp_counter", { timeLeft: resendOtpTimeout + "s" })
+    );
+    setShowResendOtp(false);
+    setShowTimer(true);
+    let timePassed = 0;
+    var interval = setInterval(function () {
+      timePassed++;
+      let timeLeft = resendOtpTimeout - timePassed;
+
+      setResendOtpCountDown(
+        t("resent_otp_counter", { timeLeft: timeLeft + "s" })
+      );
+
+      if (timeLeft === 0) {
+        clearInterval(interval);
+        setShowTimer(false);
+        setShowResendOtp(true);
+      }
+    }, 1000);
+    setTimer(interval);
+  };
+
   //Handle Login API Integration here
   const authenticateUser = async () => {
     try {
@@ -126,7 +166,7 @@ export default function Otp({
 
       let vid = loginState["Otp_mosip-vid"];
       let challengeType = challengeTypes.otp;
-      let challenge = loginState["Otp_otp"];
+      let challenge = otpValue;
 
       let challengeList = [
         {
@@ -176,18 +216,18 @@ export default function Otp({
             onClick={() => {
               setOtpStatus(OTPStatusEnum.getOtp);
             }}
-            class="text-sky-600 text-3xl flex justify-left"
+            className="text-sky-600 text-3xl flex justify-left"
           >
             &#8592;
           </button>
         )}
         <div className="flex justify-center col-start-2 col-span-4">
-          <h1 class="text-center text-sky-600 font-semibold">
+          <h1 className="text-center text-sky-600 font-semibold">
             {t("sign_in_with_otp")}
           </h1>
         </div>
       </div>
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+      <form className="mt-2 space-y-2" onSubmit={handleSubmit}>
         <div className={"space-y-px"}>
           {fields.map((field) => (
             <InputWithImage
@@ -203,46 +243,25 @@ export default function Otp({
               placeholder={t(field.placeholder)}
               imgPath="images/photo_scan.png"
               disabled={otpStatus !== OTPStatusEnum.getOtp}
-              formError={formErrors["Otp_" + field.id]}
             />
           ))}
         </div>
 
-        {otpStatus === OTPStatusEnum.getOtp && (
-          <div className="flex items-center justify-between ">
-            <div className="flex items-center rounded-md appearance-none w-full px-3 py-3 border border-gray-300">
-              <input
-                id="captcha"
-                name="captcha"
-                type="checkbox"
-                className="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-              />
-              <label
-                htmlFor="captcha"
-                className="ml-2 block font-semibold text-gray-900"
-              >
-                {t("not_a_robot")}
-              </label>
-            </div>
-          </div>
-        )}
-
         {otpStatus === OTPStatusEnum.verifyOtp && (
-          <div className={"space-y-px"}>
-            <InputWithImage
-              key={"Otp_" + "otp"}
-              handleChange={handleChange}
-              value={loginState["Otp_" + "otp"]}
-              labelText={t("otp_label_text")}
-              labelFor={"otp"}
-              id={"Otp_" + "otp"}
-              name={"otp"}
-              type={"password"}
-              isRequired={true}
-              placeholder={t("otp_placeholder")}
-              imgPath="images/photo_scan.png"
-              disabled={otpStatus !== OTPStatusEnum.verifyOtp}
-              formError={formErrors["Otp_" + "otp"]}
+          <div className="space-y-px flex justify-center">
+            <PinInput
+              length={6}
+              initialValue=""
+              onChange={(value, index) => {
+                setOtpValue(value);
+              }}
+              type="numeric"
+              inputMode="number"
+              style={{ padding: "10px" }}
+              inputStyle={{ borderColor: "#9999CC" }}
+              inputFocusStyle={{ borderColor: "blue" }}
+              onComplete={(value, index) => {}}
+              autoSelect={true}
             />
           </div>
         )}
@@ -252,14 +271,32 @@ export default function Otp({
             type="Button"
             text={t("get_otp")}
             handleClick={handleSendOtp}
+            disabled={!loginState["Otp_mosip-vid"]}
           />
         )}
+
         {otpStatus === OTPStatusEnum.verifyOtp && (
           <>
-            <FormAction type="Submit" text={t("verify")} />
-            <span class="w-full flex justify-center text-sm text-gray-500">
+            <span className="w-full flex justify-center text-sm text-gray-500">
               {otpSentMsg}
             </span>
+            <FormAction
+              disabled={otpValue.length !== 6}
+              type="Submit"
+              text={t("verify")}
+            />
+            {showTimer && (
+              <span className="w-full flex justify-center text-md text-gray-500">
+                {resendOtpCountDown}
+              </span>
+            )}
+            {showResendOtp && (
+              <FormAction
+                type="Button"
+                text={t("resent_otp")}
+                handleClick={handleSendOtp}
+              />
+            )}
           </>
         )}
 

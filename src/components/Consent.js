@@ -7,6 +7,7 @@ import { LoadingStates as states } from "../constants/states";
 export default function Consent({
   authService,
   localStorageService,
+  mosipLogoPath = "logo.png",
   i18nKeyPrefix = "consent",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
@@ -81,7 +82,7 @@ export default function Consent({
   let essentialClaims = oAuthDetails?.essentialClaims;
   let voluntaryClaims = oAuthDetails?.voluntaryClaims;
   let clientName = oAuthDetails?.clientName;
-  let logoUrl = oAuthDetails?.logoUrl;
+  let clientLogoPath = oAuthDetails?.logoUrl;
 
   //Handle Login API Integration here
   const submitConsent = async () => {
@@ -162,8 +163,10 @@ export default function Consent({
     >
       <div className="px-4 py-4 flex-auto">
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="flex justify-center">
-            <img src={logoUrl}></img>
+          <div className="flex justify-center items-center">
+            <img className="h-20 mr-5" src={clientLogoPath} alt={clientName} />
+            <span className="text-6xl flex mr-5">&#8651;</span>
+            <img className="h-20" src={mosipLogoPath} alt="MOSIP" />
           </div>
 
           <div className="flex justify-center">
@@ -180,7 +183,7 @@ export default function Consent({
               <div className="divide-y">
                 {authorizeScopes?.map((item) => (
                   <div key={item}>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
                       <div className="flex justify-start relative items-center mb-1 mt-1 cursor-pointer">
                         <span className="ml-3 text-sm font-medium text-black-900">
                           {t(item)}
@@ -213,7 +216,7 @@ export default function Consent({
               <div className="divide-y">
                 {essentialClaims?.map((item) => (
                   <div key={item}>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
                       <div className="flex justify-start relative items-center mb-1 mt-1 cursor-pointer">
                         <span className="ml-3 text-sm font-medium text-black-900">
                           {t(item)}
@@ -240,7 +243,7 @@ export default function Consent({
               <div className="divide-y">
                 {voluntaryClaims?.map((item) => (
                   <div key={item}>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
                       <div className="flex justify-start relative items-center mb-1 mt-1 cursor-pointer">
                         <span className="ml-3 text-sm font-medium text-black-900">
                           {t(item)}
@@ -277,10 +280,10 @@ export default function Consent({
               )}
             </div>
           }
-          <div class="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <button
               type="button"
-              class="flex justify-center w-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 light:bg-gray-800 light:text-white light:border-gray-600 light:hover:bg-gray-700 light:hover:border-gray-600 light:focus:ring-gray-700"
+              className="flex justify-center w-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 light:bg-gray-800 light:text-white light:border-gray-600 light:hover:bg-gray-700 light:hover:border-gray-600 light:focus:ring-gray-700"
               onClick={handleCancel}
             >
               {t("cancel")}
@@ -289,7 +292,7 @@ export default function Consent({
             <div className="flex justify-end">
               <button
                 type="button"
-                class="flex justify-center w-full text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                className="flex justify-center w-full text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
                 onClick={handleSubmit}
               >
                 {t("allow")}

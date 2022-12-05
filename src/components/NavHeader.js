@@ -4,7 +4,7 @@ import Select from "react-select";
 
 export default function NavHeader({ langConfigService }) {
   const { i18n } = useTranslation();
-  const { getConfiguration } = {
+  const { getLocaleConfiguration } = {
     ...langConfigService,
   };
 
@@ -24,14 +24,19 @@ export default function NavHeader({ langConfigService }) {
 
   useEffect(() => {
     try {
-      getConfiguration().then((response) => {
+      getLocaleConfiguration().then((response) => {
+        let lookup = {};
         let supportedLanguages = response.languages;
         let langData = [];
         for (let lang in supportedLanguages) {
-          langData.push({
-            label: supportedLanguages[lang],
-            value: lang,
-          });
+          //check to avoid duplication language labels
+          if (!(supportedLanguages[lang] in lookup)) {
+            lookup[supportedLanguages[lang]] = 1;
+            langData.push({
+              label: supportedLanguages[lang],
+              value: lang,
+            });
+          }
         }
         setLangOptions(langData);
       });
@@ -41,8 +46,8 @@ export default function NavHeader({ langConfigService }) {
   }, []);
 
   return (
-    <nav class="bg-white border-gray-500 shadow px-2 sm:px-4 py-2">
-      <div class="flex items-center md:order-2 justify-end">
+    <nav className="bg-white border-gray-500 shadow px-2 sm:px-4 py-2">
+      <div className="flex items-center md:order-2 justify-end">
         <img src="images/language_icon.png" className="mr-2" />
         <Select
           styles={customStyles}
