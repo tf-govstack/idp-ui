@@ -171,7 +171,7 @@ export default function IDPQRCode({
             state: states.LOADING,
             msg: t("link_auth_waiting"),
           });
-          triggerLinkAuth(response.transactionId, linkCode);
+          triggerLinkAuth(transactionId, linkCode);
         }
       }
     } catch (error) {
