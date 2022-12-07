@@ -153,6 +153,8 @@ export default function L1Biometrics({
       let error = biometrics[i]["error"];
       if (error !== null && error.errorCode !== "0") {
         return { errorCode: error.errorCode, defaultMsg: error.errorInfo };
+      } else {
+        delete biometrics[i]["error"];
       }
     }
     return { errorCode: null, defaultMsg: null };
