@@ -263,7 +263,7 @@ export default function L1Biometrics({
 
     setModalityDevices(modalitydevices);
 
-    if (modalitydevices.size === 0) {
+    if (modalitydevices.length === 0) {
       setError({
         errorCode: "no_devices_found_msg",
       });
