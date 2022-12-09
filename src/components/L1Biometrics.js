@@ -124,7 +124,7 @@ export default function L1Biometrics({
 
     try {
       await Authenticate(
-        transactionId,
+        getTransactionId(),
         vid,
         await encodeBase64(biometricResponse["biometrics"])
       );
