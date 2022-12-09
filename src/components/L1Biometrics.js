@@ -68,7 +68,10 @@ export default function L1Biometrics({
   const startCapture = async () => {
     setError(null);
 
-    let transactionId = getTransactionId();
+    //limiting char count to 10
+    let text = Date.now() + "";
+    let transactionId = text.substring(0, 10);
+
     let vid = loginState["sbi_mosip-vid"];
 
     if (selectedDevice === null) {
