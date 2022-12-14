@@ -5,7 +5,7 @@ import { LoadingStates as states } from "../constants/states";
 import { useTranslation } from "react-i18next";
 import ErrorIndicator from "../common/ErrorIndicator";
 import InputWithImage from "./InputWithImage";
-import { configurationKeys } from "../constants/clientConstants";
+import { buttonTypes, configurationKeys } from "../constants/clientConstants";
 
 export default function OtpGet({
   param,
@@ -96,7 +96,7 @@ export default function OtpGet({
 
         <div className="mt-10 mb-5">
           <FormAction
-            type="Button"
+            type={buttonTypes.button}
             text={t("get_otp")}
             handleClick={sendOTP}
             disabled={!loginState["Otp_mosip-vid"]}

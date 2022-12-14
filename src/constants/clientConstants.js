@@ -17,6 +17,13 @@ const validAuthFactors = {
   BIO: "BIO",
 };
 
+const buttonTypes = {
+  button: "Button",
+  cancel: "Cancel",
+  reset: "Reset",
+  submit: "Submit",
+};
+
 const deepLinkParamPlaceholder = {
   linkCode: "LINK_CODE",
   linkExpiryDate: "LINK_EXPIRE_DT",
@@ -54,4 +61,5 @@ export {
   configurationKeys,
   validAuthFactors,
   deepLinkParamPlaceholder,
+  buttonTypes,
 };

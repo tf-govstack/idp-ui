@@ -2,7 +2,9 @@ import i18next from "i18next";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import LoadingIndicator from "../common/LoadingIndicator";
+import { buttonTypes } from "../constants/clientConstants";
 import { LoadingStates as states } from "../constants/states";
+import FormAction from "./FormAction";
 
 export default function Consent({
   authService,
@@ -157,18 +159,14 @@ export default function Consent({
   };
 
   return (
-    <div
-      className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded"
-      style={{ background: "#F2F4F4" }}
-    >
-      <div className="px-4 py-4 flex-auto">
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+    <div className="flex items-center justify-center">
+      <div className="max-w-md w-full shadow-lg mt-5 rounded bg-[#F8F8F8] px-4 py-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="flex justify-center items-center">
             <img className="h-20 mr-5" src={clientLogoPath} alt={clientName} />
             <span className="text-6xl flex mr-5">&#8651;</span>
             <img className="h-20" src={mosipLogoPath} alt="MOSIP" />
           </div>
-
           <div className="flex justify-center">
             <b>
               {t("consent_request_msg", {
@@ -176,16 +174,15 @@ export default function Consent({
               })}
             </b>
           </div>
-
           {authorizeScopes?.length > 0 && (
             <>
-              <h2>{t("authorize_scope")}</h2>
+              <h2 className="font-semibold">{t("authorize_scope")}</h2>
               <div className="divide-y">
                 {authorizeScopes?.map((item) => (
                   <div key={item}>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="flex justify-start relative items-center mb-1 mt-1 cursor-pointer">
-                        <span className="ml-3 text-sm font-medium text-black-900">
+                        <span className="ml-3 text-sm text-black-900">
                           {t(item)}
                         </span>
                       </div>
@@ -212,20 +209,20 @@ export default function Consent({
           )}
           {essentialClaims?.length > 0 && (
             <>
-              <h2>{t("essential_claims")}</h2>
+              <h2 className="font-semibold">{t("essential_claims")}</h2>
               <div className="divide-y">
                 {essentialClaims?.map((item) => (
                   <div key={item}>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="flex justify-start relative items-center mb-1 mt-1 cursor-pointer">
-                        <span className="ml-3 text-sm font-medium text-black-900">
+                        <span className="ml-3 text-sm text-black-900">
                           {t(item)}
                         </span>
                       </div>
                       <div className="flex justify-end">
                         <label
                           labelfor={item}
-                          className="inline-flex relative items-center mb-1 mt-1 cursor-pointer text-gray-400"
+                          className="inline-flex text-sm relative items-center mb-1 mt-1 cursor-pointer text-gray-400"
                         >
                           {t("required")}
                         </label>
@@ -239,13 +236,13 @@ export default function Consent({
 
           {voluntaryClaims?.length > 0 && (
             <>
-              <h2>{t("voluntary_claims")}</h2>
+              <h2 className="font-semibold">{t("voluntary_claims")}</h2>
               <div className="divide-y">
                 {voluntaryClaims?.map((item) => (
                   <div key={item}>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="flex justify-start relative items-center mb-1 mt-1 cursor-pointer">
-                        <span className="ml-3 text-sm font-medium text-black-900">
+                        <span className="ml-3 text-sm text-black-900">
                           {t(item)}
                         </span>
                       </div>
@@ -281,23 +278,16 @@ export default function Consent({
             </div>
           }
           <div className="grid grid-cols-2 gap-4">
-            <button
-              type="button"
-              className="flex justify-center w-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 light:bg-gray-800 light:text-white light:border-gray-600 light:hover:bg-gray-700 light:hover:border-gray-600 light:focus:ring-gray-700"
-              onClick={handleCancel}
-            >
-              {t("cancel")}
-            </button>
-
-            <div className="flex justify-end">
-              <button
-                type="button"
-                className="flex justify-center w-full text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
-                onClick={handleSubmit}
-              >
-                {t("allow")}
-              </button>
-            </div>
+            <FormAction
+              type={buttonTypes.cancel}
+              text={t("cancel")}
+              handleClick={handleCancel}
+            />
+            <FormAction
+              type={buttonTypes.button}
+              text={t("allow")}
+              handleClick={handleSubmit}
+            />
           </div>
         </form>
       </div>

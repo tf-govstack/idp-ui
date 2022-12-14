@@ -4,6 +4,7 @@ import LoadingIndicator from "../common/LoadingIndicator";
 import FormAction from "./FormAction";
 import { LoadingStates as states } from "../constants/states";
 import {
+  buttonTypes,
   challengeTypes,
   configurationKeys,
 } from "../constants/clientConstants";
@@ -279,7 +280,7 @@ export default function OtpVerify({
 
         <FormAction
           disabled={otpValue.length !== 6}
-          type="Submit"
+          type={buttonTypes.submit}
           text={t("verify")}
         />
         {showTimer && (
@@ -289,7 +290,7 @@ export default function OtpVerify({
         )}
         {showResendOtp && (
           <FormAction
-            type="Button"
+            type={buttonTypes.button}
             text={t("resent_otp")}
             handleClick={handleSendOtp}
           />
