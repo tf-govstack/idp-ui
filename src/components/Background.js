@@ -42,68 +42,83 @@ export default function Background({
             <div className="lg:flex-grow lg:pl-24 md:pl-16 flex flex-col">
               <div className="w-full flex mb-4 justify-center items-center">
                 <img
-                  className="h-20 mr-5"
+                  className="h-16 mr-5"
                   src={clientLogoPath}
                   alt={clientName}
                 />
                 <span className="text-6xl flex mr-5">&#8651;</span>
-                <img className="h-20" src={mosipLogoPath} alt="MOSIP" />
+                <img className="h-16" src={mosipLogoPath} alt="MOSIP" />
               </div>
               <div className="w-full">
-                <h1 className="flex justify-center title-font sm:text-3xl text-3xl mb-4 font-medium text-gray-900">
+                <h1 className="flex justify-center title-font sm:text-3xl text-3xl mb-3 font-medium text-gray-900">
                   {heading}
                 </h1>
               </div>
-              <div className="w-full flex justify-center">
-                <div className="w-96 h-min shadow-lg rounded bg-[#F8F8F8]">
-                  <div className="w-full flex justify-center">
-                    <ul
-                      className="divide-dashed w-full mr-2 ml-2 mt-2 flex mb-0 list-none flex-wrap pb-2 flex-row grid grid-cols-2"
-                      role="tablist"
-                    >
-                      {tabs.map((tab, index) => (
-                        <li
-                          key={tab.name + index}
-                          className="-mb-px flex-auto text-center"
+              <div className="grid grid-rows-7 w-full flex shadow-lg rounded bg-[#F8F8F8]">
+                {/* head */}
+                <div className="row-span-1 w-full flex justify-start">
+                  <ul
+                    className="divide-dashed w-full mr-2 ml-2 mt-2 flex mb-0 list-none flex-wrap pb-1 flex-row grid grid-cols-2"
+                    role="tablist"
+                  >
+                    {tabs.map((tab, index) => (
+                      <li
+                        key={tab.name + index}
+                        className="-mb-px flex-auto text-center"
+                      >
+                        <a
+                          className={
+                            "text-xs font-bold uppercase px-5 py-2 rounded block leading-normal " +
+                            (openTab === index
+                              ? "shadow-lg text-white border border-transparent bg-gradient-to-t from-cyan-500 to-blue-500"
+                              : "shadow-inner border border-2 text-slate-400 bg-white")
+                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setOpenTab(index);
+                          }}
+                          data-toggle="tab"
+                          href="#link1"
+                          role="tablist"
                         >
-                          <a
-                            className={
-                              "text-xs font-bold uppercase px-5 py-3 rounded block leading-normal " +
-                              (openTab === index
-                                ? "shadow-lg text-white border border-transparent bg-gradient-to-t from-cyan-500 to-blue-500"
-                                : "shadow-inner border border-2 text-slate-400 bg-white")
-                            }
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setOpenTab(index);
-                            }}
-                            data-toggle="tab"
-                            href="#link1"
-                            role="tablist"
-                          >
-                            {t(tab.name)}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                          {t(tab.name)}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {/* body */}
+                <div className="row-span-5 w-96 min-h-[340px] self-start">
                   <div className="px-5 py-2">
                     <div className={openTab === 0 ? "block" : "hidden"}>
                       {linkedWalletComp}
                     </div>
                     <div className={openTab === 1 ? "block" : "hidden"}>
                       {component}
-                      <div className="flex justify-center py-2">
-                        <button
-                          className={
-                            "text-gray-500 font-semibold" +
-                            (showMoreOption ? " block" : " hidden")
-                          }
-                          onClick={handleMoreWaysToSignIn}
-                        >
-                          {t("more_ways_to_sign_in")}
-                        </button>
-                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* footer*/}
+                <div className="row-span-1 mb-2">
+                  <div className={openTab === 0 ? "block" : "hidden"}>
+                    <p className="text-center text-black-600 font-semibold">
+                      {t("dont_have_inji")}&nbsp;
+                      <a href={"downloadURI"} className="text-sky-600">
+                        {t("download_now")}
+                      </a>
+                    </p>
+                  </div>
+                  <div className={openTab === 1 ? "block" : "hidden"}>
+                    <div className="flex justify-center">
+                      <button
+                        className={
+                          "text-gray-500 font-semibold" +
+                          (showMoreOption ? " block" : " hidden")
+                        }
+                        onClick={handleMoreWaysToSignIn}
+                      >
+                        {t("more_ways_to_sign_in")}
+                      </button>
                     </div>
                   </div>
                 </div>

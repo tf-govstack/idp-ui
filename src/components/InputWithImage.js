@@ -1,5 +1,5 @@
 const fixedInputClass =
-  "rounded-md bg-white shadow-lg appearance-none block w-full px-3.5 py-2.5 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 focus:z-10 sm:text-sm pr-10 p-2.5";
+  "rounded-md bg-white shadow-lg appearance-none block w-full px-3.5 py-2.5 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 focus:z-10 sm:text-sm pr-10 p-2.5 ";
 
 export default function InputWithImage({
   handleChange,
@@ -34,7 +34,7 @@ export default function InputWithImage({
           </label>
         )}
       </div>
-      <div className="relative my-5">
+      <div className="relative">
         <div className="flex absolute inset-y-0 right-0 items-center pr-3 pointer-events-none">
           <img className="w-6 h-6" src={imgPath} />
         </div>

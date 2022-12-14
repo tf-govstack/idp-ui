@@ -130,19 +130,19 @@ export default function Pin({
           </div>
         </div>
         <FormAction type="Submit" text={t("login")} />
-        {status === states.LOADING && (
-          <div>
-            <LoadingIndicator size="medium" message={t("authenticating_msg")} />
-          </div>
-        )}
-        {status !== states.LOADING && error && (
-          <ErrorIndicator
-            prefix={error.prefix}
-            errorCode={error.errorCode}
-            defaultMsg={error.defaultMsg}
-          />
-        )}
       </form>
+      {status === states.LOADING && (
+        <div>
+          <LoadingIndicator size="medium" message={t("authenticating_msg")} />
+        </div>
+      )}
+      {status !== states.LOADING && error && (
+        <ErrorIndicator
+          prefix={error.prefix}
+          errorCode={error.errorCode}
+          defaultMsg={error.defaultMsg}
+        />
+      )}
     </>
   );
 }
