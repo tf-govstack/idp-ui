@@ -34,9 +34,6 @@ const FACE_TYPE = "Face";
 const FINGER_TYPE = "Finger";
 const IRIS_TYPE = "Iris";
 
-const fromPort = 4501;
-const tillPort = 4600;
-
 /**
  * Triggers capture request of SBI for auth capture
  * @param {url} host SBI is hosted on given host
@@ -158,6 +155,33 @@ const capture_Auth = async (
 const mosipdisc_DiscoverDevicesAsync = async (host) => {
   clearDiscoveredDevices();
   clearDeviceInfos();
+
+  const portRange =
+    getIdpConfiguration(configurationKeys.sbiPortRange) ??
+    process.env.REACT_APP_SBI_PORT_RANGE;
+
+  let ports = portRange.split("-").map((x) => x.trim());
+
+  let fromPort = ports[0].trim();
+  let tillPort = ports[1].trim();
+
+  //port validations
+  let portsValid = true;
+  if (
+    isNaN(fromPort) ||
+    isNaN(tillPort) ||
+    !(fromPort > 0) ||
+    !(tillPort > 0) ||
+    !(fromPort <= tillPort)
+  ) {
+    portsValid = false;
+  }
+
+  if (!portsValid) {
+    //take default values
+    fromPort = 4501;
+    tillPort = 4510;
+  }
 
   let discoverRequestList = [];
   for (let i = fromPort; i <= tillPort; i++) {

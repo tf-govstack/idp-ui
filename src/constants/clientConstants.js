@@ -31,6 +31,7 @@ const deepLinkParamPlaceholder = {
 
 const configurationKeys = {
   sbiEnv: "sbi.env",
+  sbiPortRange: "sbi.port.range", //hyphen separated numbers (inclusive). default is 4501-4600
 
   sbiCAPTURETimeoutInSeconds: "sbi.timeout.CAPTURE",
   sbiDISCTimeoutInSeconds: "sbi.timeout.DISC",
@@ -46,10 +47,12 @@ const configurationKeys = {
 
   sbiIrisBioSubtypes: "sbi.bio.subtypes.iris", //comma separated list of bio-subtypes. default is "UNKNOWN"
   sbiFingerBioSubtypes: "sbi.bio.subtypes.finger", //comma separated list of bio-subtypes. default is "UNKNOWN"
+
   resendOtpTimeout: "resend.otp.delay.secs",
   sendOtpChannels: "send.otp.channels", //comma separated list of otp channels.
   sendOTPShowCaptcha: "mosip.preregistration.captcha.enable", //display captcha or not
   sendOtpCaptchaSiteKey: "mosip.preregistration.captcha.sitekey", //site key for ReCAPTCHA
+
   linkCodeWaitTimeInSec: "mosip.idp.link-code-expire-in-secs",
   injiDeepLinkURI: "mosip.idp.inji.deep-link-uri",
   injiAppDownloadURI: "mosip.idp.inji.download-uri",

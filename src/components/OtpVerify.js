@@ -140,7 +140,7 @@ export default function OtpVerify({
   const startTimer = async () => {
     clearInterval(timer);
     setResendOtpCountDown(
-      t("resent_otp_counter", { timeLeft: resendOtpTimeout + "s" })
+      t("resend_otp_counter", { timeLeft: resendOtpTimeout + "s" })
     );
     setShowResendOtp(false);
     setShowTimer(true);
@@ -150,7 +150,7 @@ export default function OtpVerify({
       let timeLeft = resendOtpTimeout - timePassed;
 
       setResendOtpCountDown(
-        t("resent_otp_counter", { timeLeft: timeLeft + "s" })
+        t("resend_otp_counter", { timeLeft: timeLeft + "s" })
       );
 
       if (timeLeft === 0) {
@@ -291,7 +291,7 @@ export default function OtpVerify({
         {showResendOtp && (
           <FormAction
             type={buttonTypes.button}
-            text={t("resent_otp")}
+            text={t("resend_otp")}
             handleClick={handleSendOtp}
           />
         )}

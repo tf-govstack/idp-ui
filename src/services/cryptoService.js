@@ -18,7 +18,7 @@ const decodeJWT = async (signed_jwt) => {
  */
 const encodeBase64 = async (jsonObject) => {
   let objJsonStr = JSON.stringify(jsonObject);
-  let objJsonB64 = new Buffer.from(objJsonStr).toString("base64");
+  let objJsonB64 = Buffer.from(objJsonStr).toString("base64");
   return objJsonB64;
 };
 
