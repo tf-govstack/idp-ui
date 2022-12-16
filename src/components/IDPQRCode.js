@@ -275,52 +275,47 @@ export default function IDPQRCode({
       <div className="grid grid-cols-6 items-center">
         <div className="flex justify-center col-start-2 col-span-4">
           <h1 className="text-center text-sky-600 font-semibold">
-            {t("sign_in_with_inji")}
+            {t("scan_with_inji")}
           </h1>
         </div>
       </div>
-      <p className="text-center text-black-600 font-semibold my-2">
-        {t("scan_with_inji")}
-      </p>
-      <div className="app flex justify-center">
-        {status.state === states.LOADING && error === null && (
-          <div>
-            <LoadingIndicator size="medium" message={status.msg} />
-          </div>
-        )}
+      <div className="relative h-64 mt-6">
         {error && (
-          <div className="w-full">
-            <ErrorIndicator
-              prefix={error.prefix}
-              errorCode={error.errorCode}
-              defaultMsg={error.defaultMsg}
-            />
-            <div className="flex w-full justify-center">
-              <button
-                type="button"
-                className="flex justify-center w-2/3 text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5"
-                onClick={fetchQRCode}
-              >
-                {t("refresh")}
-              </button>
+          <div className="absolute bottom-0 left-0 bg-white bg-opacity-90 h-full w-full flex justify-center items-center">
+            <div className="rounded h-min w-full p-3 mx-4">
+              <ErrorIndicator
+                prefix={error.prefix}
+                errorCode={error.errorCode}
+                defaultMsg={error.defaultMsg}
+                customClass="font-semibold"
+              />
+              <div className="flex w-full justify-center mt-5">
+                <button
+                  type="button"
+                  className="flex justify-center w-full text-gray-900 bg-slate-200 border border-gray-300 hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5"
+                  onClick={fetchQRCode}
+                >
+                  {t("refresh")}
+                </button>
+              </div>
             </div>
           </div>
         )}
-        {qr && !error && (
-          <div className="border border-4 border-sky-600 rounded-3xl p-2 w-52 h-52">
-            <img src={qr} />
-            <div className="flex justify-center">
-              <p className=" w-22 bg-[#F8F8F8] text-center">{t("inji_app")}</p>
+        {qr && (
+          <div className="w-full flex justify-center">
+            <div className="border border-4 border-sky-600 rounded-3xl p-2 w-64 h-64">
+              <img src={qr} />
+            </div>
+          </div>
+        )}
+        {status.state === states.LOADING && error === null && (
+          <div className="absolute bottom-0 left-0 bg-white bg-opacity-80 h-full w-full flex justify-center items-center">
+            <div className="rounded h-min bg-slate-50 w-full p-3 mx-4">
+              <LoadingIndicator size="medium" message={status.msg} />
             </div>
           </div>
         )}
       </div>
-      <p className="text-center text-black-600 font-semibold mt-6 mb-2">
-        {t("dont_have_inji")}&nbsp;
-        <a href={downloadURI} className="text-sky-600">
-          {t("download_now")}
-        </a>
-      </p>
     </>
   );
 }

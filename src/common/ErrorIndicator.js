@@ -1,6 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { localStorageService } from "../services/local-storageService";
 
+const fixedInputClass =
+  "p-2 mt-1 mb-1 w-full text-center text-sm rounded-lg text-red-700 bg-red-100 ";
+
 /**
  * @param {string} prefix optional value which will be showen before the error msg, msg be passed after translation.
  * @param {string} errorCode is a key from locales file under errors namespace
@@ -12,6 +15,7 @@ const ErrorIndicator = ({
   errorCode,
   defaultMsg,
   i18nKeyPrefix = "errors",
+  customClass,
 }) => {
   const { getRedirectUri, getNonce, getState } = { ...localStorageService };
 
@@ -44,10 +48,7 @@ const ErrorIndicator = ({
   }
 
   return (
-    <div
-      className="p-2 mt-2 mb-2 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
-      role="alert"
-    >
+    <div className={fixedInputClass + customClass} role="alert">
       {prefix + " "}
       {t(errorCode, defaultMsg)}
     </div>

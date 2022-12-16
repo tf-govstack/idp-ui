@@ -282,7 +282,7 @@ export default function L1Biometrics({
       <h1 className="text-center text-sky-600 font-semibold">
         {t("sign_in_with_biometric")}
       </h1>
-      <form className="relative mt-8 space-y-6" onSubmit={submitHandler}>
+      <form className="relative mt-8 space-y-5" onSubmit={submitHandler}>
         <div className="-space-y-px">
           {inputFields.map((field) => (
             <InputWithImage

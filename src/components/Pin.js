@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import ErrorIndicator from "../common/ErrorIndicator";
 import LoadingIndicator from "../common/LoadingIndicator";
-import { challengeTypes } from "../constants/clientConstants";
+import { buttonTypes, challengeTypes } from "../constants/clientConstants";
 import { otpFields } from "../constants/formFields";
 import { LoadingStates as states } from "../constants/states";
 import FormAction from "./FormAction";
@@ -129,20 +129,20 @@ export default function Pin({
             </label>
           </div>
         </div>
-        <FormAction type="Submit" text={t("login")} />
-        {status === states.LOADING && (
-          <div>
-            <LoadingIndicator size="medium" message={t("authenticating_msg")} />
-          </div>
-        )}
-        {status !== states.LOADING && error && (
-          <ErrorIndicator
-            prefix={error.prefix}
-            errorCode={error.errorCode}
-            defaultMsg={error.defaultMsg}
-          />
-        )}
+        <FormAction type={buttonTypes.submit} text={t("login")} />
       </form>
+      {status === states.LOADING && (
+        <div>
+          <LoadingIndicator size="medium" message={t("authenticating_msg")} />
+        </div>
+      )}
+      {status !== states.LOADING && error && (
+        <ErrorIndicator
+          prefix={error.prefix}
+          errorCode={error.errorCode}
+          defaultMsg={error.defaultMsg}
+        />
+      )}
     </>
   );
 }

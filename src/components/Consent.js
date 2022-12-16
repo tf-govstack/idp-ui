@@ -2,7 +2,9 @@ import i18next from "i18next";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import LoadingIndicator from "../common/LoadingIndicator";
+import { buttonTypes } from "../constants/clientConstants";
 import { LoadingStates as states } from "../constants/states";
+import FormAction from "./FormAction";
 
 export default function Consent({
   authService,
@@ -24,6 +26,9 @@ export default function Consent({
   const [status, setStatus] = useState(states.LOADED);
   const [claims, setClaims] = useState([]);
   const [scope, setScope] = useState([]);
+  const [clientName, setClientName] = useState("");
+  const [clientLogoPath, setClientLogoPath] = useState("");
+  const [claimsScopes, setClaimsScopes] = useState([]);
 
   const handleScopeChange = (e) => {
     let id = e.target.id;
@@ -37,7 +42,6 @@ export default function Consent({
     else {
       resultArray = scope.filter((CheckedId) => CheckedId !== id);
     }
-
     setScope(resultArray);
   };
 
@@ -53,17 +57,42 @@ export default function Consent({
     else {
       resultArray = claims.filter((CheckedId) => CheckedId !== id);
     }
-
     setClaims(resultArray);
   };
 
   useEffect(() => {
-    const enableEssentialClaims = async () => {
+    const initialize = async () => {
       let oAuthDetails = JSON.parse(getOuthDetails());
-      let claims = oAuthDetails?.essentialClaims;
-      setClaims(claims);
+
+      let claimsScopes = [];
+      claimsScopes.push({
+        label: "authorize_scope",
+        type: "scope",
+        required: false,
+        values: oAuthDetails?.authorizeScopes,
+      });
+
+      claimsScopes.push({
+        label: "essential_claims",
+        type: "claim",
+        required: true,
+        values: oAuthDetails?.essentialClaims,
+      });
+
+      claimsScopes.push({
+        label: "voluntary_claims",
+        type: "claim",
+        required: false,
+        values: oAuthDetails?.voluntaryClaims,
+      });
+
+      setClaimsScopes(claimsScopes);
+      setClientName(oAuthDetails?.clientName);
+      setClientLogoPath(oAuthDetails?.logoUrl);
+
+      setClaims(oAuthDetails?.essentialClaims);
     };
-    enableEssentialClaims();
+    initialize();
   }, []);
 
   const handleSubmit = (e) => {
@@ -75,14 +104,6 @@ export default function Consent({
     e.preventDefault();
     onError("consent_request_rejected", t("consent_request_rejected"));
   };
-
-  let oAuthDetails = JSON.parse(getOuthDetails());
-
-  let authorizeScopes = oAuthDetails?.authorizeScopes;
-  let essentialClaims = oAuthDetails?.essentialClaims;
-  let voluntaryClaims = oAuthDetails?.voluntaryClaims;
-  let clientName = oAuthDetails?.clientName;
-  let clientLogoPath = oAuthDetails?.logoUrl;
 
   //Handle Login API Integration here
   const submitConsent = async () => {
@@ -157,18 +178,14 @@ export default function Consent({
   };
 
   return (
-    <div
-      className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded"
-      style={{ background: "#F2F4F4" }}
-    >
-      <div className="px-4 py-4 flex-auto">
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+    <div className="flex items-center justify-center">
+      <div className="max-w-md w-full shadow-lg mt-5 rounded bg-[#F8F8F8] px-4 py-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="flex justify-center items-center">
             <img className="h-20 mr-5" src={clientLogoPath} alt={clientName} />
             <span className="text-6xl flex mr-5">&#8651;</span>
             <img className="h-20" src={mosipLogoPath} alt="MOSIP" />
           </div>
-
           <div className="flex justify-center">
             <b>
               {t("consent_request_msg", {
@@ -176,99 +193,55 @@ export default function Consent({
               })}
             </b>
           </div>
-
-          {authorizeScopes?.length > 0 && (
-            <>
-              <h2>{t("authorize_scope")}</h2>
-              <div className="divide-y">
-                {authorizeScopes?.map((item) => (
-                  <div key={item}>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="flex justify-start relative items-center mb-1 mt-1 cursor-pointer">
-                        <span className="ml-3 text-sm font-medium text-black-900">
-                          {t(item)}
-                        </span>
+          {claimsScopes?.map(
+            (claimScope) =>
+              claimScope?.values?.length > 0 && (
+                <>
+                  <h2 className="font-semibold">{t(claimScope.label)}</h2>
+                  <div className="divide-y">
+                    {claimScope?.values?.map((item) => (
+                      <div key={item}>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="flex justify-start relative items-center mb-1 mt-1">
+                            <label className="ml-3 text-sm text-black-900">
+                              {t(item)}
+                            </label>
+                          </div>
+                          <div className="flex justify-end">
+                            {claimScope?.required && (
+                              <label
+                                labelfor={item}
+                                className="inline-flex text-sm relative items-center mb-1 mt-1 text-gray-400"
+                              >
+                                {t("required")}
+                              </label>
+                            )}
+                            {!claimScope?.required && (
+                              <label
+                                labelfor={item}
+                                className="inline-flex relative items-center mb-1 mt-1 cursor-pointer"
+                              >
+                                <input
+                                  type="checkbox"
+                                  value=""
+                                  id={item}
+                                  className="sr-only peer"
+                                  onChange={
+                                    claimScope.type === "scope"
+                                      ? handleScopeChange
+                                      : handleClaimChange
+                                  }
+                                />
+                                <div className="w-9 h-5 border border-neutral-400 bg-white rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-neutral-400 after:border after:border-neutral-400 peer-checked:after:border-sky-500 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:bg-sky-500 peer-checked:after:bg-sky-500 peer-checked:border-sky-500"></div>
+                              </label>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex justify-end">
-                        <label
-                          labelfor={item}
-                          className="inline-flex relative items-center mb-1 mt-1 cursor-pointer"
-                        >
-                          <input
-                            type="checkbox"
-                            value=""
-                            id={item}
-                            className="sr-only peer"
-                            onChange={handleScopeChange}
-                          />
-                          <div className="w-9 h-5 border border-neutral-400 bg-white rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-neutral-400 after:border after:border-neutral-400 peer-checked:after:border-sky-500 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:bg-sky-500 peer-checked:after:bg-sky-500 peer-checked:border-sky-500"></div>
-                        </label>
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </>
-          )}
-          {essentialClaims?.length > 0 && (
-            <>
-              <h2>{t("essential_claims")}</h2>
-              <div className="divide-y">
-                {essentialClaims?.map((item) => (
-                  <div key={item}>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="flex justify-start relative items-center mb-1 mt-1 cursor-pointer">
-                        <span className="ml-3 text-sm font-medium text-black-900">
-                          {t(item)}
-                        </span>
-                      </div>
-                      <div className="flex justify-end">
-                        <label
-                          labelfor={item}
-                          className="inline-flex relative items-center mb-1 mt-1 cursor-pointer text-gray-400"
-                        >
-                          {t("required")}
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-
-          {voluntaryClaims?.length > 0 && (
-            <>
-              <h2>{t("voluntary_claims")}</h2>
-              <div className="divide-y">
-                {voluntaryClaims?.map((item) => (
-                  <div key={item}>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="flex justify-start relative items-center mb-1 mt-1 cursor-pointer">
-                        <span className="ml-3 text-sm font-medium text-black-900">
-                          {t(item)}
-                        </span>
-                      </div>
-                      <div className="flex justify-end">
-                        <label
-                          labelfor={item}
-                          className="inline-flex relative items-center mb-1 mt-1 cursor-pointer"
-                        >
-                          <input
-                            type="checkbox"
-                            value=""
-                            id={item}
-                            className="sr-only peer"
-                            onChange={handleClaimChange}
-                          />
-                          <div className="w-9 h-5 border border-neutral-400 bg-white rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-neutral-400 after:border after:border-neutral-400 peer-checked:after:border-sky-500 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:bg-sky-500 peer-checked:after:bg-sky-500 peer-checked:border-sky-500"></div>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
+                </>
+              )
           )}
           {
             <div>
@@ -281,23 +254,16 @@ export default function Consent({
             </div>
           }
           <div className="grid grid-cols-2 gap-4">
-            <button
-              type="button"
-              className="flex justify-center w-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 light:bg-gray-800 light:text-white light:border-gray-600 light:hover:bg-gray-700 light:hover:border-gray-600 light:focus:ring-gray-700"
-              onClick={handleCancel}
-            >
-              {t("cancel")}
-            </button>
-
-            <div className="flex justify-end">
-              <button
-                type="button"
-                className="flex justify-center w-full text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
-                onClick={handleSubmit}
-              >
-                {t("allow")}
-              </button>
-            </div>
+            <FormAction
+              type={buttonTypes.cancel}
+              text={t("cancel")}
+              handleClick={handleCancel}
+            />
+            <FormAction
+              type={buttonTypes.button}
+              text={t("allow")}
+              handleClick={handleSubmit}
+            />
           </div>
         </form>
       </div>
