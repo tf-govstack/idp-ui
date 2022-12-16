@@ -115,7 +115,7 @@ export default function OtpVerify({
     if (response.maskedMobile) {
       otpChannels =
         " " +
-        t("mobile_number", {
+        t("mobile_number_placeholder", {
           mobileNumber: response.maskedMobile,
         });
     }
@@ -126,7 +126,7 @@ export default function OtpVerify({
       } else {
         otpChannels += " ";
       }
-      otpChannels += t("email_address", {
+      otpChannels += t("email_address_placeholder", {
         emailAddress: response.maskedEmail,
       });
     }
@@ -140,7 +140,7 @@ export default function OtpVerify({
   const startTimer = async () => {
     clearInterval(timer);
     setResendOtpCountDown(
-      t("resend_otp_counter", { timeLeft: resendOtpTimeout + "s" })
+      t("resend_otp_counter", getMinFromSec(resendOtpTimeout))
     );
     setShowResendOtp(false);
     setShowTimer(true);
@@ -148,11 +148,7 @@ export default function OtpVerify({
     var interval = setInterval(function () {
       timePassed++;
       let timeLeft = resendOtpTimeout - timePassed;
-
-      setResendOtpCountDown(
-        t("resend_otp_counter", { timeLeft: timeLeft + "s" })
-      );
-
+      setResendOtpCountDown(t("resend_otp_counter", getMinFromSec(timeLeft)));
       if (timeLeft === 0) {
         clearInterval(interval);
         setShowTimer(false);
@@ -162,6 +158,19 @@ export default function OtpVerify({
     setTimer(interval);
   };
 
+  const getMinFromSec = (seconds) => {
+    let sec = (seconds % 60).toLocaleString("en-US", {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+    });
+
+    let min = Math.floor(seconds / 60).toLocaleString("en-US", {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+    });
+
+    return { min: min, sec: sec };
+  };
   //Handle Login API Integration here
   const authenticateUser = async () => {
     try {
@@ -244,7 +253,6 @@ export default function OtpVerify({
             inputMode="number"
             style={{ padding: "5px 0px" }}
             inputStyle={{
-              borderColor: "#0284c7",
               width: "40px",
               height: "40px",
               margin: "0 5px",
@@ -252,7 +260,7 @@ export default function OtpVerify({
               borderBottom: "2px solid #0284c7",
               color: "#0284c7",
             }}
-            inputFocusStyle={{ borderColor: "#075985" }}
+            inputFocusStyle={{ borderBottom: "2px solid #075985" }}
             onComplete={(value, index) => {}}
             autoSelect={true}
           />

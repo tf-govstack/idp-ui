@@ -77,21 +77,19 @@ export default function OtpGet({
     <>
       <div className="  mt-16">
         {fields.map((field) => (
-          <div>
-            <InputWithImage
-              key={"Otp_" + field.id}
-              handleChange={handleChange}
-              value={loginState["Otp_" + field.id]}
-              labelText={t(field.labelText)}
-              labelFor={field.labelFor}
-              id={"Otp_" + field.id}
-              name={field.name}
-              type={field.type}
-              isRequired={field.isRequired}
-              placeholder={t(field.placeholder)}
-              imgPath="images/photo_scan.png"
-            />
-          </div>
+          <InputWithImage
+            key={"Otp_" + field.id}
+            handleChange={handleChange}
+            value={loginState["Otp_" + field.id]}
+            labelText={t(field.labelText)}
+            labelFor={field.labelFor}
+            id={"Otp_" + field.id}
+            name={field.name}
+            type={field.type}
+            isRequired={field.isRequired}
+            placeholder={t(field.placeholder)}
+            imgPath="images/photo_scan.png"
+          />
         ))}
 
         <div className="mt-10 mb-5">

@@ -97,7 +97,7 @@
     "mobile_number": "Mobile Number",
     "email_address": "Email Address",
     "otp_sent_msg": "OTP has been sent to your registered {{otpChannels}}",
-    "resend_otp_counter": "Resend OTP in {{timeLeft}}",
+    "resend_otp_counter": "Resend OTP in {{min}}:{{sec}}",
     "mobile_number_placeholder": "Mobile Number: {{mobileNumber}}",
     "email_address_placeholder": "Email Address: {{emailAddress}}"
   },
