@@ -81,7 +81,7 @@ export default function OtpVerify({
 
       if (errors != null && errors.length > 0) {
         setError({
-          prefix: t("send_otp_failed"),
+          prefix: "send_otp_failed_msg",
           errorCode: errors[0].errorCode,
           defaultMsg: errors[0].errorMessage,
         });
@@ -92,7 +92,7 @@ export default function OtpVerify({
       }
     } catch (error) {
       setError({
-        prefix: t("send_otp_failed"),
+        prefix: "send_otp_failed_msg",
         errorCode: error.message,
       });
       setStatus({ state: states.ERROR, msg: "" });
@@ -198,7 +198,7 @@ export default function OtpVerify({
 
       if (errors != null && errors.length > 0) {
         setError({
-          prefix: t("authentication_failed_msg"),
+          prefix: "authentication_failed_msg",
           errorCode: errors[0].errorCode,
           defaultMsg: errors[0].errorMessage,
         });
@@ -212,7 +212,7 @@ export default function OtpVerify({
       }
     } catch (error) {
       setError({
-        prefix: t("authentication_failed_msg"),
+        prefix: "authentication_failed_msg",
         errorCode: error.message,
       });
       setStatus({ state: states.ERROR, msg: "" });

@@ -56,7 +56,7 @@ export default function OtpGet({
 
       if (errors != null && errors.length > 0) {
         setError({
-          prefix: t("send_otp_failed"),
+          prefix: "send_otp_failed_msg",
           errorCode: errors[0].errorCode,
           defaultMsg: errors[0].errorMessage,
         });
@@ -66,7 +66,7 @@ export default function OtpGet({
       }
     } catch (error) {
       setError({
-        prefix: t("send_otp_failed"),
+        prefix: "send_otp_failed_msg",
         errorCode: error.message,
       });
       setStatus({ state: states.ERROR, msg: "" });

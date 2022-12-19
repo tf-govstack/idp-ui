@@ -98,7 +98,7 @@ export default function IDPQRCode({
       }
     } catch (error) {
       setError({
-        prefix: t("link_code_refresh_failed"),
+        prefix: "link_code_refresh_failed",
         errorCode: error.message,
         defaultMsg: error.message,
       });
@@ -145,8 +145,7 @@ export default function IDPQRCode({
       //No response
       if (!linkStatusResponse || !linkStatusResponse?.response) {
         setError({
-          errorCode: t("qr_code_expired"),
-          defaultMsg: t("qr_code_expired"),
+          errorCode: "qr_code_expired",
         });
         return;
       }
@@ -163,7 +162,7 @@ export default function IDPQRCode({
         let response = linkStatusResponse.response;
         if (response.linkStatus != "LINKED") {
           setError({
-            errorCode: t("failed_to_link"),
+            errorCode: "failed_to_link",
           });
         } else {
           setQr(null);
@@ -176,7 +175,7 @@ export default function IDPQRCode({
       }
     } catch (error) {
       setError({
-        prefix: t("link_code_refresh_failed"),
+        prefix: "link_code_refresh_failed",
         errorCode: error.message,
         defaultMsg: error.message,
       });
@@ -226,8 +225,7 @@ export default function IDPQRCode({
       //No response
       if (!linkAuthResponse || !linkAuthResponse?.response) {
         setError({
-          errorCode: t("authorization_failed"),
-          defaultMsg: t("authorization_failed"),
+          errorCode: "authorization_failed",
         });
         return;
       }
@@ -263,7 +261,7 @@ export default function IDPQRCode({
       }
     } catch (error) {
       setError({
-        prefix: t("link_code_status_failed"),
+        prefix: "link_code_status_failed",
         errorCode: error.message,
         defaultMsg: error.message,
       });

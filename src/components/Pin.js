@@ -69,7 +69,7 @@ export default function Pin({
 
       if (errors != null && errors.length > 0) {
         setError({
-          prefix: t("authentication_failed_msg"),
+          prefix: "authentication_failed_msg",
           errorCode: errors[0].errorCode,
           defaultMsg: errors[0].errorMessage,
         });
@@ -83,7 +83,7 @@ export default function Pin({
       }
     } catch (error) {
       setError({
-        prefix: t("authentication_failed_msg"),
+        prefix: "authentication_failed_msg",
         errorCode: error.message,
       });
       setStatus(states.ERROR);

@@ -108,7 +108,7 @@ export default function L1Biometrics({
 
       if (errorCode !== null) {
         setError({
-          prefix: t("biometric_capture_failed_msg"),
+          prefix: "biometric_capture_failed_msg",
           errorCode: errorCode,
           defaultMsg: defaultMsg,
         });
@@ -116,7 +116,7 @@ export default function L1Biometrics({
       }
     } catch (error) {
       setError({
-        prefix: t("biometric_capture_failed_msg"),
+        prefix: "biometric_capture_failed_msg",
         errorCode: error.message,
       });
       return;
@@ -130,7 +130,7 @@ export default function L1Biometrics({
       );
     } catch (error) {
       setError({
-        prefix: t("authentication_failed_msg"),
+        prefix: "authentication_failed_msg",
         errorCode: error.message,
       });
     }
@@ -191,7 +191,7 @@ export default function L1Biometrics({
 
     if (errors != null && errors.length > 0) {
       setError({
-        prefix: t("authentication_failed_msg"),
+        prefix: "authentication_failed_msg",
         errorCode: errors[0].errorCode,
         defaultMsg: errors[0].errorMessage,
       });
@@ -226,6 +226,7 @@ export default function L1Biometrics({
       });
     } catch (error) {
       setError({
+        prefix: "device_disc_failed",
         errorCode: error.message,
       });
     }
