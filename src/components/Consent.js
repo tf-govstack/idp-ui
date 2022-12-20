@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { buttonTypes } from "../constants/clientConstants";
-import { LoadingStates as states } from "../constants/states";
+import { LoadingStates, LoadingStates as states } from "../constants/states";
 import FormAction from "./FormAction";
 
 export default function Consent({
@@ -119,8 +119,6 @@ export default function Consent({
         acceptedClaims,
         permittedAuthorizeScopes
       );
-
-      setStatus(states.LOADED);
 
       const { response, errors } = authCodeResponse;
 
@@ -245,23 +243,25 @@ export default function Consent({
           )}
           {
             <div>
-              {status === "LOADING" && (
+              {status === LoadingStates.LOADING && (
                 <LoadingIndicator size="medium" message="redirecting_msg" />
               )}
             </div>
           }
-          <div className="grid grid-cols-2 gap-4">
-            <FormAction
-              type={buttonTypes.cancel}
-              text={t("cancel")}
-              handleClick={handleCancel}
-            />
-            <FormAction
-              type={buttonTypes.button}
-              text={t("allow")}
-              handleClick={handleSubmit}
-            />
-          </div>
+          {status !== LoadingStates.LOADING && (
+            <div className="grid grid-cols-2 gap-4">
+              <FormAction
+                type={buttonTypes.cancel}
+                text={t("cancel")}
+                handleClick={handleCancel}
+              />
+              <FormAction
+                type={buttonTypes.button}
+                text={t("allow")}
+                handleClick={handleSubmit}
+              />
+            </div>
+          )}
         </form>
       </div>
     </div>
