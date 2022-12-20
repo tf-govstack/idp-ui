@@ -32,9 +32,11 @@ export default function OtpVerify({
   };
 
   const resendOtpTimeout =
-    getIdpConfiguration(configurationKeys.resendOtpTimeout) ?? "5";
+    getIdpConfiguration(configurationKeys.resendOtpTimeout) ??
+    process.env.REACT_APP_RESEND_OTP_TIMEOUT_IN_SEC;
   const commaSeparatedChannels =
-    getIdpConfiguration(configurationKeys.sendOtpChannels) ?? "email,mobile";
+    getIdpConfiguration(configurationKeys.sendOtpChannels) ??
+    process.env.REACT_APP_SEND_OTP_CHANNELS;
 
   const [loginState, setLoginState] = useState(fieldsState);
   const [error, setError] = useState(null);
