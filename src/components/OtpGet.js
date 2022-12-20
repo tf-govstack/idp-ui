@@ -44,7 +44,7 @@ export default function OtpGet({
 
       let otpChannels = commaSeparatedChannels.split(",").map((x) => x.trim());
 
-      setStatus({ state: states.LOADING, msg: t("sending_otp_msg") });
+      setStatus({ state: states.LOADING, msg: "sending_otp_msg" });
       const sendOtpResponse = await post_SendOtp(
         transactionId,
         vid,
@@ -56,7 +56,7 @@ export default function OtpGet({
 
       if (errors != null && errors.length > 0) {
         setError({
-          prefix: t("send_otp_failed"),
+          prefix: "send_otp_failed_msg",
           errorCode: errors[0].errorCode,
           defaultMsg: errors[0].errorMessage,
         });
@@ -66,7 +66,7 @@ export default function OtpGet({
       }
     } catch (error) {
       setError({
-        prefix: t("send_otp_failed"),
+        prefix: "send_otp_failed_msg",
         errorCode: error.message,
       });
       setStatus({ state: states.ERROR, msg: "" });
@@ -89,6 +89,7 @@ export default function OtpGet({
             isRequired={field.isRequired}
             placeholder={t(field.placeholder)}
             imgPath="images/photo_scan.png"
+            tooltipMsg="vid_tooltip"
           />
         ))}
 
@@ -97,7 +98,7 @@ export default function OtpGet({
             type={buttonTypes.button}
             text={t("get_otp")}
             handleClick={sendOTP}
-            disabled={!loginState["Otp_mosip-vid"]}
+            disabled={!loginState["Otp_mosip-vid"]?.trim()}
           />
         </div>
 

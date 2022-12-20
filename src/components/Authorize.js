@@ -12,7 +12,7 @@ export default function Authorize({
   langConfigService,
   i18nKeyPrefix = "authorize",
 }) {
-  const { t, i18n } = useTranslation("translation", {
+  const { i18n } = useTranslation("translation", {
     keyPrefix: i18nKeyPrefix,
   });
 
@@ -57,7 +57,7 @@ export default function Authorize({
           try {
             claimsDecoded = JSON.parse(decodeURI(claims));
           } catch {
-            setError(t("parsing_error_msg"));
+            setError("parsing_error_msg");
             setStatus(states.ERROR);
             return;
           }
@@ -154,7 +154,7 @@ export default function Authorize({
 
   switch (status) {
     case states.LOADING:
-      el = <LoadingIndicator size="medium" message={t("loading_msg")} />;
+      el = <LoadingIndicator size="medium" message={"loading_msg"} />;
       break;
     case states.LOADED:
       if (oAuthDetailResponse === null) {

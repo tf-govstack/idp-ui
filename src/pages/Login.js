@@ -10,7 +10,10 @@ import { cryptoService } from "../services/cryptoService";
 import { sbiService } from "../services/sbiService";
 import Background from "../components/Background";
 import SignInOptions from "../components/SignInOptions";
-import { validAuthFactors } from "../constants/clientConstants";
+import {
+  configurationKeys,
+  validAuthFactors,
+} from "../constants/clientConstants";
 import { linkAuthService } from "../services/linkAuthService";
 import IDPQRCode from "../components/IDPQRCode";
 
@@ -93,6 +96,7 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
   const [showMoreOption, setShowMoreOption] = useState(false);
   const [clientLogoURL, setClientLogoURL] = useState(null);
   const [clientName, setClientName] = useState(null);
+  const [injiDownloadURI, setInjiDownloadURI] = useState(null);
 
   const handleSignInOptionClick = (authFactor) => {
     //TODO handle multifactor auth
@@ -110,6 +114,12 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
   }, []);
 
   const loadComponent = () => {
+    setInjiDownloadURI(
+      localStorageService.getIdpConfiguration(
+        configurationKeys.injiAppDownloadURI
+      ) ?? process.env.REACT_APP_INJI_DOWNLOAD_URI
+    );
+
     let oAuthDetails = JSON.parse(localStorageService.getOuthDetails());
 
     try {
@@ -147,6 +157,7 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
         handleMoreWaysToSignIn={handleMoreWaysToSignIn}
         showMoreOption={showMoreOption}
         linkedWalletComp={InitiateLinkedWallet()}
+        injiAppDownloadURI={injiDownloadURI}
       />
     </>
   );

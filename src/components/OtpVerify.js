@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingIndicator from "../common/LoadingIndicator";
 import FormAction from "./FormAction";
@@ -32,9 +32,11 @@ export default function OtpVerify({
   };
 
   const resendOtpTimeout =
-    getIdpConfiguration(configurationKeys.resendOtpTimeout) ?? "30";
+    getIdpConfiguration(configurationKeys.resendOtpTimeout) ??
+    process.env.REACT_APP_RESEND_OTP_TIMEOUT_IN_SEC;
   const commaSeparatedChannels =
-    getIdpConfiguration(configurationKeys.sendOtpChannels) ?? "email,mobile";
+    getIdpConfiguration(configurationKeys.sendOtpChannels) ??
+    process.env.REACT_APP_SEND_OTP_CHANNELS;
 
   const [loginState, setLoginState] = useState(fieldsState);
   const [error, setError] = useState(null);
@@ -44,7 +46,8 @@ export default function OtpVerify({
   const [showTimer, setShowTimer] = useState(false);
   const [timer, setTimer] = useState(null);
   const [otpValue, setOtpValue] = useState("");
-  const [otpSentMsg, setOtpSentMsg] = useState("");
+  const [otpSentChannels, setOtpSentChannels] = useState("");
+  let pin = useRef();
 
   const navigate = useNavigate();
 
@@ -65,11 +68,13 @@ export default function OtpVerify({
   const sendOTP = async () => {
     try {
       setError(null);
+      pin.clear();
+      setOtpValue("");
 
       let transactionId = getTransactionId();
       let otpChannels = commaSeparatedChannels.split(",").map((x) => x.trim());
 
-      setStatus({ state: states.LOADING, msg: t("sending_otp_msg") });
+      setStatus({ state: states.LOADING, msg: "sending_otp_msg" });
       const sendOtpResponse = await post_SendOtp(
         transactionId,
         vid,
@@ -81,7 +86,7 @@ export default function OtpVerify({
 
       if (errors != null && errors.length > 0) {
         setError({
-          prefix: t("send_otp_failed"),
+          prefix: "send_otp_failed_msg",
           errorCode: errors[0].errorCode,
           defaultMsg: errors[0].errorMessage,
         });
@@ -92,7 +97,7 @@ export default function OtpVerify({
       }
     } catch (error) {
       setError({
-        prefix: t("send_otp_failed"),
+        prefix: "send_otp_failed_msg",
         errorCode: error.message,
       });
       setStatus({ state: states.ERROR, msg: "" });
@@ -134,7 +139,7 @@ export default function OtpVerify({
     let msg = t("otp_sent_msg", {
       otpChannels: otpChannels,
     });
-    setOtpSentMsg(msg);
+    setOtpSentChannels(msg);
   };
 
   const startTimer = async () => {
@@ -149,6 +154,7 @@ export default function OtpVerify({
       timePassed++;
       let timeLeft = resendOtpTimeout - timePassed;
       setResendOtpCountDown(t("resend_otp_counter", getMinFromSec(timeLeft)));
+
       if (timeLeft === 0) {
         clearInterval(interval);
         setShowTimer(false);
@@ -186,7 +192,7 @@ export default function OtpVerify({
         },
       ];
 
-      setStatus({ state: states.LOADING, msg: t("authenticating_msg") });
+      setStatus({ state: states.LOADING, msg: "authenticating_msg" });
       const authenticateResponse = await post_AuthenticateUser(
         transactionId,
         vid,
@@ -198,7 +204,7 @@ export default function OtpVerify({
 
       if (errors != null && errors.length > 0) {
         setError({
-          prefix: t("authentication_failed_msg"),
+          prefix: "authentication_failed_msg",
           errorCode: errors[0].errorCode,
           defaultMsg: errors[0].errorMessage,
         });
@@ -212,7 +218,7 @@ export default function OtpVerify({
       }
     } catch (error) {
       setError({
-        prefix: t("authentication_failed_msg"),
+        prefix: "authentication_failed_msg",
         errorCode: error.message,
       });
       setStatus({ state: states.ERROR, msg: "" });
@@ -238,6 +244,7 @@ export default function OtpVerify({
               imgPath="images/photo_scan.png"
               disabled={true}
               customClass="text-gray-400"
+              tooltipMsg="vid_tooltip"
             />
           ))}
         </div>
@@ -263,13 +270,14 @@ export default function OtpVerify({
             inputFocusStyle={{ borderBottom: "2px solid #075985" }}
             onComplete={(value, index) => {}}
             autoSelect={true}
+            ref={(n) => (pin = n)}
           />
         </div>
 
         <div className="h-16 flex items-center justify-center">
           {status.state !== states.LOADING && !error && (
             <span className="w-full flex justify-center text-sm text-gray-500">
-              {otpSentMsg}
+              {otpSentChannels}
             </span>
           )}
 

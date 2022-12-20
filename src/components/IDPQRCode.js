@@ -1,5 +1,5 @@
 import QRCode from "qrcode";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ErrorIndicator from "../common/ErrorIndicator";
 import LoadingIndicator from "../common/LoadingIndicator";
@@ -26,7 +26,6 @@ export default function IDPQRCode({
   const [qr, setQr] = useState("");
   const [status, setStatus] = useState({ state: states.LOADED, msg: "" });
   const [error, setError] = useState(null);
-  const [downloadURI, setDownloadURI] = useState(null);
   const timeoutInSeconds =
     getIdpConfiguration(configurationKeys.linkCodeWaitTimeInSec) ??
     process.env.REACT_APP_LINK_CODE_TIMEOUT_IN_SEC;
@@ -55,10 +54,6 @@ export default function IDPQRCode({
 
   useEffect(() => {
     fetchQRCode();
-    setDownloadURI(
-      getIdpConfiguration(configurationKeys.injiAppDownloadURI) ??
-        process.env.REACT_APP_INJI_DOWNLOAD_URI
-    );
   }, []);
 
   const fetchQRCode = async () => {
@@ -67,7 +62,7 @@ export default function IDPQRCode({
     try {
       setStatus({
         state: states.LOADING,
-        msg: t("loading_msg"),
+        msg: "loading_msg",
       });
       let { response, errors } = await post_GenerateLinkCode(
         getTransactionId()
@@ -98,7 +93,7 @@ export default function IDPQRCode({
       }
     } catch (error) {
       setError({
-        prefix: t("link_code_refresh_failed"),
+        prefix: "link_code_refresh_failed",
         errorCode: error.message,
         defaultMsg: error.message,
       });
@@ -145,8 +140,7 @@ export default function IDPQRCode({
       //No response
       if (!linkStatusResponse || !linkStatusResponse?.response) {
         setError({
-          errorCode: t("qr_code_expired"),
-          defaultMsg: t("qr_code_expired"),
+          errorCode: "qr_code_expired",
         });
         return;
       }
@@ -163,20 +157,20 @@ export default function IDPQRCode({
         let response = linkStatusResponse.response;
         if (response.linkStatus != "LINKED") {
           setError({
-            errorCode: t("failed_to_link"),
+            errorCode: "failed_to_link",
           });
         } else {
           setQr(null);
           setStatus({
             state: states.LOADING,
-            msg: t("link_auth_waiting"),
+            msg: "link_auth_waiting",
           });
           triggerLinkAuth(transactionId, linkCode);
         }
       }
     } catch (error) {
       setError({
-        prefix: t("link_code_refresh_failed"),
+        prefix: "link_code_refresh_failed",
         errorCode: error.message,
         defaultMsg: error.message,
       });
@@ -226,8 +220,7 @@ export default function IDPQRCode({
       //No response
       if (!linkAuthResponse || !linkAuthResponse?.response) {
         setError({
-          errorCode: t("authorization_failed"),
-          defaultMsg: t("authorization_failed"),
+          errorCode: "authorization_failed",
         });
         return;
       }
@@ -243,7 +236,7 @@ export default function IDPQRCode({
       } else {
         setStatus({
           state: states.LOADING,
-          msg: t("redirecting_msg"),
+          msg: "redirecting_msg",
         });
 
         let response = linkAuthResponse.response;
@@ -263,7 +256,7 @@ export default function IDPQRCode({
       }
     } catch (error) {
       setError({
-        prefix: t("link_code_status_failed"),
+        prefix: "link_code_status_failed",
         errorCode: error.message,
         defaultMsg: error.message,
       });
