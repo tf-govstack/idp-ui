@@ -86,10 +86,11 @@ export default function L1Biometrics({
     try {
       setStatus({
         state: states.AUTHENTICATING,
-        msg: t("capture_initiated_msg", {
+        msg: "capture_initiated_msg",
+        msgParam: {
           modality: t(selectedDevice.type),
           deviceModel: selectedDevice.model,
-        }),
+        },
       });
 
       biometricResponse = await capture_Auth(
@@ -176,7 +177,7 @@ export default function L1Biometrics({
 
     setStatus({
       state: states.AUTHENTICATING,
-      msg: t("authenticating_msg"),
+      msg: "authenticating_msg",
     });
 
     const authenticateResponse = await post_AuthenticateUser(
@@ -217,7 +218,7 @@ export default function L1Biometrics({
     try {
       setStatus({
         state: states.LOADING,
-        msg: t("scanning_devices_msg"),
+        msg: "scanning_devices_msg",
       });
 
       mosipdisc_DiscoverDevicesAsync(host).then(() => {
@@ -368,7 +369,11 @@ export default function L1Biometrics({
         {status.state === states.AUTHENTICATING && error === null && (
           <div className="absolute bottom-0 left-0 bg-white bg-opacity-70 h-full w-full flex justify-center font-semibold">
             <div className="flex items-center">
-              <LoadingIndicator size="medium" message={status.msg} />
+              <LoadingIndicator
+                size="medium"
+                message={status.msg}
+                msgParam={status.msgParam}
+              />
             </div>
           </div>
         )}

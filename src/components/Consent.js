@@ -246,10 +246,7 @@ export default function Consent({
           {
             <div>
               {status === "LOADING" && (
-                <LoadingIndicator
-                  size="medium"
-                  message={t("redirecting_msg")}
-                />
+                <LoadingIndicator size="medium" message="redirecting_msg" />
               )}
             </div>
           }

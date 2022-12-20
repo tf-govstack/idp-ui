@@ -44,7 +44,7 @@ export default function OtpVerify({
   const [showTimer, setShowTimer] = useState(false);
   const [timer, setTimer] = useState(null);
   const [otpValue, setOtpValue] = useState("");
-  const [otpSentMsg, setOtpSentMsg] = useState("");
+  const [otpSentChannels, setOtpSentChannels] = useState("");
 
   const navigate = useNavigate();
 
@@ -69,7 +69,7 @@ export default function OtpVerify({
       let transactionId = getTransactionId();
       let otpChannels = commaSeparatedChannels.split(",").map((x) => x.trim());
 
-      setStatus({ state: states.LOADING, msg: t("sending_otp_msg") });
+      setStatus({ state: states.LOADING, msg: "sending_otp_msg" });
       const sendOtpResponse = await post_SendOtp(
         transactionId,
         vid,
@@ -134,7 +134,7 @@ export default function OtpVerify({
     let msg = t("otp_sent_msg", {
       otpChannels: otpChannels,
     });
-    setOtpSentMsg(msg);
+    setOtpSentChannels(msg);
   };
 
   const startTimer = async () => {
@@ -186,7 +186,7 @@ export default function OtpVerify({
         },
       ];
 
-      setStatus({ state: states.LOADING, msg: t("authenticating_msg") });
+      setStatus({ state: states.LOADING, msg: "authenticating_msg" });
       const authenticateResponse = await post_AuthenticateUser(
         transactionId,
         vid,
@@ -269,7 +269,7 @@ export default function OtpVerify({
         <div className="h-16 flex items-center justify-center">
           {status.state !== states.LOADING && !error && (
             <span className="w-full flex justify-center text-sm text-gray-500">
-              {otpSentMsg}
+              {otpSentChannels}
             </span>
           )}
 

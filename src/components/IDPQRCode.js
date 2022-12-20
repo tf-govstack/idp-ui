@@ -1,5 +1,5 @@
 import QRCode from "qrcode";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ErrorIndicator from "../common/ErrorIndicator";
 import LoadingIndicator from "../common/LoadingIndicator";
@@ -26,7 +26,6 @@ export default function IDPQRCode({
   const [qr, setQr] = useState("");
   const [status, setStatus] = useState({ state: states.LOADED, msg: "" });
   const [error, setError] = useState(null);
-  const [downloadURI, setDownloadURI] = useState(null);
   const timeoutInSeconds =
     getIdpConfiguration(configurationKeys.linkCodeWaitTimeInSec) ??
     process.env.REACT_APP_LINK_CODE_TIMEOUT_IN_SEC;
@@ -55,10 +54,6 @@ export default function IDPQRCode({
 
   useEffect(() => {
     fetchQRCode();
-    setDownloadURI(
-      getIdpConfiguration(configurationKeys.injiAppDownloadURI) ??
-        process.env.REACT_APP_INJI_DOWNLOAD_URI
-    );
   }, []);
 
   const fetchQRCode = async () => {
@@ -67,7 +62,7 @@ export default function IDPQRCode({
     try {
       setStatus({
         state: states.LOADING,
-        msg: t("loading_msg"),
+        msg: "loading_msg",
       });
       let { response, errors } = await post_GenerateLinkCode(
         getTransactionId()
@@ -168,7 +163,7 @@ export default function IDPQRCode({
           setQr(null);
           setStatus({
             state: states.LOADING,
-            msg: t("link_auth_waiting"),
+            msg: "link_auth_waiting",
           });
           triggerLinkAuth(transactionId, linkCode);
         }
@@ -241,7 +236,7 @@ export default function IDPQRCode({
       } else {
         setStatus({
           state: states.LOADING,
-          msg: t("redirecting_msg"),
+          msg: "redirecting_msg",
         });
 
         let response = linkAuthResponse.response;

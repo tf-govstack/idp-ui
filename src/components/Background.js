@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import IDPQRCode from "./IDPQRCode";
 
 export default function Background({
   heading,
@@ -12,6 +11,7 @@ export default function Background({
   handleMoreWaysToSignIn,
   showMoreOption,
   linkedWalletComp,
+  injiAppDownloadURI,
   i18nKeyPrefix = "header",
 }) {
   const tabs = [
@@ -103,7 +103,7 @@ export default function Background({
                   <div className={openTab === 0 ? "block" : "hidden"}>
                     <p className="text-center text-black-600 font-semibold">
                       {t("dont_have_inji")}&nbsp;
-                      <a href={"downloadURI"} className="text-sky-600">
+                      <a href={injiAppDownloadURI} className="text-sky-600">
                         {t("download_now")}
                       </a>
                     </p>

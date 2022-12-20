@@ -133,7 +133,7 @@ export default function Pin({
       </form>
       {status === states.LOADING && (
         <div>
-          <LoadingIndicator size="medium" message={t("authenticating_msg")} />
+          <LoadingIndicator size="medium" message="authenticating_msg" />
         </div>
       )}
       {status !== states.LOADING && error && (

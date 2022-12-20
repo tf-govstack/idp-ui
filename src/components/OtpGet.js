@@ -44,7 +44,7 @@ export default function OtpGet({
 
       let otpChannels = commaSeparatedChannels.split(",").map((x) => x.trim());
 
-      setStatus({ state: states.LOADING, msg: t("sending_otp_msg") });
+      setStatus({ state: states.LOADING, msg: "sending_otp_msg" });
       const sendOtpResponse = await post_SendOtp(
         transactionId,
         vid,

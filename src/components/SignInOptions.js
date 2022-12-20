@@ -26,7 +26,7 @@ export default function SignInOptions({
   };
 
   useEffect(() => {
-    setStatus({ state: states.LOADING, msg: t("loading_msg") });
+    setStatus({ state: states.LOADING, msg: "loading_msg" });
 
     let oAuthDetails = JSON.parse(getOuthDetails());
     let authFactors = oAuthDetails.authFactors;
