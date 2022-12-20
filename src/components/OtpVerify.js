@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingIndicator from "../common/LoadingIndicator";
 import FormAction from "./FormAction";
@@ -32,7 +32,7 @@ export default function OtpVerify({
   };
 
   const resendOtpTimeout =
-    getIdpConfiguration(configurationKeys.resendOtpTimeout) ?? "30";
+    getIdpConfiguration(configurationKeys.resendOtpTimeout) ?? "5";
   const commaSeparatedChannels =
     getIdpConfiguration(configurationKeys.sendOtpChannels) ?? "email,mobile";
 
@@ -45,6 +45,7 @@ export default function OtpVerify({
   const [timer, setTimer] = useState(null);
   const [otpValue, setOtpValue] = useState("");
   const [otpSentChannels, setOtpSentChannels] = useState("");
+  let pin = useRef();
 
   const navigate = useNavigate();
 
@@ -65,6 +66,8 @@ export default function OtpVerify({
   const sendOTP = async () => {
     try {
       setError(null);
+      pin.clear();
+      setOtpValue("");
 
       let transactionId = getTransactionId();
       let otpChannels = commaSeparatedChannels.split(",").map((x) => x.trim());
@@ -149,6 +152,7 @@ export default function OtpVerify({
       timePassed++;
       let timeLeft = resendOtpTimeout - timePassed;
       setResendOtpCountDown(t("resend_otp_counter", getMinFromSec(timeLeft)));
+
       if (timeLeft === 0) {
         clearInterval(interval);
         setShowTimer(false);
@@ -264,6 +268,7 @@ export default function OtpVerify({
             inputFocusStyle={{ borderBottom: "2px solid #075985" }}
             onComplete={(value, index) => {}}
             autoSelect={true}
+            ref={(n) => (pin = n)}
           />
         </div>
 
