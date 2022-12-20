@@ -238,6 +238,7 @@ export default function OtpVerify({
               imgPath="images/photo_scan.png"
               disabled={true}
               customClass="text-gray-400"
+              tooltipMsg="vid_tooltip"
             />
           ))}
         </div>

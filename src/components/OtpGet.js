@@ -89,6 +89,7 @@ export default function OtpGet({
             isRequired={field.isRequired}
             placeholder={t(field.placeholder)}
             imgPath="images/photo_scan.png"
+            tooltipMsg="vid_tooltip"
           />
         ))}
 
@@ -97,7 +98,7 @@ export default function OtpGet({
             type={buttonTypes.button}
             text={t("get_otp")}
             handleClick={sendOTP}
-            disabled={!loginState["Otp_mosip-vid"]}
+            disabled={!loginState["Otp_mosip-vid"]?.trim()}
           />
         </div>
 

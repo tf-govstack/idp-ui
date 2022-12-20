@@ -2,12 +2,13 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingIndicator from "../common/LoadingIndicator";
-import { challengeTypes } from "../constants/clientConstants";
+import { buttonTypes, challengeTypes } from "../constants/clientConstants";
 import { LoadingStates as states } from "../constants/states";
 import InputWithImage from "./InputWithImage";
 import Select from "react-select";
 import ErrorIndicator from "../common/ErrorIndicator";
 import { useTranslation } from "react-i18next";
+import FormAction from "./FormAction";
 
 let fieldsState = {};
 const host = "http://127.0.0.1";
@@ -299,6 +300,7 @@ export default function L1Biometrics({
               isRequired={field.isRequired}
               placeholder={t(field.placeholder)}
               imgPath="images/photo_scan.png"
+              tooltipMsg="vid_tooltip"
             />
           ))}
         </div>
@@ -335,14 +337,12 @@ export default function L1Biometrics({
                     />
                   </div>
 
-                  <div className="flex justify-center">
-                    <button
-                      className="w-full mt-3 text-white bg-gradient-to-t from-cyan-500 to-blue-500 hover:bg-gradient-to-b font-medium rounded-lg text-sm py-2.5 text-center"
-                      type="submit"
-                      id={selectedDevice.type}
-                    >
-                      {t("scan_and_verify")}
-                    </button>
+                  <div className="flex justify-center py-2.5">
+                    <FormAction
+                      type={buttonTypes.submit}
+                      text={t("scan_and_verify")}
+                      disabled={!loginState["sbi_mosip-vid"]?.trim()}
+                    />
                   </div>
                 </>
               )}
