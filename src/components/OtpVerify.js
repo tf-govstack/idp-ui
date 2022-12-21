@@ -86,7 +86,6 @@ export default function OtpVerify({
 
       if (errors != null && errors.length > 0) {
         setError({
-          prefix: "send_otp_failed_msg",
           errorCode: errors[0].errorCode,
           defaultMsg: errors[0].errorMessage,
         });
@@ -136,11 +135,7 @@ export default function OtpVerify({
         emailAddress: response.maskedEmail,
       });
     }
-
-    let msg = t("otp_sent_msg", {
-      otpChannels: otpChannels,
-    });
-    setOtpSentChannels(msg);
+    setOtpSentChannels(otpChannels);
   };
 
   const startTimer = async () => {
@@ -205,7 +200,6 @@ export default function OtpVerify({
 
       if (errors != null && errors.length > 0) {
         setError({
-          prefix: "authentication_failed_msg",
           errorCode: errors[0].errorCode,
           defaultMsg: errors[0].errorMessage,
         });
@@ -279,7 +273,10 @@ export default function OtpVerify({
         <div className="h-16 flex items-center justify-center">
           {status.state !== states.LOADING && !error && (
             <span className="w-full flex justify-center text-sm text-gray-500">
-              {otpSentChannels}
+              {otpSentChannels &&
+                t("otp_sent_msg", {
+                  otpChannels: otpSentChannels,
+                })}
             </span>
           )}
 
