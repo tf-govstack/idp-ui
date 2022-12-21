@@ -85,6 +85,7 @@ export default function Pin({
       setError({
         prefix: "authentication_failed_msg",
         errorCode: error.message,
+        defaultMsg: error.message,
       });
       setStatus(states.ERROR);
     }

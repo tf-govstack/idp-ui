@@ -68,6 +68,7 @@ export default function OtpGet({
       setError({
         prefix: "send_otp_failed_msg",
         errorCode: error.message,
+        defaultMsg: error.message,
       });
       setStatus({ state: states.ERROR, msg: "" });
     }

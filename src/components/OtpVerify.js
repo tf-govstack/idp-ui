@@ -99,6 +99,7 @@ export default function OtpVerify({
       setError({
         prefix: "send_otp_failed_msg",
         errorCode: error.message,
+        defaultMsg: error.message,
       });
       setStatus({ state: states.ERROR, msg: "" });
     }
@@ -220,6 +221,7 @@ export default function OtpVerify({
       setError({
         prefix: "authentication_failed_msg",
         errorCode: error.message,
+        defaultMsg: error.message,
       });
       setStatus({ state: states.ERROR, msg: "" });
     }

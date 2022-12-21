@@ -120,6 +120,7 @@ export default function L1Biometrics({
       setError({
         prefix: "biometric_capture_failed_msg",
         errorCode: error.message,
+        defaultMsg: error.message,
       });
       return;
     }
@@ -134,6 +135,7 @@ export default function L1Biometrics({
       setError({
         prefix: "authentication_failed_msg",
         errorCode: error.message,
+        defaultMsg: error.message,
       });
     }
   };
@@ -230,6 +232,7 @@ export default function L1Biometrics({
       setError({
         prefix: "device_disc_failed",
         errorCode: error.message,
+        defaultMsg: error.message,
       });
     }
   };
