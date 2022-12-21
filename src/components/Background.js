@@ -68,7 +68,7 @@ export default function Background({
                       >
                         <a
                           className={
-                            "text-xs font-bold uppercase px-5 py-2 rounded block leading-normal " +
+                            "text-xs font-bold uppercase py-2 rounded block leading-normal " +
                             (openTab === index
                               ? "shadow-lg text-white border border-transparent bg-gradient-to-t from-cyan-500 to-blue-500"
                               : "shadow-inner border border-2 text-slate-400 bg-white")
@@ -88,13 +88,15 @@ export default function Background({
                   </ul>
                 </div>
                 {/* body */}
-                <div className="row-span-5 w-96 min-h-[340px] self-start">
-                  <div className="px-5 py-2">
-                    <div className={openTab === 0 ? "block" : "hidden"}>
-                      {linkedWalletComp}
-                    </div>
-                    <div className={openTab === 1 ? "block" : "hidden"}>
-                      {component}
+                <div className="flex justify-center w-full">
+                  <div className="row-span-5 w-96 min-h-[340px] self-start">
+                    <div className="px-5 py-2">
+                      <div className={openTab === 0 ? "block" : "hidden"}>
+                        {linkedWalletComp}
+                      </div>
+                      <div className={openTab === 1 ? "block" : "hidden"}>
+                        {component}
+                      </div>
                     </div>
                   </div>
                 </div>
