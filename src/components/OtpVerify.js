@@ -46,7 +46,8 @@ export default function OtpVerify({
   const [showTimer, setShowTimer] = useState(false);
   const [timer, setTimer] = useState(null);
   const [otpValue, setOtpValue] = useState("");
-  const [otpSentChannels, setOtpSentChannels] = useState("");
+  const [otpSentEmail, setOtpSentEmail] = useState("");
+  const [otpSentMobile, setOtpSentMobile] = useState("");
   let pin = useRef();
 
   const navigate = useNavigate();
@@ -92,7 +93,9 @@ export default function OtpVerify({
         return;
       } else {
         startTimer();
-        createOtpSentMsg(response);
+
+        setOtpSentMobile(response.maskedMobile);
+        setOtpSentEmail(response.maskedEmail);
       }
     } catch (error) {
       setError({
@@ -108,35 +111,12 @@ export default function OtpVerify({
     setShowTimer(false);
     setShowResendOtp(false);
     setError(null);
-
-    createOtpSentMsg(otpResponse);
+    
+    setOtpSentMobile(otpResponse.maskedMobile);
+    setOtpSentEmail(otpResponse.maskedEmail);
 
     startTimer();
   }, []);
-
-  const createOtpSentMsg = async (response) => {
-    let otpChannels = "";
-
-    if (response.maskedMobile) {
-      otpChannels =
-        " " +
-        t("mobile_number_placeholder", {
-          mobileNumber: response.maskedMobile,
-        });
-    }
-
-    if (response.maskedEmail) {
-      if (otpChannels.length > 0) {
-        otpChannels += " & ";
-      } else {
-        otpChannels += " ";
-      }
-      otpChannels += t("email_address_placeholder", {
-        emailAddress: response.maskedEmail,
-      });
-    }
-    setOtpSentChannels(otpChannels);
-  };
 
   const startTimer = async () => {
     clearInterval(timer);
@@ -273,10 +253,24 @@ export default function OtpVerify({
         <div className="h-16 flex items-center justify-center">
           {status.state !== states.LOADING && !error && (
             <span className="w-full flex justify-center text-sm text-gray-500">
-              {otpSentChannels &&
-                t("otp_sent_msg", {
-                  otpChannels: otpSentChannels,
-                })}
+              {otpSentEmail && otpSentMobile
+                ? t("otp_sent_msg", {
+                    otpChannels: t("mobile_email_placeholder", {
+                      mobileNumber: otpSentMobile,
+                      emailAddress: otpSentEmail,
+                    }),
+                  })
+                : otpSentEmail
+                ? t("otp_sent_msg", {
+                    otpChannels: t("email_placeholder", {
+                      emailAddress: otpSentEmail,
+                    }),
+                  })
+                : t("otp_sent_msg", {
+                    otpChannels: t("mobile_placeholder", {
+                      mobileNumber: otpSentMobile,
+                    }),
+                  })}
             </span>
           )}
 
