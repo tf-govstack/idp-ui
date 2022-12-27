@@ -16,7 +16,7 @@ export default function Authorize({
     keyPrefix: i18nKeyPrefix,
   });
 
-  const { post_OauthDetails } = { ...authService };
+  const { get_CsrfToken, post_OauthDetails } = { ...authService };
   const { storeOauthDetails, storeTransactionId } = {
     ...localStorageService,
   };
@@ -62,6 +62,8 @@ export default function Authorize({
             return;
           }
         }
+
+        await get_CsrfToken();
 
         const response = await post_OauthDetails(
           nonce,

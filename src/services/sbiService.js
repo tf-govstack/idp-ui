@@ -60,26 +60,6 @@ const capture_Auth = async (
     getIdpConfiguration(configurationKeys.sbiCAPTURETimeoutInSeconds) ??
     process.env.REACT_APP_SBI_CAPTURE_TIMEOUT;
 
-  const faceCount =
-    getIdpConfiguration(configurationKeys.sbiFaceCaptureCount) ??
-    process.env.REACT_APP_SBI_FACE_CAPTURE_COUNT;
-  const fingerCount =
-    getIdpConfiguration(configurationKeys.sbiFingerCaptureCount) ??
-    process.env.REACT_APP_SBI_FINGER_CAPTURE_COUNT;
-  const irisCount =
-    getIdpConfiguration(configurationKeys.sbiIrisCaptureCount) ??
-    process.env.REACT_APP_SBI_IRIS_CAPTURE_COUNT;
-
-  const faceScore =
-    getIdpConfiguration(configurationKeys.sbiFaceCaptureScore) ??
-    process.env.REACT_APP_SBI_FACE_CAPTURE_SCORE;
-  const fingerScore =
-    getIdpConfiguration(configurationKeys.sbiFingerCaptureScore) ??
-    process.env.REACT_APP_SBI_FINGER_CAPTURE_SCORE;
-  const irisScore =
-    getIdpConfiguration(configurationKeys.sbiIrisCaptureScore) ??
-    process.env.REACT_APP_SBI_IRIS_CAPTURE_SCORE;
-
   const irisBioSubtypes =
     getIdpConfiguration(configurationKeys.sbiIrisBioSubtypes) ??
     process.env.REACT_APP_SBI_IRIS_BIO_SUBTYPES;
@@ -93,18 +73,24 @@ const capture_Auth = async (
   let bioSubType = ["UNKNOWN"];
   switch (type) {
     case FACE_TYPE:
-      count = faceCount;
-      requestedScore = faceScore;
+      count = getIdpConfiguration(configurationKeys.sbiFaceCaptureCount) ??
+        process.env.REACT_APP_SBI_FACE_CAPTURE_COUNT;
+      requestedScore = getIdpConfiguration(configurationKeys.sbiFaceCaptureScore) ??
+        process.env.REACT_APP_SBI_FACE_CAPTURE_SCORE;
       bioSubType = null; //For Face: No bioSubType
       break;
     case FINGER_TYPE:
-      count = fingerCount;
-      requestedScore = fingerScore;
+      count = getIdpConfiguration(configurationKeys.sbiFingerCaptureCount) ??
+        process.env.REACT_APP_SBI_FINGER_CAPTURE_COUNT;
+      requestedScore = getIdpConfiguration(configurationKeys.sbiFingerCaptureScore) ??
+        process.env.REACT_APP_SBI_FINGER_CAPTURE_SCORE;
       bioSubType = fingerBioSubtypes.split(",").map((x) => x.trim());
       break;
     case IRIS_TYPE:
-      count = irisCount;
-      requestedScore = irisScore;
+      count = getIdpConfiguration(configurationKeys.sbiIrisCaptureCount) ??
+        process.env.REACT_APP_SBI_IRIS_CAPTURE_COUNT;
+      requestedScore = getIdpConfiguration(configurationKeys.sbiIrisCaptureScore) ??
+        process.env.REACT_APP_SBI_IRIS_CAPTURE_SCORE;
       bioSubType = irisBioSubtypes.split(",").map((x) => x.trim());
       break;
   }

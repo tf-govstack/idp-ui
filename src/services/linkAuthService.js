@@ -1,4 +1,5 @@
 import axios from "axios";
+import { localStorageService } from "./local-storageService";
 
 const baseUrl =
   process.env.NODE_ENV === "development"
@@ -8,6 +9,8 @@ const baseUrl =
 const linkCodeGenerateEndPoint = "/linked-authorization/link-code";
 const linkStatusEndPoint = "/linked-authorization/link-status";
 const linkAuthorizationCodeEndPoint = "/linked-authorization/link-auth-code";
+
+const { getCookie } = { ...localStorageService };
 
 /**
  * Triggers /linked-authorization/link-code API on IDP service
@@ -27,6 +30,7 @@ const post_GenerateLinkCode = async (transactionId) => {
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
+      "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
     },
   });
   return response.data;
@@ -51,6 +55,7 @@ const post_LinkStatus = async (transactionId, linkCode) => {
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
+      "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
     },
   });
   return response.data;
@@ -76,6 +81,7 @@ const post_AuthorizationCode = async (transactionId, linkedCode) => {
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
+      "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
     },
   });
   return response.data;

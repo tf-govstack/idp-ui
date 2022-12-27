@@ -132,6 +132,11 @@ const getIdpConfiguration = (configKey) => {
   return oauthDetails?.configs[configKey];
 };
 
+function getCookie(key) {
+  var b = document.cookie.match("(^|;)\\s*" + key + "\\s*=\\s*([^;]+)");
+  return b ? b.pop() : "";
+}
+
 const localStorageService = {
   addDeviceInfos: addDeviceInfos,
   getDeviceInfos: getDeviceInfos,
@@ -146,6 +151,7 @@ const localStorageService = {
   getNonce: getNonce,
   getState: getState,
   getOuthDetails: getOuthDetails,
+  getCookie: getCookie
 };
 
 export { localStorageService };
