@@ -46,7 +46,8 @@ export default function OtpVerify({
   const [showTimer, setShowTimer] = useState(false);
   const [timer, setTimer] = useState(null);
   const [otpValue, setOtpValue] = useState("");
-  const [otpSentChannels, setOtpSentChannels] = useState("");
+  const [otpSentEmail, setOtpSentEmail] = useState("");
+  const [otpSentMobile, setOtpSentMobile] = useState("");
   let pin = useRef();
 
   const navigate = useNavigate();
@@ -86,19 +87,21 @@ export default function OtpVerify({
 
       if (errors != null && errors.length > 0) {
         setError({
-          prefix: "send_otp_failed_msg",
           errorCode: errors[0].errorCode,
           defaultMsg: errors[0].errorMessage,
         });
         return;
       } else {
         startTimer();
-        createOtpSentMsg(response);
+
+        setOtpSentMobile(response.maskedMobile);
+        setOtpSentEmail(response.maskedEmail);
       }
     } catch (error) {
       setError({
         prefix: "send_otp_failed_msg",
         errorCode: error.message,
+        defaultMsg: error.message,
       });
       setStatus({ state: states.ERROR, msg: "" });
     }
@@ -108,39 +111,12 @@ export default function OtpVerify({
     setShowTimer(false);
     setShowResendOtp(false);
     setError(null);
-
-    createOtpSentMsg(otpResponse);
+    
+    setOtpSentMobile(otpResponse.maskedMobile);
+    setOtpSentEmail(otpResponse.maskedEmail);
 
     startTimer();
   }, []);
-
-  const createOtpSentMsg = async (response) => {
-    let otpChannels = "";
-
-    if (response.maskedMobile) {
-      otpChannels =
-        " " +
-        t("mobile_number_placeholder", {
-          mobileNumber: response.maskedMobile,
-        });
-    }
-
-    if (response.maskedEmail) {
-      if (otpChannels.length > 0) {
-        otpChannels += " & ";
-      } else {
-        otpChannels += " ";
-      }
-      otpChannels += t("email_address_placeholder", {
-        emailAddress: response.maskedEmail,
-      });
-    }
-
-    let msg = t("otp_sent_msg", {
-      otpChannels: otpChannels,
-    });
-    setOtpSentChannels(msg);
-  };
 
   const startTimer = async () => {
     clearInterval(timer);
@@ -204,7 +180,6 @@ export default function OtpVerify({
 
       if (errors != null && errors.length > 0) {
         setError({
-          prefix: "authentication_failed_msg",
           errorCode: errors[0].errorCode,
           defaultMsg: errors[0].errorMessage,
         });
@@ -220,6 +195,7 @@ export default function OtpVerify({
       setError({
         prefix: "authentication_failed_msg",
         errorCode: error.message,
+        defaultMsg: error.message,
       });
       setStatus({ state: states.ERROR, msg: "" });
     }
@@ -277,7 +253,24 @@ export default function OtpVerify({
         <div className="h-16 flex items-center justify-center">
           {status.state !== states.LOADING && !error && (
             <span className="w-full flex justify-center text-sm text-gray-500">
-              {otpSentChannels}
+              {otpSentEmail && otpSentMobile
+                ? t("otp_sent_msg", {
+                    otpChannels: t("mobile_email_placeholder", {
+                      mobileNumber: otpSentMobile,
+                      emailAddress: otpSentEmail,
+                    }),
+                  })
+                : otpSentEmail
+                ? t("otp_sent_msg", {
+                    otpChannels: t("email_placeholder", {
+                      emailAddress: otpSentEmail,
+                    }),
+                  })
+                : t("otp_sent_msg", {
+                    otpChannels: t("mobile_placeholder", {
+                      mobileNumber: otpSentMobile,
+                    }),
+                  })}
             </span>
           )}
 

@@ -56,6 +56,7 @@ const configurationKeys = {
   linkCodeWaitTimeInSec: "mosip.idp.link-code-expire-in-secs",
   injiDeepLinkURI: "mosip.idp.inji.deep-link-uri",
   injiAppDownloadURI: "mosip.idp.inji.download-uri",
+  signInWithInjiEnable: "mosip.idp.inji.enable",
 };
 
 export {

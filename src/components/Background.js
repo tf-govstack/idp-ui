@@ -12,6 +12,7 @@ export default function Background({
   showMoreOption,
   linkedWalletComp,
   injiAppDownloadURI,
+  injiEnable,
   i18nKeyPrefix = "header",
 }) {
   const tabs = [
@@ -23,7 +24,7 @@ export default function Background({
     },
   ];
 
-  const [openTab, setOpenTab] = useState(0);
+  const [openTab, setOpenTab] = useState(injiEnable === true ? 0 : 1);
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
   return (
     <>
@@ -56,45 +57,49 @@ export default function Background({
               </div>
               <div className="grid grid-rows-7 w-full flex shadow-lg rounded bg-[#F8F8F8]">
                 {/* head */}
-                <div className="row-span-1 w-full flex justify-start">
-                  <ul
-                    className="divide-dashed w-full mr-2 ml-2 mt-2 flex mb-0 list-none flex-wrap pb-1 flex-row grid grid-cols-2"
-                    role="tablist"
-                  >
-                    {tabs.map((tab, index) => (
-                      <li
-                        key={tab.name + index}
-                        className="-mb-px flex-auto text-center"
-                      >
-                        <a
-                          className={
-                            "text-xs font-bold uppercase px-5 py-2 rounded block leading-normal " +
-                            (openTab === index
-                              ? "shadow-lg text-white border border-transparent bg-gradient-to-t from-cyan-500 to-blue-500"
-                              : "shadow-inner border border-2 text-slate-400 bg-white")
-                          }
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setOpenTab(index);
-                          }}
-                          data-toggle="tab"
-                          href="#link1"
-                          role="tablist"
+                {injiEnable === true && (
+                  <div className="row-span-1 w-full flex justify-start">
+                    <ul
+                      className="divide-dashed w-full mr-2 ml-2 mt-2 flex mb-0 list-none flex-wrap pb-1 flex-row grid grid-cols-2"
+                      role="tablist"
+                    >
+                      {tabs.map((tab, index) => (
+                        <li
+                          key={tab.name + index}
+                          className="-mb-px flex-auto text-center"
                         >
-                          {t(tab.name)}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                          <a
+                            className={
+                              "text-xs font-bold uppercase py-2 rounded block leading-normal " +
+                              (openTab === index
+                                ? "shadow-lg text-white border border-transparent bg-gradient-to-t from-cyan-500 to-blue-500"
+                                : "shadow-inner border border-2 text-slate-400 bg-white")
+                            }
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setOpenTab(index);
+                            }}
+                            data-toggle="tab"
+                            href="#link1"
+                            role="tablist"
+                          >
+                            {t(tab.name)}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 {/* body */}
-                <div className="row-span-5 w-96 min-h-[340px] self-start">
-                  <div className="px-5 py-2">
-                    <div className={openTab === 0 ? "block" : "hidden"}>
-                      {linkedWalletComp}
-                    </div>
-                    <div className={openTab === 1 ? "block" : "hidden"}>
-                      {component}
+                <div className="flex justify-center w-full">
+                  <div className="row-span-5 w-96 min-h-[340px] self-start">
+                    <div className="px-5 py-2">
+                      <div className={openTab === 0 ? "block" : "hidden"}>
+                        {injiEnable === true && linkedWalletComp}
+                      </div>
+                      <div className={openTab === 1 ? "block" : "hidden"}>
+                        {component}
+                      </div>
                     </div>
                   </div>
                 </div>
