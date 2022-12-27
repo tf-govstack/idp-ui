@@ -1,4 +1,5 @@
 import axios from "axios";
+import { localStorageService } from "./local-storageService";
 
 const baseUrl =
   process.env.NODE_ENV === "development"
@@ -9,6 +10,9 @@ const sendOtpEndPoint = "/authorization/send-otp";
 const authenticateEndPoint = "/authorization/authenticate";
 const oauthDetailsEndPoint = "/authorization/oauth-details";
 const authCodeEndPoint = "/authorization/auth-code";
+const csrfEndPoint = "/csrf/token";
+
+const { getCookie } = { ...localStorageService };
 
 /**
  * Triggers /authenticate API on IDP service
@@ -36,6 +40,7 @@ const post_AuthenticateUser = async (
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
+      "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
     },
   });
   return response.data;
@@ -97,6 +102,7 @@ const post_OauthDetails = async (
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
+      "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
     },
   });
   return response.data;
@@ -127,6 +133,7 @@ const post_AuthCode = async (
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
+      "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
     },
   });
   return response.data;
@@ -154,16 +161,32 @@ const post_SendOtp = async (transactionId, individualId, otpChannels) => {
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
+      "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
     },
   });
   return response.data;
 };
+
+
+
+const get_CsrfToken = async () => {
+  const endpoint = baseUrl + csrfEndPoint;
+
+  const response = await axios.get(endpoint, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
 
 const authService = {
   post_AuthenticateUser: post_AuthenticateUser,
   post_OauthDetails: post_OauthDetails,
   post_AuthCode: post_AuthCode,
   post_SendOtp: post_SendOtp,
+  get_CsrfToken: get_CsrfToken
 };
 
 export { authService };
