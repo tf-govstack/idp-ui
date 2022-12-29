@@ -111,7 +111,7 @@ export default function OtpVerify({
     setShowTimer(false);
     setShowResendOtp(false);
     setError(null);
-    
+
     setOtpSentMobile(otpResponse.maskedMobile);
     setOtpSentEmail(otpResponse.maskedEmail);
 
@@ -244,7 +244,10 @@ export default function OtpVerify({
               color: "#0284c7",
             }}
             inputFocusStyle={{ borderBottom: "2px solid #075985" }}
-            onComplete={(value, index) => {}}
+            onComplete={(value, index) => {
+              //TO handle case when user pastes OTP
+              setOtpValue(value);
+            }}
             autoSelect={true}
             ref={(n) => (pin = n)}
           />
@@ -255,18 +258,18 @@ export default function OtpVerify({
             <span className="w-full flex justify-center text-sm text-gray-500">
               {otpSentEmail && otpSentMobile
                 ? t("otp_sent_msg", {
-                    otpChannels: t("mobile_email_placeholder", {
-                      mobileNumber: otpSentMobile,
-                      emailAddress: otpSentEmail,
-                    }),
-                  })
+                  otpChannels: t("mobile_email_placeholder", {
+                    mobileNumber: otpSentMobile,
+                    emailAddress: otpSentEmail,
+                  }),
+                })
                 : otpSentEmail
-                ? t("otp_sent_msg", {
+                  ? t("otp_sent_msg", {
                     otpChannels: t("email_placeholder", {
                       emailAddress: otpSentEmail,
                     }),
                   })
-                : t("otp_sent_msg", {
+                  : t("otp_sent_msg", {
                     otpChannels: t("mobile_placeholder", {
                       mobileNumber: otpSentMobile,
                     }),
