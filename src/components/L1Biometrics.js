@@ -285,7 +285,7 @@ export default function L1Biometrics({
 
   return (
     <>
-      <h1 className="text-center text-sky-600 font-semibold">
+      <h1 className="text-center text-sky-600 font-semibold line-clamp-2" title={t("sign_in_with_biometric")}>
         {t("sign_in_with_biometric")}
       </h1>
       <form className="relative mt-8 space-y-5" onSubmit={submitHandler}>
