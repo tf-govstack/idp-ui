@@ -93,7 +93,7 @@ export default function Pin({
 
   return (
     <>
-      <h1 className="text-center text-sky-600 font-semibold">
+      <h1 className="text-center text-sky-600 font-semibold line-clamp-2" title={t("sign_in_with_pin")}>
         {t("sign_in_with_pin")}
       </h1>
       <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

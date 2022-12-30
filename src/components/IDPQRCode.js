@@ -265,13 +265,9 @@ export default function IDPQRCode({
 
   return (
     <>
-      <div className="grid grid-cols-6 items-center">
-        <div className="flex justify-center col-start-2 col-span-4">
-          <h1 className="text-center text-sky-600 font-semibold">
-            {t("scan_with_inji")}
-          </h1>
-        </div>
-      </div>
+      <h1 className="text-center text-sky-600 font-semibold line-clamp-2" title={t("scan_with_inji")}>
+        {t("scan_with_inji")}
+      </h1>
       <div className="relative h-64 mt-6">
         {error && (
           <div className="absolute bottom-0 left-0 bg-white bg-opacity-90 h-full w-full flex justify-center items-center">

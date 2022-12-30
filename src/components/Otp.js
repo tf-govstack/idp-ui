@@ -42,7 +42,7 @@ export default function Otp({
           </div>
         )}
         <div className="h-6 flex justify-center col-start-2 col-span-6 h-fit">
-          <h1 className="text-center text-sky-600 font-semibold">
+          <h1 className="text-center text-sky-600 font-semibold line-clamp-2" title={t("sign_in_with_otp")}>
             {t("sign_in_with_otp")}
           </h1>
         </div>

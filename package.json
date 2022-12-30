@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.4",
+    "@tailwindcss/line-clamp": "^0.4.2",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
     "cra-template": "1.1.3",
