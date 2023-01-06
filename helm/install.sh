@@ -7,7 +7,7 @@ if [ $# -ge 1 ] ; then
 fi
 
 NS=idp
-CHART_VERSION=0.0.1
+CHART_VERSION=0.9.0
 
 echo Create $NS namespace
 kubectl create ns $NS
@@ -15,7 +15,7 @@ kubectl create ns $NS
 echo Istio label
 kubectl label ns $NS istio-injection=enabled --overwrite
 helm repo update
-
+helm dependency update ./idp-ui
 echo Copy configmaps
 ./copy_cm.sh
 
@@ -32,6 +32,6 @@ kubectl -n $NS create cm mock-auth-data --from-file=./mock-auth-data/
 echo Installing IDP UI
 helm -n $NS install idp-ui ./idp-ui --set istio.hosts\[0\]=$IDP_HOST 
 
-kubectl -n $NS  get deploy -o name |  xargs -n1 -t  kubectl -n $NS rollout status
+kubectl -n $NS  get deploy -o name |  xargs -n1 -t  kubectl -n $NS rollout status deployment/idp-ui
 
 echo Installed IDP-UI
