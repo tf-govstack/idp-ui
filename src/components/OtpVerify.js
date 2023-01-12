@@ -5,6 +5,7 @@ import FormAction from "./FormAction";
 import { LoadingStates as states } from "../constants/states";
 import {
   buttonTypes,
+  challengeFormats,
   challengeTypes,
   configurationKeys,
 } from "../constants/clientConstants";
@@ -160,11 +161,13 @@ export default function OtpVerify({
 
       let challengeType = challengeTypes.otp;
       let challenge = otpValue;
+      let challengeFormat = challengeFormats.otp;
 
       let challengeList = [
         {
           authFactorType: challengeType,
           challenge: challenge,
+          format: challengeFormat
         },
       ];
 
