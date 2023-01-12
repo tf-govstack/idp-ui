@@ -11,6 +11,14 @@ const challengeTypes = {
   wallet: "WALLET",
 };
 
+const challengeFormats = {
+  bio: "encoded-json",
+  pin: "number",
+  otp: "alpha-numeric",
+  wallet: "jwt",
+};
+
+
 const validAuthFactors = {
   PIN: "PIN",
   OTP: "OTP",
@@ -66,4 +74,5 @@ export {
   validAuthFactors,
   deepLinkParamPlaceholder,
   buttonTypes,
+  challengeFormats
 };

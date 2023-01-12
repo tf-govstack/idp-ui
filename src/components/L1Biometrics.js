@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingIndicator from "../common/LoadingIndicator";
-import { buttonTypes, challengeTypes } from "../constants/clientConstants";
+import { buttonTypes, challengeFormats, challengeTypes } from "../constants/clientConstants";
 import { LoadingStates as states } from "../constants/states";
 import InputWithImage from "./InputWithImage";
 import Select from "react-select";
@@ -170,11 +170,13 @@ export default function L1Biometrics({
   const Authenticate = async (transactionId, uin, bioValue) => {
     let challengeType = challengeTypes.bio;
     let challenge = bioValue;
+    let challengeFormat = challengeFormats.bio;
 
     let challengeList = [
       {
         authFactorType: challengeType,
         challenge: challenge,
+        format: challengeFormat
       },
     ];
 
