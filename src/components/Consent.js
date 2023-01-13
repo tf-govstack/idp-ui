@@ -70,6 +70,7 @@ export default function Consent({
         type: "scope",
         required: false,
         values: oAuthDetails?.authorizeScopes,
+        tooltip: "authorize_scope_tooltip",
       });
 
       claimsScopes.push({
@@ -77,6 +78,7 @@ export default function Consent({
         type: "claim",
         required: true,
         values: oAuthDetails?.essentialClaims,
+        tooltip: "essential_claims_tooltip",
       });
 
       claimsScopes.push({
@@ -84,6 +86,7 @@ export default function Consent({
         type: "claim",
         required: false,
         values: oAuthDetails?.voluntaryClaims,
+        tooltip: "voluntary_claims_tooltip",
       });
 
       setClaimsScopes(claimsScopes);
@@ -182,7 +185,7 @@ export default function Consent({
           <div className="flex justify-center items-center">
             <img className="h-20" src={clientLogoPath} alt={clientName} />
             <span className="text-6xl flex mx-5">&#8651;</span>
-            <img className="h-20" src={mosipLogoPath} alt="MOSIP" />
+            <img className="h-20" src={mosipLogoPath} alt={t("mosip")} />
           </div>
           <div className="flex justify-center">
             <b>
@@ -195,7 +198,14 @@ export default function Consent({
             (claimScope) =>
               claimScope?.values?.length > 0 && (
                 <>
-                  <h2 className="font-semibold">{t(claimScope.label)}</h2>
+                  <h2 className="font-semibold" title={t(claimScope.tooltip)}>
+                    {t(claimScope.label)}
+                    <button className="ml-1 text-sky-600 text-xl"
+                      onClick={(e) => { e.preventDefault(); }}
+                    >
+                      &#9432;
+                    </button>
+                  </h2>
                   <div className="divide-y">
                     {claimScope?.values?.map((item) => (
                       <div key={item}>
