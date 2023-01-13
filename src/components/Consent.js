@@ -180,8 +180,8 @@ export default function Consent({
       <div className="max-w-md w-full shadow-lg mt-5 rounded bg-[#F8F8F8] px-4 py-4">
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="flex justify-center items-center">
-            <img className="h-20 mr-5" src={clientLogoPath} alt={clientName} />
-            <span className="text-6xl flex mr-5">&#8651;</span>
+            <img className="h-20" src={clientLogoPath} alt={clientName} />
+            <span className="text-6xl flex mx-5">&#8651;</span>
             <img className="h-20" src={mosipLogoPath} alt="MOSIP" />
           </div>
           <div className="flex justify-center">
@@ -230,7 +230,12 @@ export default function Consent({
                                       : handleClaimChange
                                   }
                                 />
-                                <div className="w-9 h-5 border border-neutral-400 bg-white rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-neutral-400 after:border after:border-neutral-400 peer-checked:after:border-sky-500 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:bg-sky-500 peer-checked:after:bg-sky-500 peer-checked:border-sky-500"></div>
+                                <div className="w-9 h-5 border border-neutral-400 bg-white rounded-full peer after:content-[''] 
+                                after:absolute after:top-[2px] after:bg-neutral-400 after:border after:border-neutral-400 
+                                peer-checked:after:border-sky-500 after:rounded-full after:h-4 after:w-4 after:transition-all 
+                                peer-checked:after:bg-sky-500 peer-checked:after:bg-sky-500 peer-checked:border-sky-500 
+                                ltr:peer-checked:after:translate-x-full ltr:after:left-[2px] 
+                                rtl:peer-checked:after:-translate-x-full rtl:after:right-[2px]"></div>
                               </label>
                             )}
                           </div>

@@ -39,15 +39,15 @@ export default function Background({
               />
             </div>
           </div>
-          <div className="flex justify-start">
-            <div className="lg:flex-grow lg:pl-24 md:pl-16 flex flex-col">
+          <div>
+            <div className="lg:flex-grow lg:px-24 md:px-16 flex flex-col">
               <div className="w-full flex mb-4 justify-center items-center">
                 <img
-                  className="h-16 mr-5"
+                  className="h-16"
                   src={clientLogoPath}
                   alt={clientName}
                 />
-                <span className="text-6xl flex mr-5">&#8651;</span>
+                <span className="text-6xl flex mx-5">&#8651;</span>
                 <img className="h-16" src={mosipLogoPath} alt="MOSIP" />
               </div>
               <div className="w-full">

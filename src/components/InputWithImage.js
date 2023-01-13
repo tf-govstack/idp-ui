@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 const fixedInputClass =
-  "rounded-md bg-white shadow-lg appearance-none block w-full px-3.5 py-2.5 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 focus:z-10 sm:text-sm pr-10 p-2.5 ";
+  "rounded-md bg-white shadow-lg appearance-none block w-full px-3.5 py-2.5 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 focus:z-10 sm:text-sm p-2.5 ltr:pr-10 rtl:pl-10 ";
 
 export default function InputWithImage({
   handleChange,
@@ -41,7 +41,7 @@ export default function InputWithImage({
         )}
       </div>
       <div className="relative">
-        <div className="flex absolute inset-y-0 right-0 items-center pr-3 pointer-events-none">
+        <div className="flex absolute inset-y-0 items-center p-3 pointer-events-none ltr:right-0 rtl:left-0">
           <img className="w-6 h-6" src={imgPath} />
         </div>
         <input

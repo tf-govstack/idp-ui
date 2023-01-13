@@ -35,7 +35,7 @@ export default function Otp({
               onClick={() => {
                 setOtpStatus(OTPStatusEnum.getOtp);
               }}
-              className="text-sky-600 text-2xl font-semibold justify-left"
+              className="text-sky-600 text-2xl font-semibold justify-left rtl:rotate-180"
             >
               &#8701;
             </button>
