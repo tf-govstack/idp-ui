@@ -97,7 +97,12 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
   const [clientLogoURL, setClientLogoURL] = useState(null);
   const [clientName, setClientName] = useState(null);
   const [injiDownloadURI, setInjiDownloadURI] = useState(null);
-  const [injiEnable, setInjiEnable] = useState(null);
+
+  let value = localStorageService.getIdpConfiguration(
+    configurationKeys.signInWithInjiEnable
+  ) ?? process.env.REACT_APP_INJI_ENABLE
+
+  const [injiEnable, setInjiEnable] = useState(value?.toString().toLowerCase() === "true");
 
   const handleSignInOptionClick = (authFactor) => {
     //TODO handle multifactor auth
@@ -119,14 +124,6 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
       localStorageService.getIdpConfiguration(
         configurationKeys.injiAppDownloadURI
       ) ?? process.env.REACT_APP_INJI_DOWNLOAD_URI
-    );
-
-    let value = localStorageService.getIdpConfiguration(
-      configurationKeys.signInWithInjiEnable
-    ) ?? process.env.REACT_APP_INJI_ENABLE
-
-    setInjiEnable(
-      value?.toString().toLowerCase() === "true"
     );
 
     let oAuthDetails = JSON.parse(localStorageService.getOuthDetails());
