@@ -126,7 +126,7 @@ export default function Pin({
             />
             <label
               htmlFor="remember-me"
-              className="ml-2 block text-sm text-cyan-900"
+              className="mx-2 block text-sm text-cyan-900"
             >
               {t("remember_me")}
             </label>

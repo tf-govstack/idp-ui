@@ -33,7 +33,7 @@ export default function Background({
           <div className="flex justify-center lg:mt-32 mt-20 mb:mt-0 lg:w-1/2 md:w-1/2 w-5/6 mb-10 md:mb-0">
             <div>
               <img
-                className="object-contain rounded"
+                className="object-contain rtl:scale-x-[-1]"
                 alt={t("backgroud_image_alt")}
                 src={backgroundImgPath}
               />

@@ -14,7 +14,7 @@ function App() {
 
   const [rtlLangs, setRtlLangs] = useState([]);
   const [langOptions, setLangOptions] = useState([]);
-  const [dir, setDir] = useState("ltr");
+  const [dir, setDir] = useState("");
 
   //Loading rtlLangs
   useEffect(() => {
@@ -35,6 +35,7 @@ function App() {
         }
         setLangOptions(langData);
         setRtlLangs(response.rtlLanguages);
+        setDir(response.rtlLanguages.includes(i18n.language) ? "rtl" : "ltr")
       });
     } catch (error) {
       console.error("Failed to load rtl languages!");
