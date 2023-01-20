@@ -5,15 +5,11 @@ import { validAuthFactors } from "../constants/clientConstants";
 import { LoadingStates as states } from "../constants/states";
 
 export default function SignInOptions({
-  localStorageService,
+  oAuthDetailsService,
   handleSignInOptionClick,
   i18nKeyPrefix = "signInOption",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
-
-  const { getOuthDetails } = {
-    ...localStorageService,
-  };
 
   const [status, setStatus] = useState({ state: states.LOADED, msg: "" });
   const [singinOptions, setSinginOptions] = useState(null);
@@ -28,7 +24,7 @@ export default function SignInOptions({
   useEffect(() => {
     setStatus({ state: states.LOADING, msg: "loading_msg" });
 
-    let oAuthDetails = JSON.parse(getOuthDetails());
+    let oAuthDetails = oAuthDetailsService.getOuthDetails();
     let authFactors = oAuthDetails.authFactors;
 
     let loginOptions = [];

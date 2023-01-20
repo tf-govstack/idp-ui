@@ -19,7 +19,7 @@ export default function OtpVerify({
   otpResponse,
   vid,
   authService,
-  localStorageService,
+  oAuthDetailsService,
   i18nKeyPrefix = "otp",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
@@ -28,15 +28,12 @@ export default function OtpVerify({
   fields.forEach((field) => (fieldsState["Otp" + field.id] = ""));
 
   const { post_AuthenticateUser, post_SendOtp } = { ...authService };
-  const { getTransactionId, storeTransactionId, getIdpConfiguration } = {
-    ...localStorageService,
-  };
 
   const resendOtpTimeout =
-    getIdpConfiguration(configurationKeys.resendOtpTimeout) ??
+    oAuthDetailsService.getIdpConfiguration(configurationKeys.resendOtpTimeout) ??
     process.env.REACT_APP_RESEND_OTP_TIMEOUT_IN_SEC;
   const commaSeparatedChannels =
-    getIdpConfiguration(configurationKeys.sendOtpChannels) ??
+    oAuthDetailsService.getIdpConfiguration(configurationKeys.sendOtpChannels) ??
     process.env.REACT_APP_SEND_OTP_CHANNELS;
 
   const [loginState, setLoginState] = useState(fieldsState);
@@ -73,7 +70,7 @@ export default function OtpVerify({
       pin.clear();
       setOtpValue("");
 
-      let transactionId = getTransactionId();
+      let transactionId = oAuthDetailsService.getTransactionId();
       let otpChannels = commaSeparatedChannels.split(",").map((x) => x.trim());
 
       setStatus({ state: states.LOADING, msg: "sending_otp_msg" });
@@ -157,7 +154,7 @@ export default function OtpVerify({
   //Handle Login API Integration here
   const authenticateUser = async () => {
     try {
-      let transactionId = getTransactionId();
+      let transactionId = oAuthDetailsService.getTransactionId();
 
       let challengeType = challengeTypes.otp;
       let challenge = otpValue;
@@ -179,7 +176,7 @@ export default function OtpVerify({
       );
       setStatus({ state: states.LOADED, msg: "" });
 
-      const { response, errors } = authenticateResponse;
+      const { errors } = authenticateResponse;
 
       if (errors != null && errors.length > 0) {
         setError({
@@ -189,8 +186,9 @@ export default function OtpVerify({
         return;
       } else {
         setError(null);
-        storeTransactionId(response.transactionId);
-        navigate("/consent", {
+        let responseB64 = oAuthDetailsService.encodeBase64(oAuthDetailsService.getOuthDetails());
+
+        navigate("/consent?response=" + responseB64, {
           replace: true,
         });
       }

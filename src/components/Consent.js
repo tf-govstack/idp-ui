@@ -8,20 +8,13 @@ import FormAction from "./FormAction";
 
 export default function Consent({
   authService,
-  localStorageService,
+  oAuthDetailsService,
   logoPath = "logo.png",
   i18nKeyPrefix = "consent",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
 
   const { post_AuthCode } = { ...authService };
-  const {
-    getTransactionId,
-    getRedirectUri,
-    getNonce,
-    getState,
-    getOuthDetails,
-  } = { ...localStorageService };
 
   const [status, setStatus] = useState(states.LOADED);
   const [claims, setClaims] = useState([]);
@@ -62,7 +55,7 @@ export default function Consent({
 
   useEffect(() => {
     const initialize = async () => {
-      let oAuthDetails = JSON.parse(getOuthDetails());
+      let oAuthDetails = oAuthDetailsService.getOuthDetails();
 
       let claimsScopes = [];
       claimsScopes.push({
@@ -111,7 +104,7 @@ export default function Consent({
   //Handle Login API Integration here
   const submitConsent = async () => {
     try {
-      let transactionId = getTransactionId();
+      let transactionId = oAuthDetailsService.getTransactionId();
       let acceptedClaims = claims;
       let permittedAuthorizeScopes = scope;
 
@@ -152,9 +145,9 @@ export default function Consent({
 
   //errorCode is REQUIRED, errorDescription is OPTIONAL
   const onError = async (errorCode, errorDescription) => {
-    let nonce = getNonce();
-    let state = getState();
-    let redirect_uri = getRedirectUri();
+    let nonce = oAuthDetailsService.getNonce();
+    let state = oAuthDetailsService.getState();
+    let redirect_uri = oAuthDetailsService.getRedirectUri();
 
     if (!redirect_uri) {
       return;

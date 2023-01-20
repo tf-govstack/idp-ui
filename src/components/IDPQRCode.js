@@ -11,15 +11,11 @@ import { LoadingStates as states } from "../constants/states";
 
 export default function IDPQRCode({
   linkAuthService,
-  localStorageService,
+  oAuthDetailsService,
   i18nKeyPrefix = "IDPQRCode",
 }) {
   const { post_GenerateLinkCode, post_LinkStatus, post_AuthorizationCode } = {
     ...linkAuthService,
-  };
-
-  const { getTransactionId, getIdpConfiguration } = {
-    ...localStorageService,
   };
 
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
@@ -27,7 +23,7 @@ export default function IDPQRCode({
   const [status, setStatus] = useState({ state: states.LOADED, msg: "" });
   const [error, setError] = useState(null);
   const timeoutInSeconds =
-    getIdpConfiguration(configurationKeys.linkCodeWaitTimeInSec) ??
+    oAuthDetailsService.getIdpConfiguration(configurationKeys.linkCodeWaitTimeInSec) ??
     process.env.REACT_APP_LINK_CODE_TIMEOUT_IN_SEC;
 
   const GenerateQRCode = (text) => {
@@ -65,7 +61,7 @@ export default function IDPQRCode({
         msg: "loading_msg",
       });
       let { response, errors } = await post_GenerateLinkCode(
-        getTransactionId()
+        oAuthDetailsService.getTransactionId()
       );
 
       if (errors != null && errors.length > 0) {
@@ -75,7 +71,7 @@ export default function IDPQRCode({
         });
       } else {
         let injiDeepLinkURI =
-          getIdpConfiguration(configurationKeys.injiDeepLinkURI) ??
+          oAuthDetailsService.getIdpConfiguration(configurationKeys.injiDeepLinkURI) ??
           process.env.REACT_APP_INJI_DEEP_LINK_URI;
 
         injiDeepLinkURI = injiDeepLinkURI.replace(

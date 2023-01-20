@@ -16,14 +16,13 @@ fields.forEach((field) => (fieldsState["Pin" + field.id] = ""));
 export default function Pin({
   param,
   authService,
-  localStorageService,
+  oAuthDetailsService,
   i18nKeyPrefix = "pin",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
 
   const fields = param;
   const { post_AuthenticateUser } = { ...authService };
-  const { getTransactionId, storeTransactionId } = { ...localStorageService };
 
   const [loginState, setLoginState] = useState(fieldsState);
   const [error, setError] = useState(null);
@@ -43,7 +42,7 @@ export default function Pin({
   //Handle Login API Integration here
   const authenticateUser = async () => {
     try {
-      let transactionId = getTransactionId();
+      let transactionId = oAuthDetailsService.getTransactionId();
 
       let uin = loginState["Pin_mosip-uin"];
       let challengeType = challengeTypes.pin;
@@ -78,8 +77,9 @@ export default function Pin({
         return;
       } else {
         setError(null);
-        storeTransactionId(response.transactionId);
-        navigate("/consent", {
+        let responseB64 = oAuthDetailsService.encodeBase64(oAuthDetailsService.getOuthDetails());
+
+        navigate("/consent?response=" + responseB64, {
           replace: true,
         });
       }

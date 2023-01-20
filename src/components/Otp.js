@@ -11,7 +11,7 @@ const OTPStatusEnum = {
 export default function Otp({
   param,
   authService,
-  localStorageService,
+  oAuthDetailsService,
   i18nKeyPrefix = "otp",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
@@ -52,7 +52,7 @@ export default function Otp({
         <OtpGet
           param={param}
           authService={authService}
-          localStorageService={localStorageService}
+          oAuthDetailsService={oAuthDetailsService}
           onOtpSent={onOtpSent}
         />
       )}
@@ -63,7 +63,7 @@ export default function Otp({
           otpResponse={otpResponse}
           vid={vid}
           authService={authService}
-          localStorageService={localStorageService}
+          oAuthDetailsService={oAuthDetailsService}
         />
       )}
     </>

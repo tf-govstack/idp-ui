@@ -23,7 +23,7 @@ export default function L1Biometrics({
   param,
   authService,
   localStorageService,
-  cryptoService,
+  oAuthDetailsService,
   sbiService,
   i18nKeyPrefix = "l1Biometrics",
 }) {
@@ -31,10 +31,11 @@ export default function L1Biometrics({
 
   const inputFields = param.inputFields;
 
-  const { encodeBase64 } = { ...cryptoService };
-  const { capture_Auth, mosipdisc_DiscoverDevicesAsync } = { ...sbiService };
+  const capture_Auth = sbiService.capture_Auth;
+  const mosipdisc_DiscoverDevicesAsync = sbiService.mosipdisc_DiscoverDevicesAsync;
+
   const { post_AuthenticateUser } = { ...authService };
-  const { getDeviceInfos, getTransactionId, storeTransactionId } = {
+  const { getDeviceInfos } = {
     ...localStorageService,
   };
 
@@ -127,9 +128,9 @@ export default function L1Biometrics({
 
     try {
       await Authenticate(
-        getTransactionId(),
+        oAuthDetailsService.getTransactionId(),
         vid,
-        await encodeBase64(biometricResponse["biometrics"])
+        oAuthDetailsService.encodeBase64(biometricResponse["biometrics"])
       );
     } catch (error) {
       setError({
@@ -202,8 +203,8 @@ export default function L1Biometrics({
         defaultMsg: errors[0].errorMessage,
       });
     } else {
-      storeTransactionId(response.transactionId);
-      navigate("/consent", {
+      let responseB64 = oAuthDetailsService.encodeBase64(oAuthDetailsService.getOuthDetails());
+      navigate("/consent?response=" + responseB64, {
         replace: true,
       });
     }

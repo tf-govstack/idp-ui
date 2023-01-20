@@ -10,7 +10,7 @@ import { buttonTypes, configurationKeys } from "../constants/clientConstants";
 export default function OtpGet({
   param,
   authService,
-  localStorageService,
+  oAuthDetailsService,
   onOtpSent,
   i18nKeyPrefix = "otp",
 }) {
@@ -19,13 +19,10 @@ export default function OtpGet({
   let fieldsState = {};
   fields.forEach((field) => (fieldsState["Otp" + field.id] = ""));
 
-  const { getTransactionId, getIdpConfiguration } = {
-    ...localStorageService,
-  };
   const { post_SendOtp } = { ...authService };
 
   const commaSeparatedChannels =
-    getIdpConfiguration(configurationKeys.sendOtpChannels) ?? "email,mobile";
+    oAuthDetailsService.getIdpConfiguration(configurationKeys.sendOtpChannels) ?? "email,mobile";
 
   const [loginState, setLoginState] = useState(fieldsState);
   const [error, setError] = useState(null);
@@ -39,7 +36,7 @@ export default function OtpGet({
     try {
       setError(null);
 
-      let transactionId = getTransactionId();
+      let transactionId = oAuthDetailsService.getTransactionId();
       let vid = loginState["Otp_mosip-vid"];
 
       let otpChannels = commaSeparatedChannels.split(",").map((x) => x.trim());

@@ -6,8 +6,7 @@ import L1Biometrics from "../components/L1Biometrics";
 import { useTranslation } from "react-i18next";
 import { authService } from "../services/authService";
 import { localStorageService } from "../services/local-storageService";
-import { cryptoService } from "../services/cryptoService";
-import { sbiService } from "../services/sbiService";
+import sbiService from "../services/sbiService";
 import Background from "../components/Background";
 import SignInOptions from "../components/SignInOptions";
 import {
@@ -16,6 +15,10 @@ import {
 } from "../constants/clientConstants";
 import { linkAuthService } from "../services/linkAuthService";
 import IDPQRCode from "../components/IDPQRCode";
+import { useSearchParams } from "react-router-dom";
+import { Buffer } from "buffer";
+import oAuthDetailsService from "../services/oAuthDetailsService";
+
 
 //authFactorComponentMapping
 const comp = {
@@ -24,42 +27,42 @@ const comp = {
   BIO: L1Biometrics,
 };
 
-function InitiateL1Biometrics(inst) {
-  return React.createElement(comp[inst], {
+function InitiateL1Biometrics(oAuthDetailsService) {
+  return React.createElement(L1Biometrics, {
     param: bioLoginFields,
     authService: authService,
     localStorageService: localStorageService,
-    cryptoService: cryptoService,
-    sbiService: sbiService,
+    oAuthDetailsService: oAuthDetailsService,
+    sbiService: new sbiService(oAuthDetailsService),
   });
 }
 
-function InitiatePin(inst) {
-  return React.createElement(comp[inst], {
+function InitiatePin(oAuthDetailsService) {
+  return React.createElement(Pin, {
     param: pinFields,
     authService: authService,
-    localStorageService: localStorageService,
+    oAuthDetailsService: oAuthDetailsService,
   });
 }
 
-function InitiateOtp(inst) {
-  return React.createElement(comp[inst], {
+function InitiateOtp(oAuthDetailsService) {
+  return React.createElement(Otp, {
     param: otpFields,
     authService: authService,
-    localStorageService: localStorageService,
+    oAuthDetailsService: oAuthDetailsService,
   });
 }
 
-function InitiateSignInOptions(handleSignInOptionClick) {
+function InitiateSignInOptions(handleSignInOptionClick, oAuthDetailsService) {
   return React.createElement(SignInOptions, {
-    localStorageService: localStorageService,
+    oAuthDetailsService: oAuthDetailsService,
     handleSignInOptionClick: handleSignInOptionClick,
   });
 }
 
-function InitiateLinkedWallet() {
+function InitiateLinkedWallet(oAuthDetailsService) {
   return React.createElement(IDPQRCode, {
-    localStorageService: localStorageService,
+    oAuthDetailsService: oAuthDetailsService,
     linkAuthService: linkAuthService,
   });
 }
@@ -68,7 +71,7 @@ function InitiateInvalidAuthFactor(errorMsg) {
   return React.createElement(() => <div>{errorMsg}</div>);
 }
 
-function createDynamicLoginElements(inst) {
+function createDynamicLoginElements(inst, oAuthDetailsService) {
   if (typeof comp[inst] === "undefined") {
     return InitiateInvalidAuthFactor(
       "The component " + { inst } + " has not been created yet."
@@ -76,15 +79,15 @@ function createDynamicLoginElements(inst) {
   }
 
   if (comp[inst] === Otp) {
-    return InitiateOtp(inst, otpFields);
+    return InitiateOtp(oAuthDetailsService);
   }
 
   if (comp[inst] === Pin) {
-    return InitiatePin(inst, otpFields);
+    return InitiatePin(oAuthDetailsService);
   }
 
   if (comp[inst] === L1Biometrics) {
-    return InitiateL1Biometrics(inst);
+    return InitiateL1Biometrics(oAuthDetailsService);
   }
 
   return React.createElement(comp[inst]);
@@ -97,8 +100,12 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
   const [clientLogoURL, setClientLogoURL] = useState(null);
   const [clientName, setClientName] = useState(null);
   const [injiDownloadURI, setInjiDownloadURI] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  let value = localStorageService.getIdpConfiguration(
+  var decodeOAuth = Buffer.from(searchParams.get("response"), 'base64')?.toString();
+  const oAuthDetails = new oAuthDetailsService(JSON.parse(decodeOAuth));
+
+  let value = oAuthDetails.getIdpConfiguration(
     configurationKeys.signInWithInjiEnable
   ) ?? process.env.REACT_APP_INJI_ENABLE
 
@@ -107,12 +114,12 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
   const handleSignInOptionClick = (authFactor) => {
     //TODO handle multifactor auth
     setShowMoreOption(true);
-    setCompToShow(createDynamicLoginElements(authFactor[0].type));
+    setCompToShow(createDynamicLoginElements(authFactor[0].type, oAuthDetails));
   };
 
   const handleMoreWaysToSignIn = () => {
     setShowMoreOption(false);
-    setCompToShow(InitiateSignInOptions(handleSignInOptionClick));
+    setCompToShow(InitiateSignInOptions(handleSignInOptionClick, oAuthDetails));
   };
 
   useEffect(() => {
@@ -121,17 +128,17 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
 
   const loadComponent = () => {
     setInjiDownloadURI(
-      localStorageService.getIdpConfiguration(
+      oAuthDetails.getIdpConfiguration(
         configurationKeys.injiAppDownloadURI
       ) ?? process.env.REACT_APP_INJI_DOWNLOAD_URI
     );
 
-    let oAuthDetails = JSON.parse(localStorageService.getOuthDetails());
+    let oAuthDetailResponse = oAuthDetails.getOuthDetails();
 
     try {
-      setClientLogoURL(oAuthDetails?.logoUrl);
-      setClientName(oAuthDetails?.clientName);
-      let authFactors = oAuthDetails?.authFactors;
+      setClientLogoURL(oAuthDetailResponse?.logoUrl);
+      setClientName(oAuthDetailResponse?.clientName);
+      let authFactors = oAuthDetailResponse?.authFactors;
       let validComponents = [];
 
       //checking for valid auth factors
@@ -144,7 +151,7 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
       let firstLoginOption = validComponents[0];
       let authFactor = firstLoginOption[0].type;
       setShowMoreOption(validComponents.length > 1);
-      setCompToShow(createDynamicLoginElements(authFactor));
+      setCompToShow(createDynamicLoginElements(authFactor, oAuthDetails));
     } catch (error) {
       setShowMoreOption(false);
       setCompToShow(InitiateInvalidAuthFactor(t("invalid_auth_factor")));
@@ -162,7 +169,7 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
         component={compToShow}
         handleMoreWaysToSignIn={handleMoreWaysToSignIn}
         showMoreOption={showMoreOption}
-        linkedWalletComp={InitiateLinkedWallet()}
+        linkedWalletComp={InitiateLinkedWallet(oAuthDetails)}
         injiAppDownloadURI={injiDownloadURI}
         injiEnable={injiEnable}
       />

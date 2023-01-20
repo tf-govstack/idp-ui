@@ -1,20 +1,15 @@
 import axios from "axios";
 import { configurationKeys } from "../constants/clientConstants";
-import { cryptoService } from "./cryptoService";
 import { localStorageService } from "./local-storageService";
+import * as jose from "jose";
 
 const {
   addDeviceInfos,
   addDiscoveredDevices,
   clearDeviceInfos,
   clearDiscoveredDevices,
-  getIdpConfiguration,
 } = {
   ...localStorageService,
-};
-
-const { decodeJWT } = {
-  ...cryptoService,
 };
 
 const SBI_DOMAIN_URI = window.origin;
@@ -34,148 +29,164 @@ const FACE_TYPE = "Face";
 const FINGER_TYPE = "Finger";
 const IRIS_TYPE = "Iris";
 
-/**
- * Triggers capture request of SBI for auth capture
- * @param {url} host SBI is hosted on given host
- * @param {int} port port on which SBI is listening to.
- * @param {string} transactionId same as idp transactionId
- * @param {string} specVersion supported spec version
- * @param {string} type modality type
- * @param {string} deviceId
- * @returns auth capture response
- */
-const capture_Auth = async (
-  host,
-  port,
-  transactionId,
-  specVersion,
-  type,
-  deviceId
-) => {
-  const env =
-    getIdpConfiguration(configurationKeys.sbiEnv) ??
-    process.env.REACT_APP_SBI_ENV;
 
-  const captureTimeout =
-    getIdpConfiguration(configurationKeys.sbiCAPTURETimeoutInSeconds) ??
-    process.env.REACT_APP_SBI_CAPTURE_TIMEOUT;
-
-  const irisBioSubtypes =
-    getIdpConfiguration(configurationKeys.sbiIrisBioSubtypes) ??
-    process.env.REACT_APP_SBI_IRIS_BIO_SUBTYPES;
-
-  const fingerBioSubtypes =
-    getIdpConfiguration(configurationKeys.sbiFingerBioSubtypes) ??
-    process.env.REACT_APP_SBI_FINGER_BIO_SUBTYPES;
-
-  let count = 1;
-  let requestedScore = 70;
-  let bioSubType = ["UNKNOWN"];
-  switch (type) {
-    case FACE_TYPE:
-      count = getIdpConfiguration(configurationKeys.sbiFaceCaptureCount) ??
-        process.env.REACT_APP_SBI_FACE_CAPTURE_COUNT;
-      requestedScore = getIdpConfiguration(configurationKeys.sbiFaceCaptureScore) ??
-        process.env.REACT_APP_SBI_FACE_CAPTURE_SCORE;
-      bioSubType = null; //For Face: No bioSubType
-      break;
-    case FINGER_TYPE:
-      count = getIdpConfiguration(configurationKeys.sbiFingerCaptureCount) ??
-        process.env.REACT_APP_SBI_FINGER_CAPTURE_COUNT;
-      requestedScore = getIdpConfiguration(configurationKeys.sbiFingerCaptureScore) ??
-        process.env.REACT_APP_SBI_FINGER_CAPTURE_SCORE;
-      bioSubType = fingerBioSubtypes.split(",").map((x) => x.trim());
-      break;
-    case IRIS_TYPE:
-      count = getIdpConfiguration(configurationKeys.sbiIrisCaptureCount) ??
-        process.env.REACT_APP_SBI_IRIS_CAPTURE_COUNT;
-      requestedScore = getIdpConfiguration(configurationKeys.sbiIrisCaptureScore) ??
-        process.env.REACT_APP_SBI_IRIS_CAPTURE_SCORE;
-      bioSubType = irisBioSubtypes.split(",").map((x) => x.trim());
-      break;
+class sbiService {
+  constructor(oAuthDetails) {
+    this.getIdpConfiguration = oAuthDetails.getIdpConfiguration;
   }
 
-  let request = {
-    env: env,
-    purpose: purpose,
-    specVersion: specVersion,
-    timeout: captureTimeout * 1000,
-    captureTime: new Date().toISOString(),
-    domainUri: SBI_DOMAIN_URI,
-    transactionId: transactionId,
-    bio: [
-      {
-        type: type, //modality
-        count: count, // from configuration
-        bioSubType: bioSubType,
-        requestedScore: requestedScore, // from configuration
-        deviceId: deviceId, // from discovery
-        deviceSubId: 0, //Set as 0, not required for Auth capture.
-        previousHash: "", // empty string
+
+  /**
+   * Triggers capture request of SBI for auth capture
+   * @param {url} host SBI is hosted on given host
+   * @param {int} port port on which SBI is listening to.
+   * @param {string} transactionId same as idp transactionId
+   * @param {string} specVersion supported spec version
+   * @param {string} type modality type
+   * @param {string} deviceId
+   * @returns auth capture response
+   */
+  capture_Auth = async (
+    host,
+    port,
+    transactionId,
+    specVersion,
+    type,
+    deviceId
+  ) => {
+    const env =
+      this.getIdpConfiguration(configurationKeys.sbiEnv) ??
+      process.env.REACT_APP_SBI_ENV;
+
+    const captureTimeout =
+      this.getIdpConfiguration(configurationKeys.sbiCAPTURETimeoutInSeconds) ??
+      process.env.REACT_APP_SBI_CAPTURE_TIMEOUT;
+
+    const irisBioSubtypes =
+      this.getIdpConfiguration(configurationKeys.sbiIrisBioSubtypes) ??
+      process.env.REACT_APP_SBI_IRIS_BIO_SUBTYPES;
+
+    const fingerBioSubtypes =
+      this.getIdpConfiguration(configurationKeys.sbiFingerBioSubtypes) ??
+      process.env.REACT_APP_SBI_FINGER_BIO_SUBTYPES;
+
+    let count = 1;
+    let requestedScore = 70;
+    let bioSubType = ["UNKNOWN"];
+    switch (type) {
+      case FACE_TYPE:
+        count = this.getIdpConfiguration(configurationKeys.sbiFaceCaptureCount) ??
+          process.env.REACT_APP_SBI_FACE_CAPTURE_COUNT;
+        requestedScore = this.getIdpConfiguration(configurationKeys.sbiFaceCaptureScore) ??
+          process.env.REACT_APP_SBI_FACE_CAPTURE_SCORE;
+        bioSubType = null; //For Face: No bioSubType
+        break;
+      case FINGER_TYPE:
+        count = this.getIdpConfiguration(configurationKeys.sbiFingerCaptureCount) ??
+          process.env.REACT_APP_SBI_FINGER_CAPTURE_COUNT;
+        requestedScore = this.getIdpConfiguration(configurationKeys.sbiFingerCaptureScore) ??
+          process.env.REACT_APP_SBI_FINGER_CAPTURE_SCORE;
+        bioSubType = fingerBioSubtypes.split(",").map((x) => x.trim());
+        break;
+      case IRIS_TYPE:
+        count = this.getIdpConfiguration(configurationKeys.sbiIrisCaptureCount) ??
+          process.env.REACT_APP_SBI_IRIS_CAPTURE_COUNT;
+        requestedScore = this.getIdpConfiguration(configurationKeys.sbiIrisCaptureScore) ??
+          process.env.REACT_APP_SBI_IRIS_CAPTURE_SCORE;
+        bioSubType = irisBioSubtypes.split(",").map((x) => x.trim());
+        break;
+    }
+
+    let request = {
+      env: env,
+      purpose: purpose,
+      specVersion: specVersion,
+      timeout: captureTimeout * 1000,
+      captureTime: new Date().toISOString(),
+      domainUri: SBI_DOMAIN_URI,
+      transactionId: transactionId,
+      bio: [
+        {
+          type: type, //modality
+          count: count, // from configuration
+          bioSubType: bioSubType,
+          requestedScore: requestedScore, // from configuration
+          deviceId: deviceId, // from discovery
+          deviceSubId: 0, //Set as 0, not required for Auth capture.
+          previousHash: "", // empty string
+        },
+      ],
+      customOpts: null,
+    };
+
+    let endpoint = host + ":" + port + captureEndPoint;
+
+    let response = await axios({
+      method: mosip_CaptureMethod,
+      url: endpoint,
+      data: request,
+      headers: {
+        "Content-Type": "application/json",
       },
-    ],
-    customOpts: null,
+      timeout: captureTimeout * 1000,
+    });
+
+    return response?.data;
   };
 
-  let endpoint = host + ":" + port + captureEndPoint;
 
-  let response = await axios({
-    method: mosip_CaptureMethod,
-    url: endpoint,
-    data: request,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    timeout: captureTimeout * 1000,
-  });
+  /**
+   * Triggers MOSIPDISC request on multiple port simultaneously.
+   * @param {url} host SBI is hosted on given host
+   * @returns MOSIPDISC requests for the given host and the port ranging between fromPort and tillPort
+   */
 
-  return response?.data;
-};
+  mosipdisc_DiscoverDevicesAsync = async (host) => {
+    clearDiscoveredDevices();
+    clearDeviceInfos();
 
-/**
- * Triggers MOSIPDISC request on multiple port simultaneously.
- * @param {url} host SBI is hosted on given host
- * @returns MOSIPDISC requests for the given host and the port ranging between fromPort and tillPort
- */
+    const portRange =
+      this.getIdpConfiguration(configurationKeys.sbiPortRange) ??
+      process.env.REACT_APP_SBI_PORT_RANGE;
+    const discTimeout =
+      this.getIdpConfiguration(configurationKeys.sbiDISCTimeoutInSeconds) ??
+      process.env.REACT_APP_SBI_DISC_TIMEOUT;
+    const dinfoTimeout =
+      this.getIdpConfiguration(configurationKeys.sbiDINFOTimeoutInSeconds) ??
+      process.env.REACT_APP_SBI_DINFO_TIMEOUT;
 
-const mosipdisc_DiscoverDevicesAsync = async (host) => {
-  clearDiscoveredDevices();
-  clearDeviceInfos();
+    let ports = portRange.split("-").map((x) => x.trim());
 
-  const portRange =
-    getIdpConfiguration(configurationKeys.sbiPortRange) ??
-    process.env.REACT_APP_SBI_PORT_RANGE;
+    let fromPort = ports[0].trim();
+    let tillPort = ports[1].trim();
 
-  let ports = portRange.split("-").map((x) => x.trim());
+    //port validations
+    let portsValid = true;
+    if (
+      isNaN(fromPort) ||
+      isNaN(tillPort) ||
+      !(fromPort > 0) ||
+      !(tillPort > 0) ||
+      !(fromPort <= tillPort)
+    ) {
+      portsValid = false;
+    }
 
-  let fromPort = ports[0].trim();
-  let tillPort = ports[1].trim();
+    if (!portsValid) {
+      //take default values
+      fromPort = 4501;
+      tillPort = 4510;
+    }
 
-  //port validations
-  let portsValid = true;
-  if (
-    isNaN(fromPort) ||
-    isNaN(tillPort) ||
-    !(fromPort > 0) ||
-    !(tillPort > 0) ||
-    !(fromPort <= tillPort)
-  ) {
-    portsValid = false;
-  }
+    let discoverRequestList = [];
+    for (let i = fromPort; i <= tillPort; i++) {
+      discoverRequestList.push(discoverRequestBuilder(host, i, discTimeout, dinfoTimeout));
+    }
 
-  if (!portsValid) {
-    //take default values
-    fromPort = 4501;
-    tillPort = 4510;
-  }
+    return axios.all(discoverRequestList);
+  };
 
-  let discoverRequestList = [];
-  for (let i = fromPort; i <= tillPort; i++) {
-    discoverRequestList.push(discoverRequestBuilder(host, i));
-  }
-
-  return axios.all(discoverRequestList);
-};
+}
 
 /**
  * Builds MOSIPDISC API request for multiple ports to discover devices on
@@ -185,11 +196,7 @@ const mosipdisc_DiscoverDevicesAsync = async (host) => {
  * @param {int} port port on which SBI is listening to.
  * @returns MOSIPDISC request for the give host and port
  */
-const discoverRequestBuilder = async (host, port) => {
-  const discTimeout =
-    getIdpConfiguration(configurationKeys.sbiDISCTimeoutInSeconds) ??
-    process.env.REACT_APP_SBI_DISC_TIMEOUT;
-
+const discoverRequestBuilder = async (host, port, discTimeout, dinfoTimeout) => {
   let endpoint = host + ":" + port + deviceEndPoint;
 
   let request = {
@@ -205,7 +212,7 @@ const discoverRequestBuilder = async (host, port) => {
     .then(async (response) => {
       if (response?.data !== null) {
         addDiscoveredDevices(port, response.data);
-        await mosipdinfo_DeviceInfo(host, port);
+        await mosipdinfo_DeviceInfo(host, port, dinfoTimeout);
       }
     })
     .catch((error) => {
@@ -219,10 +226,7 @@ const discoverRequestBuilder = async (host, port) => {
  * @param {url} host SBI is hosted on given host
  * @param {int} port port on which SBI is listening to.
  */
-const mosipdinfo_DeviceInfo = async (host, port) => {
-  const dinfoTimeout =
-    getIdpConfiguration(configurationKeys.sbiDINFOTimeoutInSeconds) ??
-    process.env.REACT_APP_SBI_DINFO_TIMEOUT;
+const mosipdinfo_DeviceInfo = async (host, port, dinfoTimeout) => {
 
   let endpoint = host + ":" + port + infoEndPoint;
 
@@ -278,9 +282,15 @@ const validateDeviceInfo = (deviceInfo) => {
   return false;
 };
 
-const sbiService = {
-  capture_Auth: capture_Auth,
-  mosipdisc_DiscoverDevicesAsync: mosipdisc_DiscoverDevicesAsync,
+/**
+ * decode the JWT
+ * @param {JWT} signed_jwt
+ * @returns decoded jwt data
+ */
+const decodeJWT = async (signed_jwt) => {
+  const data = await new jose.decodeJwt(signed_jwt);
+  return data;
 };
 
-export { sbiService };
+
+export default sbiService;
