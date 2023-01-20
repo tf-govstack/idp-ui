@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 export default function Background({
   heading,
-  mosipLogoPath,
+  logoPath,
   clientLogoPath,
   clientName,
   backgroundImgPath,
@@ -48,7 +48,7 @@ export default function Background({
                   alt={clientName}
                 />
                 <span className="text-6xl flex mx-5">&#8651;</span>
-                <img className="h-16" src={mosipLogoPath} alt={t("mosip")} />
+                <img className="h-16" src={logoPath} alt={t("logo_alt")} />
               </div>
               <div className="w-full">
                 <h1 className="flex justify-center title-font sm:text-3xl text-3xl mb-3 font-medium text-gray-900">

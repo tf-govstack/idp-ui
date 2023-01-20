@@ -28,7 +28,7 @@ export default function IdpDetails({ i18nKeyPrefix = "idpDetails" }) {
         <div className="container flex mx-auto px-5 md:flex-row flex-col items-center">
           <div className="flex justify-center rounded-none rounded-r-lg lg:max-w-lg md:w-1/2 w-5/6 mb-10 md:mb-0">
             <img
-              className="object-cover object-center rounded"
+              className="rtl:scale-x-[-1]"
               alt="user signing in"
               src="images/illustration_one.png"
             />

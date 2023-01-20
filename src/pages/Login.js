@@ -155,7 +155,7 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
     <>
       <Background
         heading={t("login_heading")}
-        mosipLogoPath="logo.png"
+        logoPath="logo.png"
         clientLogoPath={clientLogoURL}
         clientName={clientName}
         backgroundImgPath="images/illustration_one.png"

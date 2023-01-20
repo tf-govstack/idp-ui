@@ -9,7 +9,7 @@ import FormAction from "./FormAction";
 export default function Consent({
   authService,
   localStorageService,
-  mosipLogoPath = "logo.png",
+  logoPath = "logo.png",
   i18nKeyPrefix = "consent",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
@@ -185,7 +185,7 @@ export default function Consent({
           <div className="flex justify-center items-center">
             <img className="h-20" src={clientLogoPath} alt={clientName} />
             <span className="text-6xl flex mx-5">&#8651;</span>
-            <img className="h-20" src={mosipLogoPath} alt={t("mosip")} />
+            <img className="h-20" src={logoPath} alt={t("logo_alt")} />
           </div>
           <div className="flex justify-center">
             <b>
