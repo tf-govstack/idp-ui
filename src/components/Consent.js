@@ -14,7 +14,7 @@ export default function Consent({
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
 
-  const { post_AuthCode } = { ...authService };
+  const post_AuthCode = authService.post_AuthCode;
 
   const [status, setStatus] = useState(states.LOADED);
   const [claims, setClaims] = useState([]);

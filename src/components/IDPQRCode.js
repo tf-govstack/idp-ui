@@ -14,9 +14,10 @@ export default function IDPQRCode({
   oAuthDetailsService,
   i18nKeyPrefix = "IDPQRCode",
 }) {
-  const { post_GenerateLinkCode, post_LinkStatus, post_AuthorizationCode } = {
-    ...linkAuthService,
-  };
+
+  const post_GenerateLinkCode = linkAuthService.post_GenerateLinkCode;
+  const post_LinkStatus = linkAuthService.post_LinkStatus;
+  const post_AuthorizationCode = linkAuthService.post_AuthorizationCode;
 
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
   const [qr, setQr] = useState("");

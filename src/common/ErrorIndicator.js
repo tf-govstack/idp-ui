@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { localStorageService } from "../services/local-storageService";
+import { useSearchParams } from "react-router-dom";
+import { Buffer } from "buffer";
 
 const fixedInputClass =
   "p-2 mt-1 mb-1 w-full text-center text-sm rounded-lg text-red-700 bg-red-100 ";
@@ -17,15 +18,24 @@ const ErrorIndicator = ({
   i18nKeyPrefix = "errors",
   customClass,
 }) => {
-  const { getRedirectUri, getNonce, getState } = { ...localStorageService };
-
+  const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
 
   //Redirecting if transaction invalid
   if (errorCode === "invalid_transaction") {
-    let nonce = getNonce();
-    let state = getState();
-    let redirect_uri = getRedirectUri();
+    let response = searchParams.get("response")
+
+    if (!response) {
+      //TODO naviagte to default error page
+      return;
+    }
+
+    let nonce = searchParams.get("nonce")
+    let state = searchParams.get("state")
+    var decodeOAuth = Buffer.from(response, 'base64')?.toString();
+    var OAuthDetails = JSON.parse(decodeOAuth)
+
+    let redirect_uri = OAuthDetails.redirect_uri;
 
     if (!redirect_uri) {
       //TODO naviagte to default error page

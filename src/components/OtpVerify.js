@@ -27,7 +27,8 @@ export default function OtpVerify({
   let fieldsState = {};
   fields.forEach((field) => (fieldsState["Otp" + field.id] = ""));
 
-  const { post_AuthenticateUser, post_SendOtp } = { ...authService };
+  const post_SendOtp = authService.post_SendOtp;
+  const post_AuthenticateUser = authService.post_AuthenticateUser;
 
   const resendOtpTimeout =
     oAuthDetailsService.getIdpConfiguration(configurationKeys.resendOtpTimeout) ??
@@ -186,9 +187,24 @@ export default function OtpVerify({
         return;
       } else {
         setError(null);
+
+        let nonce = oAuthDetailsService.getNonce();
+        let state = oAuthDetailsService.getState();
+
+        let params = "?";
+        if (nonce) {
+          params = params + "nonce=" + nonce + "&";
+        }
+        if (state) {
+          params = params + "state=" + state + "&";
+        }
+
         let responseB64 = oAuthDetailsService.encodeBase64(oAuthDetailsService.getOuthDetails());
 
-        navigate("/consent?response=" + responseB64, {
+        //REQUIRED
+        params = params + "response=" + responseB64;
+
+        navigate("/consent" + params, {
           replace: true,
         });
       }

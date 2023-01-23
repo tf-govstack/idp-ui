@@ -19,7 +19,7 @@ export default function OtpGet({
   let fieldsState = {};
   fields.forEach((field) => (fieldsState["Otp" + field.id] = ""));
 
-  const { post_SendOtp } = { ...authService };
+  const post_SendOtp = authService.post_SendOtp;
 
   const commaSeparatedChannels =
     oAuthDetailsService.getIdpConfiguration(configurationKeys.sendOtpChannels) ?? "email,mobile";

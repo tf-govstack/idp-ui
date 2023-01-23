@@ -4,7 +4,7 @@ import Pin from "../components/Pin";
 import { otpFields, pinFields, bioLoginFields } from "../constants/formFields";
 import L1Biometrics from "../components/L1Biometrics";
 import { useTranslation } from "react-i18next";
-import { authService } from "../services/authService";
+import authService from "../services/authService";
 import { localStorageService } from "../services/local-storageService";
 import sbiService from "../services/sbiService";
 import Background from "../components/Background";
@@ -13,7 +13,7 @@ import {
   configurationKeys,
   validAuthFactors,
 } from "../constants/clientConstants";
-import { linkAuthService } from "../services/linkAuthService";
+import linkAuthService from "../services/linkAuthService";
 import IDPQRCode from "../components/IDPQRCode";
 import { useSearchParams } from "react-router-dom";
 import { Buffer } from "buffer";
@@ -30,7 +30,7 @@ const comp = {
 function InitiateL1Biometrics(oAuthDetailsService) {
   return React.createElement(L1Biometrics, {
     param: bioLoginFields,
-    authService: authService,
+    authService: new authService(oAuthDetailsService),
     localStorageService: localStorageService,
     oAuthDetailsService: oAuthDetailsService,
     sbiService: new sbiService(oAuthDetailsService),
@@ -40,7 +40,7 @@ function InitiateL1Biometrics(oAuthDetailsService) {
 function InitiatePin(oAuthDetailsService) {
   return React.createElement(Pin, {
     param: pinFields,
-    authService: authService,
+    authService: new authService(oAuthDetailsService),
     oAuthDetailsService: oAuthDetailsService,
   });
 }
@@ -48,7 +48,7 @@ function InitiatePin(oAuthDetailsService) {
 function InitiateOtp(oAuthDetailsService) {
   return React.createElement(Otp, {
     param: otpFields,
-    authService: authService,
+    authService: new authService(oAuthDetailsService),
     oAuthDetailsService: oAuthDetailsService,
   });
 }
@@ -63,7 +63,7 @@ function InitiateSignInOptions(handleSignInOptionClick, oAuthDetailsService) {
 function InitiateLinkedWallet(oAuthDetailsService) {
   return React.createElement(IDPQRCode, {
     oAuthDetailsService: oAuthDetailsService,
-    linkAuthService: linkAuthService,
+    linkAuthService: new linkAuthService(oAuthDetailsService),
   });
 }
 
@@ -103,7 +103,10 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   var decodeOAuth = Buffer.from(searchParams.get("response"), 'base64')?.toString();
-  const oAuthDetails = new oAuthDetailsService(JSON.parse(decodeOAuth));
+  var nonce = searchParams.get("nonce");
+  var state = searchParams.get("state");
+
+  const oAuthDetails = new oAuthDetailsService(JSON.parse(decodeOAuth), nonce, state);
 
   let value = oAuthDetails.getIdpConfiguration(
     configurationKeys.signInWithInjiEnable

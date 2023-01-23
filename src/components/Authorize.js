@@ -16,7 +16,8 @@ export default function Authorize({
     keyPrefix: i18nKeyPrefix,
   });
 
-  const { get_CsrfToken, post_OauthDetails } = { ...authService };
+  const get_CsrfToken = authService.get_CsrfToken;
+  const post_OauthDetails = authService.post_OauthDetails;
 
   const { getLocaleConfiguration } = {
     ...langConfigService,
@@ -135,13 +136,24 @@ export default function Authorize({
     if (errors != null && errors.length > 0) {
       return;
     } else {
-      response.nonce = searchParams.get("nonce");
-      response.state = searchParams.get("state");
+      let nonce = searchParams.get("nonce");
+      let state = searchParams.get("state");
+
+      let params = "?";
+      if (nonce) {
+        params = params + "nonce=" + nonce + "&";
+      }
+      if (state) {
+        params = params + "state=" + state + "&";
+      }
 
       let responseStr = JSON.stringify(response);
       let responseB64 = Buffer.from(responseStr).toString("base64");
 
-      navigate("/login?response=" + responseB64, {
+      //REQUIRED
+      params = params + "response=" + responseB64;
+
+      navigate("/login" + params, {
         replace: true,
       });
     }

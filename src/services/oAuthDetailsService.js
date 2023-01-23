@@ -1,8 +1,11 @@
 import { Buffer } from "buffer";
+import { sha256 } from 'crypto-hash';
 
 class oAuthDetailsService {
-  constructor(oAuthDetails) {
+  constructor(oAuthDetails, nonce, state) {
     this.oAuthDetails = oAuthDetails;
+    this.nonce = nonce;
+    this.state = state;
   }
 
   /**
@@ -16,14 +19,14 @@ class oAuthDetailsService {
    * @returns nonce
    */
   getNonce = () => {
-    return this.oAuthDetails.nonce;
+    return this.nonce;
   };
 
   /**
    * @returns state
    */
   getState = () => {
-    return this.oAuthDetails.state;
+    return this.state;
   };
 
   /**
@@ -60,8 +63,16 @@ class oAuthDetailsService {
     return objJsonB64;
   };
 
+  /**
+   * encodes a jsonObject into base64 string
+   * @param {jsonObject} jsonObject
+   * @returns Base64 encoded SHA-256 hash of the oauth-details endpoint response.
+   */
+  getOauthDetailsHash = async () => {
+    let oAuthDetailsStr = JSON.stringify(this.oAuthDetails);
+    let oAuthDetailsB64 = Buffer.from(oAuthDetailsStr).toString("base64");
+    return await sha256(oAuthDetailsB64);
+  };
 };
-
-
 
 export default oAuthDetailsService;

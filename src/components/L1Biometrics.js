@@ -34,7 +34,8 @@ export default function L1Biometrics({
   const capture_Auth = sbiService.capture_Auth;
   const mosipdisc_DiscoverDevicesAsync = sbiService.mosipdisc_DiscoverDevicesAsync;
 
-  const { post_AuthenticateUser } = { ...authService };
+  const post_AuthenticateUser = authService.post_AuthenticateUser;
+
   const { getDeviceInfos } = {
     ...localStorageService,
   };
@@ -203,8 +204,24 @@ export default function L1Biometrics({
         defaultMsg: errors[0].errorMessage,
       });
     } else {
+
+      let nonce = oAuthDetailsService.getNonce();
+      let state = oAuthDetailsService.getState();
+
+      let params = "?";
+      if (nonce) {
+        params = params + "nonce=" + nonce + "&";
+      }
+      if (state) {
+        params = params + "state=" + state + "&";
+      }
+
       let responseB64 = oAuthDetailsService.encodeBase64(oAuthDetailsService.getOuthDetails());
-      navigate("/consent?response=" + responseB64, {
+
+      //REQUIRED
+      params = params + "response=" + responseB64;
+
+      navigate("/consent" + params, {
         replace: true,
       });
     }
