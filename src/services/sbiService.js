@@ -1,6 +1,6 @@
 import axios from "axios";
 import { configurationKeys } from "../constants/clientConstants";
-import { localStorageService } from "./local-storageService";
+import localStorageService from "./local-storageService";
 import * as jose from "jose";
 
 const {

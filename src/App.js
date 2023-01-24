@@ -5,7 +5,7 @@ import AuthorizePage from "./pages/Authorize";
 import ConsentPage from "./pages/Consent";
 import NavHeader from "./components/NavHeader";
 import IdpDetailsPage from "./pages/IdpDetails";
-import { langConfigService } from "./services/langConfigService";
+import langConfigService from "./services/langConfigService";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 

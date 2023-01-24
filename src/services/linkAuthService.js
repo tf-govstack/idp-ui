@@ -1,5 +1,5 @@
 import axios from "axios";
-import { localStorageService } from "./local-storageService";
+import localStorageService from "./local-storageService";
 
 const baseUrl =
   process.env.NODE_ENV === "development"

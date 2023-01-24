@@ -61,6 +61,11 @@ const getDeviceInfos = () => {
   return JSON.parse(localStorage.getItem(device_info_keyname));
 };
 
+/**
+ * retrieves cookie from the browser 
+ * @param {string} key
+ * @returns cookie value
+ */
 function getCookie(key) {
   var b = document.cookie.match("(^|;)\\s*" + key + "\\s*=\\s*([^;]+)");
   return b ? b.pop() : "";
@@ -75,4 +80,4 @@ const localStorageService = {
   getCookie: getCookie
 };
 
-export { localStorageService };
+export default localStorageService;

@@ -1,7 +1,7 @@
 import React from "react";
 import Authorize from "../components/Authorize";
 import authService from "../services/authService";
-import { langConfigService } from "../services/langConfigService";
+import langConfigService from "../services/langConfigService";
 
 
 export default function AuthorizePage() {

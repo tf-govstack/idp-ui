@@ -1,5 +1,5 @@
 import axios from "axios";
-import { localStorageService } from "./local-storageService";
+import localStorageService from "./local-storageService";
 
 const baseUrl =
   process.env.NODE_ENV === "development"
@@ -175,6 +175,11 @@ class authService {
     return response.data;
   };
 
+  /**
+   * Gets triggered for the very first time, before any api call.
+   * Triggers /csrf/token API on IDP service
+   * @returns csrf token.
+  */
   get_CsrfToken = async () => {
     let endpoint = baseUrl + csrfEndPoint;
 

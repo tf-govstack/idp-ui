@@ -5,7 +5,7 @@ import { otpFields, pinFields, bioLoginFields } from "../constants/formFields";
 import L1Biometrics from "../components/L1Biometrics";
 import { useTranslation } from "react-i18next";
 import authService from "../services/authService";
-import { localStorageService } from "../services/local-storageService";
+import localStorageService from "../services/local-storageService";
 import sbiService from "../services/sbiService";
 import Background from "../components/Background";
 import SignInOptions from "../components/SignInOptions";
@@ -18,7 +18,6 @@ import IDPQRCode from "../components/IDPQRCode";
 import { useSearchParams } from "react-router-dom";
 import { Buffer } from "buffer";
 import oAuthDetailsService from "../services/oAuthDetailsService";
-
 
 //authFactorComponentMapping
 const comp = {
