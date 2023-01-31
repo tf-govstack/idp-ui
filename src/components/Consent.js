@@ -8,20 +8,13 @@ import FormAction from "./FormAction";
 
 export default function Consent({
   authService,
-  localStorageService,
-  mosipLogoPath = "logo.png",
+  openIDConnectService,
+  logoPath = "logo.png",
   i18nKeyPrefix = "consent",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
 
-  const { post_AuthCode } = { ...authService };
-  const {
-    getTransactionId,
-    getRedirectUri,
-    getNonce,
-    getState,
-    getOuthDetails,
-  } = { ...localStorageService };
+  const post_AuthCode = authService.post_AuthCode;
 
   const [status, setStatus] = useState(states.LOADED);
   const [claims, setClaims] = useState([]);
@@ -62,7 +55,7 @@ export default function Consent({
 
   useEffect(() => {
     const initialize = async () => {
-      let oAuthDetails = JSON.parse(getOuthDetails());
+      let oAuthDetails = openIDConnectService.getOAuthDetails();
 
       let claimsScopes = [];
       claimsScopes.push({
@@ -70,6 +63,7 @@ export default function Consent({
         type: "scope",
         required: false,
         values: oAuthDetails?.authorizeScopes,
+        tooltip: "authorize_scope_tooltip",
       });
 
       claimsScopes.push({
@@ -77,6 +71,7 @@ export default function Consent({
         type: "claim",
         required: true,
         values: oAuthDetails?.essentialClaims,
+        tooltip: "essential_claims_tooltip",
       });
 
       claimsScopes.push({
@@ -84,6 +79,7 @@ export default function Consent({
         type: "claim",
         required: false,
         values: oAuthDetails?.voluntaryClaims,
+        tooltip: "voluntary_claims_tooltip",
       });
 
       setClaimsScopes(claimsScopes);
@@ -108,7 +104,7 @@ export default function Consent({
   //Handle Login API Integration here
   const submitConsent = async () => {
     try {
-      let transactionId = getTransactionId();
+      let transactionId = openIDConnectService.getTransactionId();
       let acceptedClaims = claims;
       let permittedAuthorizeScopes = scope;
 
@@ -149,9 +145,9 @@ export default function Consent({
 
   //errorCode is REQUIRED, errorDescription is OPTIONAL
   const onError = async (errorCode, errorDescription) => {
-    let nonce = getNonce();
-    let state = getState();
-    let redirect_uri = getRedirectUri();
+    let nonce = openIDConnectService.getNonce();
+    let state = openIDConnectService.getState();
+    let redirect_uri = openIDConnectService.getRedirectUri();
 
     if (!redirect_uri) {
       return;
@@ -180,9 +176,9 @@ export default function Consent({
       <div className="max-w-md w-full shadow-lg mt-5 rounded bg-[#F8F8F8] px-4 py-4">
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="flex justify-center items-center">
-            <img className="h-20 mr-5" src={clientLogoPath} alt={clientName} />
-            <span className="text-6xl flex mr-5">&#8651;</span>
-            <img className="h-20" src={mosipLogoPath} alt="MOSIP" />
+            <img className="h-20" src={clientLogoPath} alt={clientName} />
+            <span className="text-6xl flex mx-5">&#8651;</span>
+            <img className="h-20" src={logoPath} alt={t("logo_alt")} />
           </div>
           <div className="flex justify-center">
             <b>
@@ -195,7 +191,14 @@ export default function Consent({
             (claimScope) =>
               claimScope?.values?.length > 0 && (
                 <>
-                  <h2 className="font-semibold">{t(claimScope.label)}</h2>
+                  <h2 className="font-semibold" title={t(claimScope.tooltip)}>
+                    {t(claimScope.label)}
+                    <button className="ml-1 text-sky-600 text-xl"
+                      onClick={(e) => { e.preventDefault(); }}
+                    >
+                      &#9432;
+                    </button>
+                  </h2>
                   <div className="divide-y">
                     {claimScope?.values?.map((item) => (
                       <div key={item}>
@@ -230,7 +233,12 @@ export default function Consent({
                                       : handleClaimChange
                                   }
                                 />
-                                <div className="w-9 h-5 border border-neutral-400 bg-white rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-neutral-400 after:border after:border-neutral-400 peer-checked:after:border-sky-500 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:bg-sky-500 peer-checked:after:bg-sky-500 peer-checked:border-sky-500"></div>
+                                <div className="w-9 h-5 border border-neutral-400 bg-white rounded-full peer after:content-[''] 
+                                after:absolute after:top-[2px] after:bg-neutral-400 after:border after:border-neutral-400 
+                                peer-checked:after:border-sky-500 after:rounded-full after:h-4 after:w-4 after:transition-all 
+                                peer-checked:after:bg-sky-500 peer-checked:after:bg-sky-500 peer-checked:border-sky-500 
+                                ltr:peer-checked:after:translate-x-full ltr:after:left-[2px] 
+                                rtl:peer-checked:after:-translate-x-full rtl:after:right-[2px]"></div>
                               </label>
                             )}
                           </div>

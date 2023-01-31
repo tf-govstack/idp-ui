@@ -17,4 +17,4 @@ const langConfigService = {
   getLocaleConfiguration,
 };
 
-export { langConfigService };
+export default langConfigService;

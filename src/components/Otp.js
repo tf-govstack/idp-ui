@@ -11,7 +11,7 @@ const OTPStatusEnum = {
 export default function Otp({
   param,
   authService,
-  localStorageService,
+  openIDConnectService,
   i18nKeyPrefix = "otp",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
@@ -35,7 +35,7 @@ export default function Otp({
               onClick={() => {
                 setOtpStatus(OTPStatusEnum.getOtp);
               }}
-              className="text-sky-600 text-2xl font-semibold justify-left"
+              className="text-sky-600 text-2xl font-semibold justify-left rtl:rotate-180"
             >
               &#8701;
             </button>
@@ -52,7 +52,7 @@ export default function Otp({
         <OtpGet
           param={param}
           authService={authService}
-          localStorageService={localStorageService}
+          openIDConnectService={openIDConnectService}
           onOtpSent={onOtpSent}
         />
       )}
@@ -63,7 +63,7 @@ export default function Otp({
           otpResponse={otpResponse}
           vid={vid}
           authService={authService}
-          localStorageService={localStorageService}
+          openIDConnectService={openIDConnectService}
         />
       )}
     </>

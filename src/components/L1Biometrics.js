@@ -23,7 +23,7 @@ export default function L1Biometrics({
   param,
   authService,
   localStorageService,
-  cryptoService,
+  openIDConnectService,
   sbiService,
   i18nKeyPrefix = "l1Biometrics",
 }) {
@@ -31,10 +31,12 @@ export default function L1Biometrics({
 
   const inputFields = param.inputFields;
 
-  const { encodeBase64 } = { ...cryptoService };
-  const { capture_Auth, mosipdisc_DiscoverDevicesAsync } = { ...sbiService };
-  const { post_AuthenticateUser } = { ...authService };
-  const { getDeviceInfos, getTransactionId, storeTransactionId } = {
+  const capture_Auth = sbiService.capture_Auth;
+  const mosipdisc_DiscoverDevicesAsync = sbiService.mosipdisc_DiscoverDevicesAsync;
+
+  const post_AuthenticateUser = authService.post_AuthenticateUser;
+
+  const { getDeviceInfos } = {
     ...localStorageService,
   };
 
@@ -127,9 +129,9 @@ export default function L1Biometrics({
 
     try {
       await Authenticate(
-        getTransactionId(),
+        openIDConnectService.getTransactionId(),
         vid,
-        await encodeBase64(biometricResponse["biometrics"])
+        openIDConnectService.encodeBase64(biometricResponse["biometrics"])
       );
     } catch (error) {
       setError({
@@ -202,8 +204,24 @@ export default function L1Biometrics({
         defaultMsg: errors[0].errorMessage,
       });
     } else {
-      storeTransactionId(response.transactionId);
-      navigate("/consent", {
+
+      let nonce = openIDConnectService.getNonce();
+      let state = openIDConnectService.getState();
+
+      let params = "?";
+      if (nonce) {
+        params = params + "nonce=" + nonce + "&";
+      }
+      if (state) {
+        params = params + "state=" + state + "&";
+      }
+
+      let responseB64 = openIDConnectService.encodeBase64(openIDConnectService.getOAuthDetails());
+
+      //REQUIRED
+      params = params + "response=" + responseB64;
+
+      navigate("/consent" + params, {
         replace: true,
       });
     }

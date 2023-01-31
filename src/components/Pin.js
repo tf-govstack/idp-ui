@@ -16,14 +16,13 @@ fields.forEach((field) => (fieldsState["Pin" + field.id] = ""));
 export default function Pin({
   param,
   authService,
-  localStorageService,
+  openIDConnectService,
   i18nKeyPrefix = "pin",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
 
   const fields = param;
-  const { post_AuthenticateUser } = { ...authService };
-  const { getTransactionId, storeTransactionId } = { ...localStorageService };
+  const post_AuthenticateUser = authService.post_AuthenticateUser;
 
   const [loginState, setLoginState] = useState(fieldsState);
   const [error, setError] = useState(null);
@@ -43,7 +42,7 @@ export default function Pin({
   //Handle Login API Integration here
   const authenticateUser = async () => {
     try {
-      let transactionId = getTransactionId();
+      let transactionId = openIDConnectService.getTransactionId();
 
       let uin = loginState["Pin_mosip-uin"];
       let challengeType = challengeTypes.pin;
@@ -78,8 +77,24 @@ export default function Pin({
         return;
       } else {
         setError(null);
-        storeTransactionId(response.transactionId);
-        navigate("/consent", {
+
+        let nonce = openIDConnectService.getNonce();
+        let state = openIDConnectService.getState();
+
+        let params = "?";
+        if (nonce) {
+          params = params + "nonce=" + nonce + "&";
+        }
+        if (state) {
+          params = params + "state=" + state + "&";
+        }
+
+        let responseB64 = openIDConnectService.encodeBase64(openIDConnectService.getOAuthDetails());
+
+        //REQUIRED
+        params = params + "response=" + responseB64;
+
+        navigate("/consent" + params, {
           replace: true,
         });
       }
@@ -126,7 +141,7 @@ export default function Pin({
             />
             <label
               htmlFor="remember-me"
-              className="ml-2 block text-sm text-cyan-900"
+              className="mx-2 block text-sm text-cyan-900"
             >
               {t("remember_me")}
             </label>

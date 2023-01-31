@@ -19,7 +19,7 @@ export default function OtpVerify({
   otpResponse,
   vid,
   authService,
-  localStorageService,
+  openIDConnectService,
   i18nKeyPrefix = "otp",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
@@ -27,16 +27,14 @@ export default function OtpVerify({
   let fieldsState = {};
   fields.forEach((field) => (fieldsState["Otp" + field.id] = ""));
 
-  const { post_AuthenticateUser, post_SendOtp } = { ...authService };
-  const { getTransactionId, storeTransactionId, getIdpConfiguration } = {
-    ...localStorageService,
-  };
+  const post_SendOtp = authService.post_SendOtp;
+  const post_AuthenticateUser = authService.post_AuthenticateUser;
 
   const resendOtpTimeout =
-    getIdpConfiguration(configurationKeys.resendOtpTimeout) ??
+    openIDConnectService.getIdpConfiguration(configurationKeys.resendOtpTimeout) ??
     process.env.REACT_APP_RESEND_OTP_TIMEOUT_IN_SEC;
   const commaSeparatedChannels =
-    getIdpConfiguration(configurationKeys.sendOtpChannels) ??
+    openIDConnectService.getIdpConfiguration(configurationKeys.sendOtpChannels) ??
     process.env.REACT_APP_SEND_OTP_CHANNELS;
 
   const [loginState, setLoginState] = useState(fieldsState);
@@ -73,7 +71,7 @@ export default function OtpVerify({
       pin.clear();
       setOtpValue("");
 
-      let transactionId = getTransactionId();
+      let transactionId = openIDConnectService.getTransactionId();
       let otpChannels = commaSeparatedChannels.split(",").map((x) => x.trim());
 
       setStatus({ state: states.LOADING, msg: "sending_otp_msg" });
@@ -157,7 +155,7 @@ export default function OtpVerify({
   //Handle Login API Integration here
   const authenticateUser = async () => {
     try {
-      let transactionId = getTransactionId();
+      let transactionId = openIDConnectService.getTransactionId();
 
       let challengeType = challengeTypes.otp;
       let challenge = otpValue;
@@ -179,7 +177,7 @@ export default function OtpVerify({
       );
       setStatus({ state: states.LOADED, msg: "" });
 
-      const { response, errors } = authenticateResponse;
+      const { errors } = authenticateResponse;
 
       if (errors != null && errors.length > 0) {
         setError({
@@ -189,8 +187,24 @@ export default function OtpVerify({
         return;
       } else {
         setError(null);
-        storeTransactionId(response.transactionId);
-        navigate("/consent", {
+
+        let nonce = openIDConnectService.getNonce();
+        let state = openIDConnectService.getState();
+
+        let params = "?";
+        if (nonce) {
+          params = params + "nonce=" + nonce + "&";
+        }
+        if (state) {
+          params = params + "state=" + state + "&";
+        }
+
+        let responseB64 = openIDConnectService.encodeBase64(openIDConnectService.getOAuthDetails());
+
+        //REQUIRED
+        params = params + "response=" + responseB64;
+
+        navigate("/consent" + params, {
           replace: true,
         });
       }

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { localStorageService } from "./local-storageService";
+import localStorageService from "./local-storageService";
 
 const baseUrl =
   process.env.NODE_ENV === "development"
@@ -14,179 +14,183 @@ const csrfEndPoint = "/csrf/token";
 
 const { getCookie } = { ...localStorageService };
 
-/**
- * Triggers /authenticate API on IDP service
- * @param {string} transactionId same as idp transactionId
- * @param {String} individualId UIN/VIN of the individual
- * @param {List<AuthChallenge>} challengeList challenge list based on the auth type(ie. BIO, PIN, INJI)
- * @returns /authenticate API response
- */
-const post_AuthenticateUser = async (
-  transactionId,
-  individualId,
-  challengeList
-) => {
-  let request = {
-    requestTime: new Date().toISOString(),
-    request: {
-      transactionId: transactionId,
-      individualId: individualId,
-      challengeList: challengeList,
-    },
+class authService {
+  constructor(oAuthDetails) {
+    this.oAuthDetails = oAuthDetails;
+  }
+
+  /**
+   * Triggers /authenticate API on IDP service
+   * @param {string} transactionId same as idp transactionId
+   * @param {String} individualId UIN/VIN of the individual
+   * @param {List<AuthChallenge>} challengeList challenge list based on the auth type(ie. BIO, PIN, INJI)
+   * @returns /authenticate API response
+   */
+  post_AuthenticateUser = async (
+    transactionId,
+    individualId,
+    challengeList
+  ) => {
+    let request = {
+      requestTime: new Date().toISOString(),
+      request: {
+        transactionId: transactionId,
+        individualId: individualId,
+        challengeList: challengeList,
+      },
+    };
+
+    let endpoint = baseUrl + authenticateEndPoint;
+
+    let response = await axios.post(endpoint, request, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-XSRF-TOKEN": getCookie("XSRF-TOKEN"),
+        "oauth-hash": await this.oAuthDetails.getOauthDetailsHash()
+      },
+    });
+    return response.data;
   };
 
-  const endpoint = baseUrl + authenticateEndPoint;
+  /**
+   * Triggers /auth-code API on IDP service
+   * @param {string} nonce
+   * @param {string} state
+   * @param {string} clientId
+   * @param {url} redirectUri
+   * @param {string} responseType
+   * @param {string} scope
+   * @param {string} acrValues
+   * @param {jsonObject} claims
+   * @param {string} claimsLocales
+   * @param {string} display
+   * @param {int} maxAge
+   * @param {string} prompt
+   * @param {string} uiLocales
+   * @returns /oauthDetails API response
+   */
+  post_OauthDetails = async (
+    nonce,
+    state,
+    clientId,
+    redirectUri,
+    responseType,
+    scope,
+    acrValues,
+    claims,
+    claimsLocales,
+    display,
+    maxAge,
+    prompt,
+    uiLocales
+  ) => {
+    let request = {
+      requestTime: new Date().toISOString(),
+      request: {
+        nonce: nonce,
+        state: state,
+        clientId: clientId,
+        redirectUri: redirectUri,
+        responseType: responseType,
+        scope: scope,
+        acrValues: acrValues,
+        claims: claims,
+        claimsLocales: claimsLocales,
+        display: display,
+        maxAge: maxAge,
+        prompt: prompt,
+        uiLocales: uiLocales,
+      },
+    };
 
-  const response = await axios.post(endpoint, request, {
-    headers: {
-      "Content-Type": "application/json",
-      "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
-    },
-  });
-  return response.data;
-};
+    var endpoint = baseUrl + oauthDetailsEndPoint;
 
-/**
- * Triggers /auth-code API on IDP service
- * @param {string} nonce
- * @param {string} state
- * @param {string} clientId
- * @param {url} redirectUri
- * @param {string} responseType
- * @param {string} scope
- * @param {string} acrValues
- * @param {jsonObject} claims
- * @param {string} claimsLocales
- * @param {string} display
- * @param {int} maxAge
- * @param {string} prompt
- * @param {string} uiLocales
- * @returns /oauthDetails API response
- */
-const post_OauthDetails = async (
-  nonce,
-  state,
-  clientId,
-  redirectUri,
-  responseType,
-  scope,
-  acrValues,
-  claims,
-  claimsLocales,
-  display,
-  maxAge,
-  prompt,
-  uiLocales
-) => {
-  let request = {
-    requestTime: new Date().toISOString(),
-    request: {
-      nonce: nonce,
-      state: state,
-      clientId: clientId,
-      redirectUri: redirectUri,
-      responseType: responseType,
-      scope: scope,
-      acrValues: acrValues,
-      claims: claims,
-      claimsLocales: claimsLocales,
-      display: display,
-      maxAge: maxAge,
-      prompt: prompt,
-      uiLocales: uiLocales,
-    },
+    let response = await axios.post(endpoint, request, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
+      },
+    });
+    return response.data;
   };
 
-  var endpoint = baseUrl + oauthDetailsEndPoint;
+  /**
+   * Triggers /auth-code API to IDP service
+   * @param {String} transactionId
+   * @param {List<String>} acceptedClaims
+   * @param {List<String>} permittedAuthorizeScopes
+   * @returns /auth-code API response
+   */
+  post_AuthCode = async (
+    transactionId,
+    acceptedClaims,
+    permittedAuthorizeScopes
+  ) => {
+    let request = {
+      requestTime: new Date().toISOString(),
+      request: {
+        transactionId: transactionId,
+        acceptedClaims: acceptedClaims,
+        permittedAuthorizeScopes: permittedAuthorizeScopes,
+      },
+    };
 
-  const response = await axios.post(endpoint, request, {
-    headers: {
-      "Content-Type": "application/json",
-      "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
-    },
-  });
-  return response.data;
-};
-
-/**
- * Triggers /auth-code API to IDP service
- * @param {String} transactionId
- * @param {List<String>} acceptedClaims
- * @param {List<String>} permittedAuthorizeScopes
- * @returns /auth-code API response
- */
-const post_AuthCode = async (
-  transactionId,
-  acceptedClaims,
-  permittedAuthorizeScopes
-) => {
-  let request = {
-    requestTime: new Date().toISOString(),
-    request: {
-      transactionId: transactionId,
-      acceptedClaims: acceptedClaims,
-      permittedAuthorizeScopes: permittedAuthorizeScopes,
-    },
+    let endpoint = baseUrl + authCodeEndPoint;
+    let response = await axios.post(endpoint, request, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-XSRF-TOKEN": getCookie("XSRF-TOKEN"),
+        "oauth-hash": await this.oAuthDetails.getOauthDetailsHash()
+      },
+    });
+    return response.data;
   };
 
-  const endpoint = baseUrl + authCodeEndPoint;
-  const response = await axios.post(endpoint, request, {
-    headers: {
-      "Content-Type": "application/json",
-      "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
-    },
-  });
-  return response.data;
-};
+  /**
+   * Triggers /send-otp API on IDP service
+   * @param {string} transactionId idp transactionId
+   * @param {string} individualId UIN/VIN of the individual
+   * @param {List<string>} otpChannels list of channels(ie. phone, email)
+   * @returns /send-otp API response
+   */
+  post_SendOtp = async (transactionId, individualId, otpChannels, captchaToken) => {
+    let request = {
+      requestTime: new Date().toISOString(),
+      request: {
+        transactionId: transactionId,
+        individualId: individualId,
+        otpChannels: otpChannels,
+        captchaToken: captchaToken
+      },
+    };
 
-/**
- * Triggers /send-otp API on IDP service
- * @param {string} transactionId idp transactionId
- * @param {string} individualId UIN/VIN of the individual
- * @param {List<string>} otpChannels list of channels(ie. phone, email)
- * @returns /send-otp API response
- */
-const post_SendOtp = async (transactionId, individualId, otpChannels) => {
-  let request = {
-    requestTime: new Date().toISOString(),
-    request: {
-      transactionId: transactionId,
-      individualId: individualId,
-      otpChannels: otpChannels,
-    },
+    let endpoint = baseUrl + sendOtpEndPoint;
+
+    let response = await axios.post(endpoint, request, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-XSRF-TOKEN": getCookie("XSRF-TOKEN"),
+        "oauth-hash": await this.oAuthDetails.getOauthDetailsHash()
+      },
+    });
+    return response.data;
   };
 
-  const endpoint = baseUrl + sendOtpEndPoint;
+  /**
+   * Gets triggered for the very first time, before any api call.
+   * Triggers /csrf/token API on IDP service
+   * @returns csrf token.
+  */
+  get_CsrfToken = async () => {
+    let endpoint = baseUrl + csrfEndPoint;
 
-  const response = await axios.post(endpoint, request, {
-    headers: {
-      "Content-Type": "application/json",
-      "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
-    },
-  });
-  return response.data;
-};
+    let response = await axios.get(endpoint, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  };
+}
 
-
-
-const get_CsrfToken = async () => {
-  const endpoint = baseUrl + csrfEndPoint;
-
-  const response = await axios.get(endpoint, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  return response.data;
-};
-
-
-const authService = {
-  post_AuthenticateUser: post_AuthenticateUser,
-  post_OauthDetails: post_OauthDetails,
-  post_AuthCode: post_AuthCode,
-  post_SendOtp: post_SendOtp,
-  get_CsrfToken: get_CsrfToken
-};
-
-export { authService };
+export default authService;
