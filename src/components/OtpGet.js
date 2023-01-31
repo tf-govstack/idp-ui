@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import LoadingIndicator from "../common/LoadingIndicator";
 import FormAction from "./FormAction";
 import { LoadingStates as states } from "../constants/states";
@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import ErrorIndicator from "../common/ErrorIndicator";
 import InputWithImage from "./InputWithImage";
 import { buttonTypes, configurationKeys } from "../constants/clientConstants";
+import ReCAPTCHA from "react-google-recaptcha";
 
 export default function OtpGet({
   param,
@@ -22,11 +23,29 @@ export default function OtpGet({
   const post_SendOtp = authService.post_SendOtp;
 
   const commaSeparatedChannels =
-    oAuthDetailsService.getIdpConfiguration(configurationKeys.sendOtpChannels) ?? "email,mobile";
+    oAuthDetailsService.getIdpConfiguration(configurationKeys.sendOtpChannels) ??
+    process.env.REACT_APP_SEND_OTP_CHANNELS;
+
+  const sendOTPShowCaptchaValue =
+    oAuthDetailsService.getIdpConfiguration(configurationKeys.sendOTPShowCaptcha) ??
+    process.env.REACT_APP_SEND_OTP_SHOW_CAPTCHA;
+
+  const sendOTPShowCaptcha = sendOTPShowCaptchaValue?.toString().trim().toLowerCase() === "true"
+
+  const sendOtpCaptchaSiteKey =
+    oAuthDetailsService.getIdpConfiguration(configurationKeys.sendOtpCaptchaSiteKey) ??
+    process.env.REACT_APP_SEND_OTP_CAPTCHA_SITE_KEY;
 
   const [loginState, setLoginState] = useState(fieldsState);
   const [error, setError] = useState(null);
   const [status, setStatus] = useState({ state: states.LOADED, msg: "" });
+
+  const [captchaToken, setCaptchaToken] = useState(null);
+  const _reCaptchaRef = useRef(null);
+
+  const handleCaptchaChange = (value) => {
+    setCaptchaToken(value);
+  };
 
   const handleChange = (e) => {
     setLoginState({ ...loginState, [e.target.id]: e.target.value });
@@ -45,7 +64,8 @@ export default function OtpGet({
       const sendOtpResponse = await post_SendOtp(
         transactionId,
         vid,
-        otpChannels
+        otpChannels,
+        captchaToken
       );
       setStatus({ state: states.LOADED, msg: "" });
 
@@ -73,7 +93,7 @@ export default function OtpGet({
 
   return (
     <>
-      <div className="  mt-16">
+      <div className="mt-12">
         {fields.map((field) => (
           <InputWithImage
             key={"Otp_" + field.id}
@@ -91,12 +111,22 @@ export default function OtpGet({
           />
         ))}
 
-        <div className="mt-10 mb-5">
+        {sendOTPShowCaptcha && (
+          <div className="flex justify-center mt-5 mb-5">
+            <ReCAPTCHA
+              ref={_reCaptchaRef}
+              onChange={handleCaptchaChange}
+              sitekey={sendOtpCaptchaSiteKey}
+            />
+          </div>
+        )}
+
+        <div className="mt-5 mb-5">
           <FormAction
             type={buttonTypes.button}
             text={t("get_otp")}
             handleClick={sendOTP}
-            disabled={!loginState["Otp_mosip-vid"]?.trim()}
+            disabled={!loginState["Otp_mosip-vid"]?.trim() || (sendOTPShowCaptcha && captchaToken === null)}
           />
         </div>
 

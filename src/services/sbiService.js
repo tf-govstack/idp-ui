@@ -35,7 +35,6 @@ class sbiService {
     this.getIdpConfiguration = oAuthDetails.getIdpConfiguration;
   }
 
-
   /**
    * Triggers capture request of SBI for auth capture
    * @param {url} host SBI is hosted on given host
@@ -134,13 +133,11 @@ class sbiService {
     return response?.data;
   };
 
-
   /**
    * Triggers MOSIPDISC request on multiple port simultaneously.
    * @param {url} host SBI is hosted on given host
    * @returns MOSIPDISC requests for the given host and the port ranging between fromPort and tillPort
    */
-
   mosipdisc_DiscoverDevicesAsync = async (host) => {
     clearDiscoveredDevices();
     clearDeviceInfos();

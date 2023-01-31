@@ -153,13 +153,14 @@ class authService {
    * @param {List<string>} otpChannels list of channels(ie. phone, email)
    * @returns /send-otp API response
    */
-  post_SendOtp = async (transactionId, individualId, otpChannels) => {
+  post_SendOtp = async (transactionId, individualId, otpChannels, captchaToken) => {
     let request = {
       requestTime: new Date().toISOString(),
       request: {
         transactionId: transactionId,
         individualId: individualId,
         otpChannels: otpChannels,
+        captchaToken: captchaToken
       },
     };
 
