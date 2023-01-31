@@ -8,7 +8,7 @@ import FormAction from "./FormAction";
 
 export default function Consent({
   authService,
-  oAuthDetailsService,
+  openIDConnectService,
   logoPath = "logo.png",
   i18nKeyPrefix = "consent",
 }) {
@@ -55,7 +55,7 @@ export default function Consent({
 
   useEffect(() => {
     const initialize = async () => {
-      let oAuthDetails = oAuthDetailsService.getOuthDetails();
+      let oAuthDetails = openIDConnectService.getOAuthDetails();
 
       let claimsScopes = [];
       claimsScopes.push({
@@ -104,7 +104,7 @@ export default function Consent({
   //Handle Login API Integration here
   const submitConsent = async () => {
     try {
-      let transactionId = oAuthDetailsService.getTransactionId();
+      let transactionId = openIDConnectService.getTransactionId();
       let acceptedClaims = claims;
       let permittedAuthorizeScopes = scope;
 
@@ -145,9 +145,9 @@ export default function Consent({
 
   //errorCode is REQUIRED, errorDescription is OPTIONAL
   const onError = async (errorCode, errorDescription) => {
-    let nonce = oAuthDetailsService.getNonce();
-    let state = oAuthDetailsService.getState();
-    let redirect_uri = oAuthDetailsService.getRedirectUri();
+    let nonce = openIDConnectService.getNonce();
+    let state = openIDConnectService.getState();
+    let redirect_uri = openIDConnectService.getRedirectUri();
 
     if (!redirect_uri) {
       return;

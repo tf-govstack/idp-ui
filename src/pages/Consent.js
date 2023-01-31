@@ -3,7 +3,7 @@ import Consent from "../components/Consent";
 import authService from "../services/authService";
 import { Buffer } from "buffer";
 import { useSearchParams } from "react-router-dom";
-import oAuthDetailsService from "../services/oAuthDetailsService";
+import openIDConnectService from "../services/openIDConnectService";
 
 export default function ConsentPage() {
 
@@ -12,12 +12,12 @@ export default function ConsentPage() {
   let nonce = searchParams.get("nonce")
   let state = searchParams.get("state")
   var decodeOAuth = Buffer.from(response, 'base64')?.toString();
-  const oAuthDetails = new oAuthDetailsService(JSON.parse(decodeOAuth), nonce, state);
+  const oidcService = new openIDConnectService(JSON.parse(decodeOAuth), nonce, state);
 
   return (
     <Consent
-      authService={new authService(oAuthDetails)}
-      oAuthDetailsService={oAuthDetails}
+      authService={new authService(oidcService)}
+      openIDConnectService={oidcService}
     />
   );
 }

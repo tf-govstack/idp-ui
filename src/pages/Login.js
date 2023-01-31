@@ -14,10 +14,10 @@ import {
   validAuthFactors,
 } from "../constants/clientConstants";
 import linkAuthService from "../services/linkAuthService";
-import IDPQRCode from "../components/IDPQRCode";
+import LoginQRCode from "../components/LoginQRCode";
 import { useSearchParams } from "react-router-dom";
 import { Buffer } from "buffer";
-import oAuthDetailsService from "../services/oAuthDetailsService";
+import openIDConnectService from "../services/openIDConnectService";
 
 //authFactorComponentMapping
 const comp = {
@@ -26,43 +26,43 @@ const comp = {
   BIO: L1Biometrics,
 };
 
-function InitiateL1Biometrics(oAuthDetailsService) {
+function InitiateL1Biometrics(openIDConnectService) {
   return React.createElement(L1Biometrics, {
     param: bioLoginFields,
-    authService: new authService(oAuthDetailsService),
+    authService: new authService(openIDConnectService),
     localStorageService: localStorageService,
-    oAuthDetailsService: oAuthDetailsService,
-    sbiService: new sbiService(oAuthDetailsService),
+    openIDConnectService: openIDConnectService,
+    sbiService: new sbiService(openIDConnectService),
   });
 }
 
-function InitiatePin(oAuthDetailsService) {
+function InitiatePin(openIDConnectService) {
   return React.createElement(Pin, {
     param: pinFields,
-    authService: new authService(oAuthDetailsService),
-    oAuthDetailsService: oAuthDetailsService,
+    authService: new authService(openIDConnectService),
+    openIDConnectService: openIDConnectService,
   });
 }
 
-function InitiateOtp(oAuthDetailsService) {
+function InitiateOtp(openIDConnectService) {
   return React.createElement(Otp, {
     param: otpFields,
-    authService: new authService(oAuthDetailsService),
-    oAuthDetailsService: oAuthDetailsService,
+    authService: new authService(openIDConnectService),
+    openIDConnectService: openIDConnectService,
   });
 }
 
-function InitiateSignInOptions(handleSignInOptionClick, oAuthDetailsService) {
+function InitiateSignInOptions(handleSignInOptionClick, openIDConnectService) {
   return React.createElement(SignInOptions, {
-    oAuthDetailsService: oAuthDetailsService,
+    openIDConnectService: openIDConnectService,
     handleSignInOptionClick: handleSignInOptionClick,
   });
 }
 
-function InitiateLinkedWallet(oAuthDetailsService) {
-  return React.createElement(IDPQRCode, {
-    oAuthDetailsService: oAuthDetailsService,
-    linkAuthService: new linkAuthService(oAuthDetailsService),
+function InitiateLinkedWallet(openIDConnectService) {
+  return React.createElement(LoginQRCode, {
+    openIDConnectService: openIDConnectService,
+    linkAuthService: new linkAuthService(openIDConnectService),
   });
 }
 
@@ -70,7 +70,7 @@ function InitiateInvalidAuthFactor(errorMsg) {
   return React.createElement(() => <div>{errorMsg}</div>);
 }
 
-function createDynamicLoginElements(inst, oAuthDetailsService) {
+function createDynamicLoginElements(inst, oidcService) {
   if (typeof comp[inst] === "undefined") {
     return InitiateInvalidAuthFactor(
       "The component " + { inst } + " has not been created yet."
@@ -78,15 +78,15 @@ function createDynamicLoginElements(inst, oAuthDetailsService) {
   }
 
   if (comp[inst] === Otp) {
-    return InitiateOtp(oAuthDetailsService);
+    return InitiateOtp(oidcService);
   }
 
   if (comp[inst] === Pin) {
-    return InitiatePin(oAuthDetailsService);
+    return InitiatePin(oidcService);
   }
 
   if (comp[inst] === L1Biometrics) {
-    return InitiateL1Biometrics(oAuthDetailsService);
+    return InitiateL1Biometrics(oidcService);
   }
 
   return React.createElement(comp[inst]);
@@ -105,9 +105,9 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
   var nonce = searchParams.get("nonce");
   var state = searchParams.get("state");
 
-  const oAuthDetails = new oAuthDetailsService(JSON.parse(decodeOAuth), nonce, state);
+  const oidcService = new openIDConnectService(JSON.parse(decodeOAuth), nonce, state);
 
-  let value = oAuthDetails.getIdpConfiguration(
+  let value = oidcService.getIdpConfiguration(
     configurationKeys.signInWithInjiEnable
   ) ?? process.env.REACT_APP_INJI_ENABLE
 
@@ -116,12 +116,12 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
   const handleSignInOptionClick = (authFactor) => {
     //TODO handle multifactor auth
     setShowMoreOption(true);
-    setCompToShow(createDynamicLoginElements(authFactor[0].type, oAuthDetails));
+    setCompToShow(createDynamicLoginElements(authFactor[0].type, oidcService));
   };
 
   const handleMoreWaysToSignIn = () => {
     setShowMoreOption(false);
-    setCompToShow(InitiateSignInOptions(handleSignInOptionClick, oAuthDetails));
+    setCompToShow(InitiateSignInOptions(handleSignInOptionClick, oidcService));
   };
 
   useEffect(() => {
@@ -130,12 +130,12 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
 
   const loadComponent = () => {
     setInjiDownloadURI(
-      oAuthDetails.getIdpConfiguration(
+      oidcService.getIdpConfiguration(
         configurationKeys.injiAppDownloadURI
       ) ?? process.env.REACT_APP_INJI_DOWNLOAD_URI
     );
 
-    let oAuthDetailResponse = oAuthDetails.getOuthDetails();
+    let oAuthDetailResponse = oidcService.getOAuthDetails();
 
     try {
       setClientLogoURL(oAuthDetailResponse?.logoUrl);
@@ -153,7 +153,7 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
       let firstLoginOption = validComponents[0];
       let authFactor = firstLoginOption[0].type;
       setShowMoreOption(validComponents.length > 1);
-      setCompToShow(createDynamicLoginElements(authFactor, oAuthDetails));
+      setCompToShow(createDynamicLoginElements(authFactor, oidcService));
     } catch (error) {
       setShowMoreOption(false);
       setCompToShow(InitiateInvalidAuthFactor(t("invalid_auth_factor")));
@@ -171,7 +171,7 @@ export default function LoginPage({ i18nKeyPrefix = "header" }) {
         component={compToShow}
         handleMoreWaysToSignIn={handleMoreWaysToSignIn}
         showMoreOption={showMoreOption}
-        linkedWalletComp={InitiateLinkedWallet(oAuthDetails)}
+        linkedWalletComp={InitiateLinkedWallet(oidcService)}
         injiAppDownloadURI={injiDownloadURI}
         injiEnable={injiEnable}
       />

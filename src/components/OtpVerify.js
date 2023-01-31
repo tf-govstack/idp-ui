@@ -19,7 +19,7 @@ export default function OtpVerify({
   otpResponse,
   vid,
   authService,
-  oAuthDetailsService,
+  openIDConnectService,
   i18nKeyPrefix = "otp",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
@@ -31,10 +31,10 @@ export default function OtpVerify({
   const post_AuthenticateUser = authService.post_AuthenticateUser;
 
   const resendOtpTimeout =
-    oAuthDetailsService.getIdpConfiguration(configurationKeys.resendOtpTimeout) ??
+    openIDConnectService.getIdpConfiguration(configurationKeys.resendOtpTimeout) ??
     process.env.REACT_APP_RESEND_OTP_TIMEOUT_IN_SEC;
   const commaSeparatedChannels =
-    oAuthDetailsService.getIdpConfiguration(configurationKeys.sendOtpChannels) ??
+    openIDConnectService.getIdpConfiguration(configurationKeys.sendOtpChannels) ??
     process.env.REACT_APP_SEND_OTP_CHANNELS;
 
   const [loginState, setLoginState] = useState(fieldsState);
@@ -71,7 +71,7 @@ export default function OtpVerify({
       pin.clear();
       setOtpValue("");
 
-      let transactionId = oAuthDetailsService.getTransactionId();
+      let transactionId = openIDConnectService.getTransactionId();
       let otpChannels = commaSeparatedChannels.split(",").map((x) => x.trim());
 
       setStatus({ state: states.LOADING, msg: "sending_otp_msg" });
@@ -155,7 +155,7 @@ export default function OtpVerify({
   //Handle Login API Integration here
   const authenticateUser = async () => {
     try {
-      let transactionId = oAuthDetailsService.getTransactionId();
+      let transactionId = openIDConnectService.getTransactionId();
 
       let challengeType = challengeTypes.otp;
       let challenge = otpValue;
@@ -188,8 +188,8 @@ export default function OtpVerify({
       } else {
         setError(null);
 
-        let nonce = oAuthDetailsService.getNonce();
-        let state = oAuthDetailsService.getState();
+        let nonce = openIDConnectService.getNonce();
+        let state = openIDConnectService.getState();
 
         let params = "?";
         if (nonce) {
@@ -199,7 +199,7 @@ export default function OtpVerify({
           params = params + "state=" + state + "&";
         }
 
-        let responseB64 = oAuthDetailsService.encodeBase64(oAuthDetailsService.getOuthDetails());
+        let responseB64 = openIDConnectService.encodeBase64(openIDConnectService.getOAuthDetails());
 
         //REQUIRED
         params = params + "response=" + responseB64;

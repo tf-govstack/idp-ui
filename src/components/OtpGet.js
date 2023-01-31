@@ -11,7 +11,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 export default function OtpGet({
   param,
   authService,
-  oAuthDetailsService,
+  openIDConnectService,
   onOtpSent,
   i18nKeyPrefix = "otp",
 }) {
@@ -23,17 +23,17 @@ export default function OtpGet({
   const post_SendOtp = authService.post_SendOtp;
 
   const commaSeparatedChannels =
-    oAuthDetailsService.getIdpConfiguration(configurationKeys.sendOtpChannels) ??
+    openIDConnectService.getIdpConfiguration(configurationKeys.sendOtpChannels) ??
     process.env.REACT_APP_SEND_OTP_CHANNELS;
 
   const sendOTPShowCaptchaValue =
-    oAuthDetailsService.getIdpConfiguration(configurationKeys.sendOTPShowCaptcha) ??
+    openIDConnectService.getIdpConfiguration(configurationKeys.sendOTPShowCaptcha) ??
     process.env.REACT_APP_SEND_OTP_SHOW_CAPTCHA;
 
   const sendOTPShowCaptcha = sendOTPShowCaptchaValue?.toString().trim().toLowerCase() === "true"
 
   const sendOtpCaptchaSiteKey =
-    oAuthDetailsService.getIdpConfiguration(configurationKeys.sendOtpCaptchaSiteKey) ??
+    openIDConnectService.getIdpConfiguration(configurationKeys.sendOtpCaptchaSiteKey) ??
     process.env.REACT_APP_SEND_OTP_CAPTCHA_SITE_KEY;
 
   const [loginState, setLoginState] = useState(fieldsState);
@@ -55,7 +55,7 @@ export default function OtpGet({
     try {
       setError(null);
 
-      let transactionId = oAuthDetailsService.getTransactionId();
+      let transactionId = openIDConnectService.getTransactionId();
       let vid = loginState["Otp_mosip-vid"];
 
       let otpChannels = commaSeparatedChannels.split(",").map((x) => x.trim());

@@ -16,7 +16,7 @@ fields.forEach((field) => (fieldsState["Pin" + field.id] = ""));
 export default function Pin({
   param,
   authService,
-  oAuthDetailsService,
+  openIDConnectService,
   i18nKeyPrefix = "pin",
 }) {
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
@@ -42,7 +42,7 @@ export default function Pin({
   //Handle Login API Integration here
   const authenticateUser = async () => {
     try {
-      let transactionId = oAuthDetailsService.getTransactionId();
+      let transactionId = openIDConnectService.getTransactionId();
 
       let uin = loginState["Pin_mosip-uin"];
       let challengeType = challengeTypes.pin;
@@ -78,8 +78,8 @@ export default function Pin({
       } else {
         setError(null);
 
-        let nonce = oAuthDetailsService.getNonce();
-        let state = oAuthDetailsService.getState();
+        let nonce = openIDConnectService.getNonce();
+        let state = openIDConnectService.getState();
 
         let params = "?";
         if (nonce) {
@@ -89,7 +89,7 @@ export default function Pin({
           params = params + "state=" + state + "&";
         }
 
-        let responseB64 = oAuthDetailsService.encodeBase64(oAuthDetailsService.getOuthDetails());
+        let responseB64 = openIDConnectService.encodeBase64(openIDConnectService.getOAuthDetails());
 
         //REQUIRED
         params = params + "response=" + responseB64;

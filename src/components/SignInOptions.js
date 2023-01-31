@@ -5,7 +5,7 @@ import { validAuthFactors } from "../constants/clientConstants";
 import { LoadingStates as states } from "../constants/states";
 
 export default function SignInOptions({
-  oAuthDetailsService,
+  openIDConnectService,
   handleSignInOptionClick,
   i18nKeyPrefix = "signInOption",
 }) {
@@ -24,7 +24,7 @@ export default function SignInOptions({
   useEffect(() => {
     setStatus({ state: states.LOADING, msg: "loading_msg" });
 
-    let oAuthDetails = oAuthDetailsService.getOuthDetails();
+    let oAuthDetails = openIDConnectService.getOAuthDetails();
     let authFactors = oAuthDetails.authFactors;
 
     let loginOptions = [];

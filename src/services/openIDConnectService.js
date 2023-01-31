@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
 import { sha256 } from 'crypto-hash';
 
-class oAuthDetailsService {
+class openIDConnectService {
   constructor(oAuthDetails, nonce, state) {
     this.oAuthDetails = oAuthDetails;
     this.nonce = nonce;
@@ -32,7 +32,7 @@ class oAuthDetailsService {
   /**
    * @returns outhDetails
    */
-  getOuthDetails = () => {
+  getOAuthDetails = () => {
     return this.oAuthDetails;
   };
 
@@ -75,4 +75,4 @@ class oAuthDetailsService {
   };
 };
 
-export default oAuthDetailsService;
+export default openIDConnectService;

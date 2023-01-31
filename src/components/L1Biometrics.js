@@ -23,7 +23,7 @@ export default function L1Biometrics({
   param,
   authService,
   localStorageService,
-  oAuthDetailsService,
+  openIDConnectService,
   sbiService,
   i18nKeyPrefix = "l1Biometrics",
 }) {
@@ -129,9 +129,9 @@ export default function L1Biometrics({
 
     try {
       await Authenticate(
-        oAuthDetailsService.getTransactionId(),
+        openIDConnectService.getTransactionId(),
         vid,
-        oAuthDetailsService.encodeBase64(biometricResponse["biometrics"])
+        openIDConnectService.encodeBase64(biometricResponse["biometrics"])
       );
     } catch (error) {
       setError({
@@ -205,8 +205,8 @@ export default function L1Biometrics({
       });
     } else {
 
-      let nonce = oAuthDetailsService.getNonce();
-      let state = oAuthDetailsService.getState();
+      let nonce = openIDConnectService.getNonce();
+      let state = openIDConnectService.getState();
 
       let params = "?";
       if (nonce) {
@@ -216,7 +216,7 @@ export default function L1Biometrics({
         params = params + "state=" + state + "&";
       }
 
-      let responseB64 = oAuthDetailsService.encodeBase64(oAuthDetailsService.getOuthDetails());
+      let responseB64 = openIDConnectService.encodeBase64(openIDConnectService.getOAuthDetails());
 
       //REQUIRED
       params = params + "response=" + responseB64;

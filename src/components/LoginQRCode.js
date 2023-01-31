@@ -9,10 +9,10 @@ import {
 } from "../constants/clientConstants";
 import { LoadingStates as states } from "../constants/states";
 
-export default function IDPQRCode({
+export default function LoginQRCode({
   linkAuthService,
-  oAuthDetailsService,
-  i18nKeyPrefix = "IDPQRCode",
+  openIDConnectService,
+  i18nKeyPrefix = "LoginQRCode",
 }) {
 
   const post_GenerateLinkCode = linkAuthService.post_GenerateLinkCode;
@@ -24,7 +24,7 @@ export default function IDPQRCode({
   const [status, setStatus] = useState({ state: states.LOADED, msg: "" });
   const [error, setError] = useState(null);
   const timeoutInSeconds =
-    oAuthDetailsService.getIdpConfiguration(configurationKeys.linkCodeWaitTimeInSec) ??
+    openIDConnectService.getIdpConfiguration(configurationKeys.linkCodeWaitTimeInSec) ??
     process.env.REACT_APP_LINK_CODE_TIMEOUT_IN_SEC;
 
   const GenerateQRCode = (text) => {
@@ -62,7 +62,7 @@ export default function IDPQRCode({
         msg: "loading_msg",
       });
       let { response, errors } = await post_GenerateLinkCode(
-        oAuthDetailsService.getTransactionId()
+        openIDConnectService.getTransactionId()
       );
 
       if (errors != null && errors.length > 0) {
@@ -72,7 +72,7 @@ export default function IDPQRCode({
         });
       } else {
         let injiDeepLinkURI =
-          oAuthDetailsService.getIdpConfiguration(configurationKeys.injiDeepLinkURI) ??
+          openIDConnectService.getIdpConfiguration(configurationKeys.injiDeepLinkURI) ??
           process.env.REACT_APP_INJI_DEEP_LINK_URI;
 
         injiDeepLinkURI = injiDeepLinkURI.replace(
