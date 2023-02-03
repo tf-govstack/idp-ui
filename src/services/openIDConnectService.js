@@ -12,7 +12,7 @@ class openIDConnectService {
    * @returns redirectUri
    */
   getRedirectUri = () => {
-    return this.oAuthDetails.redirect_uri;
+    return this.oAuthDetails.redirectUri;
   };
 
   /**
