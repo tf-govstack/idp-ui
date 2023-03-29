@@ -1,4 +1,4 @@
-# IDP UI
+## IDP UI
 
 ## Overview
 This repository contains the source code for the UI of MOSIP IDP Services.
