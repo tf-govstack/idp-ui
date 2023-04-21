@@ -1,6 +1,6 @@
 ## IDP UI
 
-# Overview
+## Overview
 This repository contains the source code for the UI of MOSIP IDP Services.
 IDP Services are based on [OpenID specs](https://openid.net/specs/openid-connect-core-1_0.html).
 
